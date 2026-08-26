@@ -35,6 +35,7 @@ export class Preloader extends Scene
         this.load.image('logo', 'logo.png');
         this.load.image('pc_screen', 'Windows_Screen.png')
         this.load.image('folder', 'folder.png')
+        this.load.image('windows_cake', 'Windows_Cake.png')
     }
 
     create ()
