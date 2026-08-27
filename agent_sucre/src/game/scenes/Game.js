@@ -1,28 +1,28 @@
-import { Scene } from 'phaser';
+import { Scene } from "phaser";
+import { DialogBox } from "../components/DialogBox.js";
 
-export class Game extends Scene
-{
-    constructor ()
-    {
-        super('Game');
-    }
+export class Game extends Scene {
+  constructor() {
+    super("Game");
+  }
 
-    create ()
-    {
-        this.cameras.main.setBackgroundColor(0x00ff00);
+  create() {
+    this.cameras.main.setBackgroundColor(0x00ff00);
 
-        this.add.image(512, 384, 'background').setAlpha(0.5);
+    this.dialogBox = new DialogBox(this, 115, 600, 800, 130);
 
-        this.add.text(512, 384, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5);
+    this.dialogBox.start(
+      [
+        "Bonjour ! Bienvenue dans cette aventure.",
+        "Utilise la carte pour te déplacer.",
+        "Bonne chance !",
+      ],
+      () => {
+        this.scene.start("GameOver");
+      },
+    );
 
-        this.input.once('pointerdown', () => {
-
-            this.scene.start('GameOver');
-
-        });
-    }
+    this.input.on("pointerdown", () => this.dialogBox.advance());
+    this.input.keyboard.on("keydown-SPACE", () => this.dialogBox.advance());
+  }
 }
