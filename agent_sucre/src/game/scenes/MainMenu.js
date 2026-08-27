@@ -12,10 +12,10 @@ export class MainMenu extends Scene {
     g.fillStyle(0x000000, 1);
     g.fillRect(32, 32, 896, 150);
 
-    g.generateTexture('task_bar', 896, 80);
+    g.generateTexture("task_bar", 896, 80);
     g.destroy();
 
-    this.add.image(495, 639, 'task_bar');
+    this.add.image(495, 639, "task_bar");
 
     this.add.image(110, 655, "windows_cake").setScale(0.08);
 
