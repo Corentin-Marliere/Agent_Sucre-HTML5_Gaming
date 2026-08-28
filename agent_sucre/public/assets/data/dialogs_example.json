@@ -1,0 +1,32 @@
+{
+  "dialogue_1": {
+    "speaker": "Lysandre",
+    "lines": [
+      "Prêt pour le mini-jeu ?"
+    ],
+    "choices": [
+      {
+        "text": "Oui, c'est parti !",
+        "nextSceneId": "ShootEmUpScene"
+      },
+      {
+        "text": "Non, réexplique-moi.",
+        "nextDialogId": "explications"
+      }
+    ]
+  },
+  "explications": {
+    "speaker": "Lysandre",
+    "lines": [
+      "Il faut esquiver les obstacles et tirer !"
+    ],
+    "nextDialogId": "dialogue_1"
+  },
+  "victoire": {
+    "speaker": "Lysandre",
+    "lines": [
+      "Bien joué ! Passons à la suite."
+    ],
+    "nextSceneId": "ClassroomScene"
+  }
+}
