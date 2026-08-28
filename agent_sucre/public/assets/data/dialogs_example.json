@@ -1,13 +1,11 @@
 {
   "dialogue_1": {
     "speaker": "Lysandre",
-    "lines": [
-      "Prêt pour le mini-jeu ?"
-    ],
+    "lines": ["Prêt pour le mini-jeu ?"],
     "choices": [
       {
         "text": "Oui, c'est parti !",
-        "nextSceneId": "ShootEmUpScene"
+        "nextSceneId": "MainMenu"
       },
       {
         "text": "Non, réexplique-moi.",
@@ -16,17 +14,19 @@
     ]
   },
   "explications": {
-    "speaker": "Lysandre",
-    "lines": [
-      "Il faut esquiver les obstacles et tirer !"
-    ],
+    "speaker": "Philippe Etjtebeze",
+    "lines": ["Il faut esquiver les obstacles et tirer !"],
     "nextDialogId": "dialogue_1"
   },
   "victoire": {
     "speaker": "Lysandre",
-    "lines": [
-      "Bien joué ! Passons à la suite."
-    ],
+    "lines": ["Bien joué ! Passons à la suite."],
     "nextSceneId": "ClassroomScene"
+  },
+  "cadeau": {
+    "speaker": "Lysandre",
+    "text": "Tiens, prends ceci.",
+    "action": { "type": "ADD_ITEM", "itemId": "key" },
+    "nextDialogId": "suite_cle"
   }
 }
