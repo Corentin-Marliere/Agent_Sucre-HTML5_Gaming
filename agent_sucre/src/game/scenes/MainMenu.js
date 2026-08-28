@@ -6,20 +6,21 @@ export class MainMenu extends Scene {
   }
 
   create() {
-    this.add.image(512, 384, "pc_screen");
+    this.cameras.main.setBackgroundColor(0x000000);
+    this.add.image(980, 499, "pc_screen").setScale(1.3);
 
     const g = this.make.graphics({ x: 0, y: 0, add: false });
     g.fillStyle(0x000000, 1);
-    g.fillRect(32, 32, 896, 150);
+    g.fillRect(32, 32, 1155, 80);
 
-    g.generateTexture("task_bar", 896, 80);
+    g.generateTexture("task_bar", 1155, 80);
     g.destroy();
 
-    this.add.image(495, 639, "task_bar");
+    this.add.image(964, 850, "task_bar");
 
-    this.add.image(110, 655, "windows_cake").setScale(0.08);
+    this.add.image(450, 865, "windows_cake").setScale(0.08);
 
-    const bouton = this.add.image(130, 130, "folder");
+    const bouton = this.add.image(470, 158, "folder");
 
     bouton.setScale(0.1);
 
