@@ -26,9 +26,11 @@ export class Preloader extends Scene {
     //  Load the assets for the game - Replace with your own assets
     this.load.setPath("assets");
 
-    this.load.image("pc_screen", "Windows_Screen.png");
-    this.load.image("folder", "folder.png");
-    this.load.image("windows_cake", "Windows_Cake.png");
+    this.load.image("pc_screen", "images/Windows_Screen.png");
+    this.load.image("folder", "images/folder.png");
+    this.load.image("windows_cake", "images/Windows_Cake.png");
+
+    this.load.json('dialogs', 'data/dialogs_example.json');
   }
 
   create() {
