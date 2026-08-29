@@ -29,8 +29,10 @@ export class Preloader extends Scene {
     this.load.image("pc_screen", "images/Windows_Screen.png");
     this.load.image("folder", "images/folder.png");
     this.load.image("windows_cake", "images/Windows_Cake.png");
+    this.load.image("secret_institute_map", "images/map_secret_institute.jpeg");
 
-    this.load.json('dialogs', 'data/dialogs_example.json');
+    this.load.json("dialogs", "data/dialogs_example.json");
+    this.load.json("maps", "data/maps.json");
   }
 
   create() {
