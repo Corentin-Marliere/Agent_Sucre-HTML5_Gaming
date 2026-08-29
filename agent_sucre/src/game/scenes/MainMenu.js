@@ -29,5 +29,9 @@ export class MainMenu extends Scene {
     bouton.on("pointerdown", () => {
       this.scene.start("Game");
     });
+
+    this.input.once("pointerdown", () => {
+      this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
+    });
   }
 }
