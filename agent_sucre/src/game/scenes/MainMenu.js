@@ -30,7 +30,13 @@ export class MainMenu extends Scene {
       this.scene.start("Game");
     });
 
-    this.input.once("pointerdown", () => {
+    const mapTest = this.add.image(1495, 158, "folder");
+
+    mapTest.setScale(0.1);
+
+    mapTest.setInteractive({ useHandCursor: true });
+
+    mapTest.on("pointerdown", () => {
       this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
     });
   }
