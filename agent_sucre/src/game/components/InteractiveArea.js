@@ -10,21 +10,20 @@ export class InteractiveArea extends GameObjects.Container {
     this.setSize(width, height);
     this.setInteractive({ useHandCursor: true });
 
-    // bg.on("pointerover", () => {
-    //   scene.tweens.add({
-    //     targets: this,
-    //     scale: 1.05,
-    //     duration: 150,
-    //   });
-    // });
+    this.highlight = scene.add.graphics();
+    this.highlight.fillStyle(0xffffff, 0.3); // Couleur blanche avec 30% d'opacité
+    this.highlight.fillRect(-width / 2, -height / 2, width, height); // Centré sur le container
+    this.highlight.setVisible(false);
 
-    // bg.on("pointerout", () => {
-    //   scene.tweens.add({
-    //     targets: this,
-    //     scale: 1,
-    //     duration: 150,
-    //   });
-    // });
+    this.add(this.highlight);
+
+    this.on("pointerover", () => {
+      this.highlight.setVisible(true);
+    });
+
+    this.on("pointerout", () => {
+      this.highlight.setVisible(false);
+    });
 
     this.on("pointerdown", () => {
       this.changeZone();
