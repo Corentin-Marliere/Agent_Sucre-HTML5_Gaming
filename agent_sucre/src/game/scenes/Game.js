@@ -24,5 +24,6 @@ export class Game extends Scene {
 
     this.input.on("pointerdown", () => this.dialogBox.advance());
     this.input.keyboard.on("keydown-SPACE", () => this.dialogBox.advance());
+    this.input.keyboard.on("keydown-ENTER", () => this.dialogBox.advance());
   }
 }
