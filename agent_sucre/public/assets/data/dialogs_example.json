@@ -1,32 +1,102 @@
 {
-  "dialogue_1": {
-    "speaker": "Lysandre",
-    "lines": ["Prêt pour le mini-jeu ?"],
+  "etchebest_intro": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "Halte-là la recrue ! Personne ne circule sans autorisation dans les couloirs du château.",
+      "Montrez-moi votre badge et justifiez votre présence immédiatement !"
+    ],
     "choices": [
       {
-        "text": "Oui, c'est parti !",
-        "nextSceneId": "MainMenu"
+        "text": "Présenter calmement le badge d'apprenti (Pro)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "etchebest", "amount": 5 }
+        ],
+        "nextDialogId": "etchebest_reponse_pro"
       },
       {
-        "text": "Non, réexplique-moi.",
-        "nextDialogId": "explications"
+        "text": "Tenter une diversion audacieuse (Audacieux)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "etchebest", "amount": 10 },
+          { "type": "ADD_INFILTRATION", "amount": -15 }
+        ],
+        "nextDialogId": "etchebest_reponse_audacieux"
+      },
+      {
+        "text": "Bafouiller nerveusement en cherchant ses mots (Hésitant)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "etchebest", "amount": -10 },
+          { "type": "ADD_INFILTRATION", "amount": -10 }
+        ],
+        "nextDialogId": "etchebest_reponse_hesitant"
+      }
+    ]
+  },
+  "etchebest_reponse_pro": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "Impeccable. Vous avez vos papiers en règle et un sang-froid appréciable.",
+      "Les couloirs de ce château sont un labyrinthe et on ne laisse pas les bleus se balader seuls."
+    ],
+    "choices": [
+      {
+        "text": "Suivre le Chef de la Sécurité",
+        "nextDialogId": "etchebest_fin"
+      }
+    ]
+  },
+  "etchebest_reponse_audacieux": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "Ah ! Du cran, j'aime ça ! Mais attention, ici on ne plaisante pas avec la sécurité.",
+      "Votre coup d'éclat a fait du bruit dans les couloirs. Soyez plus discret la prochaine fois !"
+    ],
+    "choices": [
+      {
+        "text": "Compris, Chef ! Je surveillerai ma discrétion.",
+        "nextDialogId": "etchebest_fin"
+      }
+    ]
+  },
+  "etchebest_reponse_hesitant": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "Un flan ! Vous avez l'air d'un flan mal démoulé !",
+      "Si vous tremblez comme ça devant moi, qu'est-ce que ce sera face à Gordon Ramsay ? Ressaisissez-vous !"
+    ],
+    "choices": [
+      {
+        "text": "Pardon Chef... Je me reprends immédiatement.",
+        "nextDialogId": "etchebest_fin"
+      }
+    ]
+  },
+  "etchebest_fin": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "Bien. Rendez-vous au laboratoire R&D pour découvrir vos gadgets auprès de Cyril Lignac."
+    ],
+    "choices": [
+      {
+        "text": "Consulter la carte de l'Institut Secret",
+        "nextSceneId": "GenericMapScene"
+      },
+      {
+        "text": "Retourner au Bureau virtuel",
+        "nextSceneId": "MainMenu"
       }
     ]
   },
   "explications": {
-    "speaker": "Philippe Etjtebeze",
-    "lines": ["Il faut esquiver les obstacles et tirer !"],
-    "nextDialogId": "dialogue_1"
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "Halte-là la recrue ! Personne ne circule sans autorisation dans les couloirs.",
+      "Montrez-moi votre badge et justifiez votre présence immédiatement !"
+    ],
+    "nextDialogId": "etchebest_intro"
   },
-  "victoire": {
-    "speaker": "Lysandre",
-    "lines": ["Bien joué ! Passons à la suite."],
-    "nextSceneId": "ClassroomScene"
-  },
-  "cadeau": {
-    "speaker": "Lysandre",
-    "text": "Tiens, prends ceci.",
-    "action": { "type": "ADD_ITEM", "itemId": "key" },
-    "nextDialogId": "suite_cle"
+  "dialogue_1": {
+    "speaker": "Philippe Etchebest",
+    "lines": ["Prêt pour la mission ?"],
+    "nextDialogId": "etchebest_intro"
   }
 }
