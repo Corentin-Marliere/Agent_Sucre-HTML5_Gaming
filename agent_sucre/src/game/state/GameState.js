@@ -28,7 +28,14 @@ export class GameState {
         items: ["badge_recrue", "boite_patissiere"],
       },
       gauges: {
-        affection: {},
+        affection: {
+          etchebest: 50,
+          ramsay: 50,
+          lignac: 50,
+          bocuse: 50,
+          grolet: 50,
+        },
+        infiltration: 100,
         energy: 100,
         moral: 100,
       },
@@ -320,26 +327,26 @@ export class GameState {
   }
 
   /**
-   * Modifies the affection level with a character.
+   * Modifies the affection level with a character (bounded between 0 and 100).
    * @param {string} character
    * @param {number} amount
-   * @returns {number} New condition
+   * @returns {number} New value
    */
   addAffection(character, amount) {
-    const current = this.state.gauges.affection[character] ?? 0;
-    const nextVal = current + amount;
+    const current = this.state.gauges.affection[character] ?? 50;
+    const nextVal = Math.min(100, Math.max(0, current + amount));
     this.state.gauges.affection[character] = nextVal;
     this._touch();
     return nextVal;
   }
 
   /**
-   * Sets the affection level with a character.
+   * Sets the affection level with a character (bounded between 0 and 100).
    * @param {string} character
    * @param {number} value
    */
   setAffection(character, value) {
-    this.state.gauges.affection[character] = value;
+    this.state.gauges.affection[character] = Math.min(100, Math.max(0, value));
     this._touch();
   }
 
@@ -349,7 +356,32 @@ export class GameState {
    * @returns {number}
    */
   getAffection(character) {
-    return this.state.gauges.affection[character] ?? 0;
+    return this.state.gauges.affection[character] ?? 50;
+  }
+
+  /**
+   * Retrieves the infiltration level (0-100).
+   * @returns {number}
+   */
+  getInfiltration() {
+    return this.state.gauges.infiltration ?? 100;
+  }
+
+  /**
+   * Modifies the infiltration level (bounded between 0 and 100).
+   * @param {number} amount
+   * @returns {number} New infiltration value
+   */
+  addInfiltration(amount) {
+    return this.addGauge("infiltration", amount, { min: 0, max: 100 });
+  }
+
+  /**
+   * Sets the infiltration level (bounded between 0 and 100).
+   * @param {number} value
+   */
+  setInfiltration(value) {
+    this.setGauge("infiltration", Math.min(100, Math.max(0, value)));
   }
 
   /* ======================================================================= */

@@ -102,24 +102,38 @@ export class DialogBox extends GameObjects.Container {
   showChoices() {
     this.clearChoices();
 
+    const choiceWidth = 640;
+    const choiceHeight = 40;
+    const spacing = 12;
+
     this.choices.forEach((choice, index) => {
-      const buttonY = -50 * (this.choices.length - index) - 10;
+      const buttonY = -(choiceHeight + spacing) * (this.choices.length - index) - 10;
 
       const btnBg = this.scene.add
-        .rectangle(this.width / 2, buttonY, this.width - 1000, 35, 0x222222, 0.9)
-        .setStrokeStyle(1, 0xffffff)
+        .rectangle(this.width / 2, buttonY, choiceWidth, choiceHeight, 0x101a28, 0.95)
+        .setStrokeStyle(1.5, 0x00d2ff)
         .setInteractive({ useHandCursor: true });
 
       const btnText = this.scene.add
-        .text(this.width / 2, buttonY, choice.text, {
-          fontFamily: "Arial",
-          fontSize: "16px",
+        .text(this.width / 2, buttonY, `➤  ${choice.text}`, {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "15px",
+          fontStyle: "bold",
           color: "#ffffff",
         })
         .setOrigin(0.5);
 
-      btnBg.on("pointerover", () => btnBg.setFillStyle(0x444444));
-      btnBg.on("pointerout", () => btnBg.setFillStyle(0x222222));
+      btnBg.on("pointerover", () => {
+        btnBg.setFillStyle(0x1e3a5f, 0.98);
+        btnBg.setStrokeStyle(2, 0x00ffcc);
+        btnText.setColor("#00ffcc");
+      });
+
+      btnBg.on("pointerout", () => {
+        btnBg.setFillStyle(0x101a28, 0.95);
+        btnBg.setStrokeStyle(1.5, 0x00d2ff);
+        btnText.setColor("#ffffff");
+      });
 
       btnBg.on("pointerdown", () => {
         this.justSelectedChoice = true;

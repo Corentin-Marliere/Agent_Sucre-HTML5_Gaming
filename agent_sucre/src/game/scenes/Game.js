@@ -3,9 +3,10 @@ import { DialogBox } from "../components/DialogBox.js";
 import { DialogueManager } from "../manager/DialogManager.js";
 import { gameState } from "../state/GameState.js";
 import { InventoryModal } from "../components/InventoryModal.js";
+import { GaugeHUD } from "../components/GaugeHUD.js";
 
 /**
- * Dialogue scene with Visual Novel box and inventory modal support.
+ * Dialogue scene with Visual Novel box, Gauges HUD, and inventory modal support.
  */
 export class Game extends Scene {
   constructor() {
@@ -14,24 +15,36 @@ export class Game extends Scene {
 
   create() {
     gameState.setCurrentScene("Game");
-    this.cameras.main.setBackgroundColor(0x00ff00);
+    this.cameras.main.setBackgroundColor(0x141b26);
+
+    // Background decoration if available
+    if (this.textures.exists("pc_screen")) {
+      this.add.image(980, 499, "pc_screen").setScale(1.3).setAlpha(0.65);
+    }
 
     this.currentModal = null;
 
+    // Visual Novel HUD: Infiltration bar and Character Affinity meter
+    this.gaugeHUD = new GaugeHUD(this, { speaker: "Philippe Etchebest" });
+
+    // Dialogue text box
     this.dialogBox = new DialogBox(this);
 
+    // Dialogue narrative manager connected to HUD
     this.dialogueManager = new DialogueManager(
       this,
       this.dialogBox,
       "dialogs",
+      { gaugeHUD: this.gaugeHUD }
     );
 
-    this.dialogueManager.play("explications");
+    // Start introductory dialogue
+    this.dialogueManager.play("etchebest_intro");
 
-    // Top HUD controls
+    // Top HUD controls (return to desktop & inventory shortcut)
     this.createHUD();
 
-    // Advance dialogues when clicking or pressing Space/Enter (only if no modal is open)
+    // Advance dialogues when clicking (only if no modal is open)
     this.input.on("pointerdown", () => {
       if (!this.currentModal) {
         this.dialogBox.advance();
