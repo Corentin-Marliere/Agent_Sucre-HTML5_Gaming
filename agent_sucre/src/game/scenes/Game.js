@@ -1,6 +1,7 @@
 import { Scene } from "phaser";
 import { DialogBox } from "../components/DialogBox.js";
 import { DialogueManager } from "../manager/DialogManager.js";
+import { gameState } from "../state/GameState.js";
 
 export class Game extends Scene {
   constructor() {
@@ -8,6 +9,7 @@ export class Game extends Scene {
   }
 
   create() {
+    gameState.setCurrentScene("Game");
     this.cameras.main.setBackgroundColor(0x00ff00);
 
     this.dialogBox = new DialogBox(this);

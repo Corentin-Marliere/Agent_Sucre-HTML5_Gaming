@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import { gameState } from "../state/GameState.js";
 
 export class MainMenu extends Scene {
   constructor() {
@@ -6,6 +7,7 @@ export class MainMenu extends Scene {
   }
 
   create() {
+    gameState.setCurrentScene("MainMenu");
     this.cameras.main.setBackgroundColor(0x000000);
     this.add.image(980, 499, "pc_screen").setScale(1.3);
 

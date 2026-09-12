@@ -1,4 +1,5 @@
 import { DialogBox } from "../components/DialogBox";
+import { gameState } from "../state/GameState.js";
 
 export class DialogueManager {
   constructor(scene, dialogBox, jsonKey) {
@@ -13,6 +14,8 @@ export class DialogueManager {
       console.warn(`Dialogue ID non trouvé : ${dialogueId}`);
       return;
     }
+
+    gameState.setCurrentDialogue(dialogueId);
 
     this.dialogBox.start(
       data.speaker || null,
@@ -42,13 +45,21 @@ export class DialogueManager {
   }
 
   executeAction(action) {
-    // switch (action.type) {
-    //   case "ADD_ITEM":
-    //     this.inventory.add(action.itemId);
-    //     break;
-    //   case "ADD_AFFECTION":
-    //     this.playerStats.affection += action.amount;
-    //     break;
-    // }
+    switch (action.type) {
+      case "ADD_ITEM":
+        gameState.addItem(action.itemId, action.quantity || 1);
+        break;
+      case "REMOVE_ITEM":
+        gameState.removeItem(action.itemId, action.quantity || 1);
+        break;
+      case "ADD_AFFECTION":
+        gameState.addAffection(action.target || action.character || "default", action.amount || 0);
+        break;
+      case "SET_FLAG":
+        gameState.setFlag(action.flag, action.value ?? true);
+        break;
+      default:
+        console.warn(`Action de dialogue non reconnue : ${action.type}`);
+    }
   }
 }
