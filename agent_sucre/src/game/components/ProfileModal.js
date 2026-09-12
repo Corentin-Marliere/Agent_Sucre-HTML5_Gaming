@@ -75,6 +75,18 @@ export class ProfileModal extends GameObjects.Container {
       .setOrigin(0, 0.5);
     this.add(this.titleText);
 
+    // Close button [X]
+    const closeBtn = this.scene.add
+      .text(winX + winWidth / 2 - 25, titleBarY, "✖", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "18px",
+        color: "#ff6b6b",
+      })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+    closeBtn.on("pointerdown", () => this.close());
+    this.add(closeBtn);
+
     // Error message
     this.errorText = this.scene.add
       .text(winX, winY + (this.mode === "CREATE" ? 115 : 85), "", {
@@ -251,10 +263,10 @@ export class ProfileModal extends GameObjects.Container {
 
   setActiveField(field) {
     this.activeField = field;
-    if (this.nameInputBox) {
+    if (this.nameInputBox && this.nameInputBox.scene) {
       this.nameInputBox.setStrokeStyle(2, field === "agentName" ? 0x00d2ff : 0x555e6d);
     }
-    if (this.pinInputBox) {
+    if (this.pinInputBox && this.pinInputBox.scene) {
       this.pinInputBox.setStrokeStyle(2, field === "pinCode" ? 0x00d2ff : 0x555e6d);
     }
   }
@@ -267,17 +279,17 @@ export class ProfileModal extends GameObjects.Container {
   }
 
   updateDisplay() {
-    if (this.nameDisplayText) {
+    if (this.nameDisplayText && this.nameDisplayText.scene) {
       this.nameDisplayText.setText(this.agentName || " ");
     }
-    if (this.pinDisplayText) {
+    if (this.pinDisplayText && this.pinDisplayText.scene) {
       this.pinDisplayText.setText(this.getMaskedPin());
     }
   }
 
   initKeyboardListener() {
     this.onKeyDown = (event) => {
-      if (!this.visible) return;
+      if (!this.scene || !this.visible) return;
 
       const key = event.key;
 
@@ -308,7 +320,9 @@ export class ProfileModal extends GameObjects.Container {
         } else if (this.activeField === "pinCode") {
           this.pinCode = this.pinCode.slice(0, -1);
         }
-        this.errorText.setText("");
+        if (this.errorText && this.errorText.scene) {
+          this.errorText.setText("");
+        }
         this.updateDisplay();
         return;
       }
@@ -317,7 +331,9 @@ export class ProfileModal extends GameObjects.Container {
       if (this.activeField === "pinCode") {
         if (/^\d$/.test(key) && this.pinCode.length < 4) {
           this.pinCode += key;
-          this.errorText.setText("");
+          if (this.errorText && this.errorText.scene) {
+            this.errorText.setText("");
+          }
           this.updateDisplay();
         }
         return;
@@ -327,7 +343,9 @@ export class ProfileModal extends GameObjects.Container {
       if (this.activeField === "agentName") {
         if (key.length === 1 && this.agentName.length < 20) {
           this.agentName += key;
-          this.errorText.setText("");
+          if (this.errorText && this.errorText.scene) {
+            this.errorText.setText("");
+          }
           this.updateDisplay();
         }
       }
@@ -339,18 +357,23 @@ export class ProfileModal extends GameObjects.Container {
   handleCreateSubmit() {
     const result = SaveManager.createProfile(this.agentName, this.pinCode);
     if (!result.success) {
-      this.errorText.setText(result.error);
+      if (this.errorText && this.errorText.scene) {
+        this.errorText.setText(result.error);
+      }
       return;
     }
 
+    const createdName = this.agentName;
     this.close();
-    this.onSuccess({ mode: "CREATE", agentName: this.agentName });
+    this.onSuccess({ mode: "CREATE", agentName: createdName });
   }
 
   handleLoadSubmit() {
     const result = SaveManager.load(this.pinCode);
     if (!result.success) {
-      this.errorText.setText(result.error);
+      if (this.errorText && this.errorText.scene) {
+        this.errorText.setText(result.error);
+      }
       this.pinCode = "";
       this.updateDisplay();
       return;
@@ -370,7 +393,7 @@ export class ProfileModal extends GameObjects.Container {
   }
 
   close() {
-    if (this.onKeyDown) {
+    if (this.scene && this.scene.input && this.scene.input.keyboard && this.onKeyDown) {
       this.scene.input.keyboard.off("keydown", this.onKeyDown);
     }
     this.destroy();

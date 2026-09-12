@@ -7,14 +7,7 @@ import { WardrobeModal } from "../components/WardrobeModal.js";
 import { ConfirmModal } from "../components/ConfirmModal.js";
 
 /**
- * Scène du Menu Principal (OS Virtuel de l'Agent).
- * Implémente la logique complète requise par les tickets #3 et #16 :
- * - 'New Mission' : Initialisation et démarrage d'une nouvelle partie.
- * - 'Load Save' : Chargement et déverrouillage de la sauvegarde par code PIN.
- * - 'Settings' : Options sonores, configuration des touches et redémarrage du jeu (critère Epitech).
- * - 'Wardrobe' : Vestiaire tactique de l'agent.
- * - 'Institut Secret' : Accès direct à la carte d'exploration.
- * - Menu Démarrer interactif via le bouton Windows Cake.
+ * Main Menu scene.
  */
 export class MainMenu extends Scene {
   constructor() {
@@ -28,36 +21,45 @@ export class MainMenu extends Scene {
 
     this.startMenuOpen = false;
     this.startMenuContainer = null;
+    this.currentModal = null;
 
-    // Barre des tâches inférieure
+    // Bottom taskbar
     this.createTaskbar();
 
-    // Icônes d'action sur le bureau virtuel
+    // Virtual desktop icons
     this.createDesktopIcons();
 
-    // Message toast de retour d'action
+    // Toast notification element
     this.createToastElement();
 
-    // Détection automatique au premier lancement de la session
+    // Session check on launch
     this.checkInitialSession();
   }
 
   /* ========================================================================== */
-  /* BUREAU VIRTUEL & ICÔNES D'ACTION (#3 & #16)                                */
+  /* VIRTUAL DESKTOP & DESKTOP ICONS                                            */
   /* ========================================================================== */
 
   createDesktopIcons() {
     const iconsData = [
       {
-        x: 410,
+        x: 420,
+        y: 158,
+        label: "Mission Dialogue",
+        sub: "(Boîte de dialogue)",
+        color: "#ffffff",
+        action: () => this.scene.start("Game"),
+      },
+      {
+        x: 685,
         y: 158,
         label: "New Mission",
-        sub: "(Nouvelle partie)",
+        sub: "(Créer profil PIN)",
         color: "#00ffcc",
         action: () => this.handleNewMission(),
       },
       {
-        x: 680,
+        x: 950,
         y: 158,
         label: "Load Save",
         sub: "(Charger avec PIN)",
@@ -65,7 +67,7 @@ export class MainMenu extends Scene {
         action: () => this.handleLoadSave(),
       },
       {
-        x: 950,
+        x: 1215,
         y: 158,
         label: "Wardrobe",
         sub: "(Dressing tactique)",
@@ -73,15 +75,7 @@ export class MainMenu extends Scene {
         action: () => this.handleWardrobe(),
       },
       {
-        x: 1220,
-        y: 158,
-        label: "Settings",
-        sub: "(Options & Touches)",
-        color: "#00d2ff",
-        action: () => this.handleSettings(),
-      },
-      {
-        x: 1490,
+        x: 1480,
         y: 158,
         label: "Institut Secret",
         sub: "(Carte interactive)",
@@ -93,14 +87,8 @@ export class MainMenu extends Scene {
     iconsData.forEach((item) => {
       const folder = this.add.image(item.x, item.y, "folder");
       folder.setScale(0.1);
-      folder.setInteractive({ useHandCursor: true });
 
-      // Effet de survol
-      folder.on("pointerover", () => folder.setScale(0.11));
-      folder.on("pointerout", () => folder.setScale(0.1));
-      folder.on("pointerdown", item.action);
-
-      this.add
+      const labelText = this.add
         .text(item.x, item.y + 44, item.label, {
           fontFamily: "Arial, sans-serif",
           fontSize: "14px",
@@ -109,22 +97,37 @@ export class MainMenu extends Scene {
         })
         .setOrigin(0.5);
 
-      this.add
+      const subText = this.add
         .text(item.x, item.y + 62, item.sub, {
           fontFamily: "Arial, sans-serif",
           fontSize: "11px",
           color: "#94a3b8",
         })
         .setOrigin(0.5);
+
+      // Interactive hit zone covering both icon and label
+      const hitZone = this.add
+        .rectangle(item.x, item.y + 20, 160, 120, 0x000000, 0)
+        .setInteractive({ useHandCursor: true });
+
+      hitZone.on("pointerover", () => {
+        folder.setScale(0.11);
+        labelText.setColor("#ffffff");
+      });
+      hitZone.on("pointerout", () => {
+        folder.setScale(0.1);
+        labelText.setColor(item.color);
+      });
+      hitZone.on("pointerdown", item.action);
     });
   }
 
   /* ========================================================================== */
-  /* ACTIONS DES BOUTONS                                                        */
+  /* BUTTON ACTIONS                                                             */
   /* ========================================================================== */
 
   /**
-   * Action 'New Mission' : Lance une nouvelle partie avec confirmation si une sauvegarde existe.
+   * 'New Mission' action
    */
   handleNewMission() {
     this.closeStartMenu();
@@ -133,25 +136,23 @@ export class MainMenu extends Scene {
       new ConfirmModal(this, {
         title: "⚠️ NOUVELLE MISSION",
         message:
-          "Une sauvegarde existe déjà.\nVoulez-vous réinitialiser votre profil et commencer une nouvelle mission ?",
+          "Une sauvegarde existe déjà.\nVoulez-vous réinitialiser votre progression et créer un nouveau profil d'agent ?",
         confirmText: "Oui, nouvelle partie",
         cancelText: "Annuler",
         onConfirm: () => {
           SaveManager.deleteSave();
-          this.openProfileModal("CREATE", (state) => {
-            this.scene.start("Game");
-          });
+          gameState.reset();
+          this.refreshStatus();
+          this.openProfileModal("CREATE");
         },
       });
     } else {
-      this.openProfileModal("CREATE", () => {
-        this.scene.start("Game");
-      });
+      this.openProfileModal("CREATE");
     }
   }
 
   /**
-   * Action 'Load Save' : Ouvre l'invite de déverrouillage PIN.
+   * 'Load Save' action
    */
   handleLoadSave() {
     this.closeStartMenu();
@@ -161,41 +162,65 @@ export class MainMenu extends Scene {
       return;
     }
 
-    this.openProfileModal("LOAD", (result) => {
-      const targetScene = result?.state?.progression?.currentScene || "Game";
-      this.showToast("Session déverrouillée ! Lancement...");
-      this.time.delayedCall(800, () => {
-        this.scene.start(targetScene);
-      });
-    });
+    this.openProfileModal("LOAD");
   }
 
   /**
-   * Action 'Settings' : Ouvre la boîte des paramètres (audio, touches, redémarrage).
+   * 'Settings' action
    */
   handleSettings() {
     this.closeStartMenu();
 
     new SettingsModal(this, {
-      onRestart: () => {
-        this.showToast("🔄 Redémarrage du système...");
-        this.time.delayedCall(500, () => {
-          this.scene.restart();
-        });
-      },
+      onRestart: () => this.handleRestartGame(),
+      onClearSave: () => this.handleClearSave(),
     });
   }
 
   /**
-   * Action 'Wardrobe' : Ouvre le vestiaire de l'agent.
+   * 'Wardrobe' action
    */
   handleWardrobe() {
     this.closeStartMenu();
     new WardrobeModal(this);
   }
 
+  /**
+   * Restart game:
+   */
+  handleRestartGame() {
+    this.showToast("🔄 Redémarrage du système...");
+    gameState.reset();
+    if (this.currentModal && this.currentModal.scene) {
+      this.currentModal.close();
+    }
+    this.currentModal = null;
+
+    this.time.delayedCall(400, () => {
+      this.scene.restart();
+    });
+  }
+
+  /**
+   * Complete wipe of save data and return to profile creation.
+   */
+  handleClearSave() {
+    SaveManager.deleteSave();
+    gameState.reset();
+    this.showToast("🗑️ Sauvegarde effacée !");
+
+    if (this.currentModal && this.currentModal.scene) {
+      this.currentModal.close();
+    }
+    this.currentModal = null;
+
+    this.time.delayedCall(400, () => {
+      this.scene.restart();
+    });
+  }
+
   /* ========================================================================== */
-  /* BARRE DES TÂCHES & MENU DÉMARRER                                           */
+  /* TASKBAR & START MENU                                                       */
   /* ========================================================================== */
 
   createTaskbar() {
@@ -207,28 +232,47 @@ export class MainMenu extends Scene {
 
     this.add.image(964, 850, "task_bar");
 
-    // Bouton Windows Cake (Menu Démarrer)
+    // Windows Cake button
     const cakeBtn = this.add.image(450, 865, "windows_cake").setScale(0.08);
     cakeBtn.setInteractive({ useHandCursor: true });
     cakeBtn.on("pointerdown", () => this.toggleStartMenu());
 
-    // Statut de l'agent sur la barre
+    // Agent status on taskbar
     this.statusText = this.add
-      .text(500, 865, this.getAgentStatusString(), {
+      .text(495, 865, this.getAgentStatusString(), {
         fontFamily: "Courier, monospace",
         fontSize: "14px",
         color: "#00ffcc",
       })
       .setOrigin(0, 0.5);
 
-    // Bouton Sauvegarder sur la barre des tâches
-    const saveBtn = this.add
-      .rectangle(1430, 865, 130, 32, 0x1f7a3a)
+    // Settings button on taskbar
+    const settingsBtn = this.add
+      .rectangle(1340, 865, 110, 32, 0x1e3a5f)
       .setStrokeStyle(1, 0xffffff)
       .setInteractive({ useHandCursor: true });
 
     this.add
-      .text(1430, 865, "💾 Sauvegarder", {
+      .text(1340, 865, "⚙️ Options", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "13px",
+        fontStyle: "bold",
+        color: "#ffffff",
+      })
+      .setOrigin(0.5);
+
+    settingsBtn.on("pointerover", () => settingsBtn.setAlpha(0.85));
+    settingsBtn.on("pointerout", () => settingsBtn.setAlpha(1));
+    settingsBtn.on("pointerdown", () => this.handleSettings());
+
+    // Save button on taskbar
+    const saveBtn = this.add
+      .rectangle(1465, 865, 120, 32, 0x1f7a3a)
+      .setStrokeStyle(1, 0xffffff)
+      .setInteractive({ useHandCursor: true });
+
+    this.add
+      .text(1465, 865, "💾 Sauvegarder", {
         fontFamily: "Arial, sans-serif",
         fontSize: "13px",
         fontStyle: "bold",
@@ -265,28 +309,23 @@ export class MainMenu extends Scene {
     this.startMenuContainer.setDepth(1050);
 
     const menuBg = this.add
-      .rectangle(100, 0, 260, 240, 0x1e222d, 0.98)
+      .rectangle(100, 0, 260, 250, 0x1e222d, 0.98)
       .setStrokeStyle(2, 0x00d2ff);
     this.startMenuContainer.add(menuBg);
 
     const items = [
+      { text: "💬 Mission Dialogue", action: () => { this.closeStartMenu(); this.scene.start("Game"); } },
       { text: "🚀 Nouvelle Mission", action: () => this.handleNewMission() },
-      { text: "📂 Charger Partie", action: () => this.handleLoadSave() },
+      { text: "📂 Charger Sauvegarde", action: () => this.handleLoadSave() },
       { text: "👗 Vestiaire Tactique", action: () => this.handleWardrobe() },
       { text: "⚙️ Paramètres & Touches", action: () => this.handleSettings() },
-      {
-        text: "🔄 Redémarrer le jeu",
-        action: () => {
-          this.closeStartMenu();
-          this.scene.restart();
-        },
-      },
+      { text: "🔄 Redémarrer le jeu", action: () => { this.closeStartMenu(); this.handleRestartGame(); } },
     ];
 
     items.forEach((item, idx) => {
-      const yPos = -90 + idx * 45;
+      const yPos = -95 + idx * 40;
       const btn = this.add
-        .rectangle(100, yPos, 240, 36, 0x103460, 0.8)
+        .rectangle(100, yPos, 240, 32, 0x103460, 0.8)
         .setInteractive({ useHandCursor: true });
 
       const label = this.add
@@ -315,7 +354,7 @@ export class MainMenu extends Scene {
   }
 
   /* ========================================================================== */
-  /* NOTIFICATIONS & STATUT                                                     */
+  /* NOTIFICATIONS & STATUS                                                     */
   /* ========================================================================== */
 
   getAgentStatusString() {
@@ -326,7 +365,7 @@ export class MainMenu extends Scene {
   }
 
   refreshStatus() {
-    if (this.statusText) {
+    if (this.statusText && this.statusText.scene) {
       this.statusText.setText(this.getAgentStatusString());
     }
   }
@@ -347,10 +386,12 @@ export class MainMenu extends Scene {
   }
 
   showToast(message) {
-    if (!this.saveToast) return;
+    if (!this.saveToast || !this.saveToast.scene) return;
     this.saveToast.setText(message).setVisible(true);
     this.time.delayedCall(2800, () => {
-      this.saveToast.setVisible(false);
+      if (this.saveToast && this.saveToast.scene) {
+        this.saveToast.setVisible(false);
+      }
     });
   }
 
@@ -359,22 +400,26 @@ export class MainMenu extends Scene {
     const isUnlocked = Boolean(gameState.getProfile().pinCode);
 
     if (!hasSave) {
-      // Première partie : inviter à créer le profil
+      // First playthrough
       this.openProfileModal("CREATE");
     } else if (!isUnlocked) {
-      // Sauvegarde présente mais pas encore déverrouillée dans la session
+      // Existing save present but session not unlocked
       this.openProfileModal("LOAD");
     }
   }
 
   openProfileModal(mode = "LOAD", onFinished = null) {
     if (this.currentModal) {
-      this.currentModal.close();
+      if (this.currentModal.scene) {
+        this.currentModal.close();
+      }
+      this.currentModal = null;
     }
 
     this.currentModal = new ProfileModal(this, {
       mode,
       onSuccess: (result) => {
+        this.currentModal = null;
         this.refreshStatus();
         if (result.mode === "CREATE") {
           this.showToast(`Bienvenue, agent ${result.agentName} ! Dossier initialisé.`);
@@ -384,8 +429,13 @@ export class MainMenu extends Scene {
         if (onFinished) onFinished(result);
       },
       onNewGameRequest: () => {
+        this.currentModal = null;
         this.handleNewMission();
       },
+    });
+
+    this.currentModal.on("destroy", () => {
+      this.currentModal = null;
     });
   }
 }

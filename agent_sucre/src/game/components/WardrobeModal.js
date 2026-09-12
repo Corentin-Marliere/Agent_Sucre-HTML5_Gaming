@@ -2,9 +2,7 @@ import { GameObjects } from "phaser";
 import { gameState } from "../state/GameState.js";
 
 /**
- * Modal Dressing / Vestiaire tactique de l'agent.
- * Permet d'afficher la tenue active et de préparer les équipements tactiques
- * (comme le Tablier pare-balles du chef offert par Ramsay dans le chapitre 1).
+ * Agent tactical wardrobe / dressing modal
  */
 export class WardrobeModal extends GameObjects.Container {
   /**
@@ -15,7 +13,7 @@ export class WardrobeModal extends GameObjects.Container {
   constructor(scene, options = {}) {
     super(scene, 0, 0);
 
-    this.onClose = options.onClose || (() => {});
+    this.onClose = options.onClose || (() => { });
     this.equippedOutfit = gameState.getFlag("equippedOutfit") || "apprenti_lyfe";
 
     this.outfits = [
@@ -55,13 +53,13 @@ export class WardrobeModal extends GameObjects.Container {
     const screenWidth = this.scene.scale.width;
     const screenHeight = this.scene.scale.height;
 
-    // Fond assombri
+    // Darkened backdrop
     this.backdrop = this.scene.add
       .rectangle(screenWidth / 2, screenHeight / 2, screenWidth, screenHeight, 0x000000, 0.7)
       .setInteractive();
     this.add(this.backdrop);
 
-    // Fenêtre
+    // Window
     const winWidth = 660;
     const winHeight = 460;
     const winX = screenWidth / 2;
@@ -72,7 +70,7 @@ export class WardrobeModal extends GameObjects.Container {
       .setStrokeStyle(3, 0x9b59b6);
     this.add(this.windowBg);
 
-    // Barre de titre
+    // Title bar
     const titleBarHeight = 44;
     const titleBarY = winY - winHeight / 2 + titleBarHeight / 2;
     this.titleBar = this.scene.add.rectangle(winX, titleBarY, winWidth, titleBarHeight, 0x4a235a);
@@ -88,7 +86,7 @@ export class WardrobeModal extends GameObjects.Container {
       .setOrigin(0, 0.5);
     this.add(this.titleText);
 
-    // Bouton de fermeture [X]
+    // Close button [X]
     const closeBtn = this.scene.add
       .text(winX + winWidth / 2 - 25, titleBarY, "✖", {
         fontFamily: "Arial, sans-serif",
@@ -110,7 +108,7 @@ export class WardrobeModal extends GameObjects.Container {
       .setOrigin(0.5);
     this.add(header);
 
-    // Liste des tenues
+    // Outfit list
     this.outfits.forEach((outfit, idx) => {
       const cardY = winY - 90 + idx * 85;
       const isEquipped = this.equippedOutfit === outfit.id;
@@ -182,7 +180,7 @@ export class WardrobeModal extends GameObjects.Container {
       }
     });
 
-    // Bouton Fermer
+    // Close button
     const closeBottomBtn = this.scene.add
       .rectangle(winX, winY + 180, 240, 38, 0x4a235a)
       .setStrokeStyle(1, 0xffffff)
@@ -211,7 +209,7 @@ export class WardrobeModal extends GameObjects.Container {
   }
 
   close() {
-    if (this.onKeyDown) {
+    if (this.scene && this.scene.input && this.scene.input.keyboard && this.onKeyDown) {
       this.scene.input.keyboard.off("keydown", this.onKeyDown);
     }
     this.destroy();

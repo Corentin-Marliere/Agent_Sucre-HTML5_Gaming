@@ -3,11 +3,7 @@ import { SaveManager } from "../manager/SaveManager.js";
 import { gameState } from "../state/GameState.js";
 
 /**
- * Boîte de dialogue rétro OS pour la gestion des paramètres :
- * - Volume audio et mute
- * - Configuration et rappel des touches (Espace, Entrée, Clic)
- * - Redémarrage complet du jeu (exigence de notation Epitech)
- * - Suppression / réinitialisation de la sauvegarde
+ * Retro OS dialog box for settings management
  */
 export class SettingsModal extends GameObjects.Container {
   /**
@@ -19,10 +15,11 @@ export class SettingsModal extends GameObjects.Container {
   constructor(scene, options = {}) {
     super(scene, 0, 0);
 
-    this.onClose = options.onClose || (() => {});
-    this.onRestart = options.onRestart || (() => {});
+    this.onClose = options.onClose || (() => { });
+    this.onRestart = options.onRestart || (() => { });
+    this.onClearSave = options.onClearSave || (() => { });
 
-    // Touche de dialogue active (Espace par défaut)
+    // Active dialogue key (Space by default)
     this.dialogueKey = gameState.getFlag("dialogueKey") || "SPACE";
 
     this.initUI();
@@ -38,13 +35,13 @@ export class SettingsModal extends GameObjects.Container {
     const screenWidth = this.scene.scale.width;
     const screenHeight = this.scene.scale.height;
 
-    // Fond assombri
+    // Darkened backdrop
     this.backdrop = this.scene.add
       .rectangle(screenWidth / 2, screenHeight / 2, screenWidth, screenHeight, 0x000000, 0.7)
       .setInteractive();
     this.add(this.backdrop);
 
-    // Fenêtre
+    // Window
     const winWidth = 680;
     const winHeight = 520;
     const winX = screenWidth / 2;
@@ -55,7 +52,7 @@ export class SettingsModal extends GameObjects.Container {
       .setStrokeStyle(3, 0x4a76a8);
     this.add(this.windowBg);
 
-    // Barre de titre
+    // Title bar
     const titleBarHeight = 44;
     const titleBarY = winY - winHeight / 2 + titleBarHeight / 2;
     this.titleBar = this.scene.add.rectangle(winX, titleBarY, winWidth, titleBarHeight, 0x103460);
@@ -71,7 +68,7 @@ export class SettingsModal extends GameObjects.Container {
       .setOrigin(0, 0.5);
     this.add(this.titleText);
 
-    // Bouton de fermeture [X]
+    // Close button [X]
     const closeBtn = this.scene.add
       .text(winX + winWidth / 2 - 25, titleBarY, "✖", {
         fontFamily: "Arial, sans-serif",
@@ -84,7 +81,7 @@ export class SettingsModal extends GameObjects.Container {
     this.add(closeBtn);
 
     // ==========================================
-    // SECTION 1 : AUDIO
+    // SECTION 1: AUDIO
     // ==========================================
     const audioTitle = this.scene.add
       .text(winX - 300, winY - 170, "🔊 PARAMÈTRES AUDIO", {
@@ -106,7 +103,7 @@ export class SettingsModal extends GameObjects.Container {
       .setOrigin(0, 0.5);
     this.add(this.volumeText);
 
-    // Boutons de volume : 0%, 25%, 50%, 75%, 100%
+    // Volume buttons: 0%, 25%, 50%, 75%, 100%
     const volumeLevels = [0, 0.25, 0.5, 0.75, 1];
     volumeLevels.forEach((vol, idx) => {
       const btnX = winX - 100 + idx * 75;
@@ -134,7 +131,7 @@ export class SettingsModal extends GameObjects.Container {
     });
 
     // ==========================================
-    // SECTION 2 : CONFIGURATION DES TOUCHES
+    // SECTION 2: KEY CONFIGURATION
     // ==========================================
     const controlsTitle = this.scene.add
       .text(winX - 300, winY - 65, "⌨️ CONFIGURATION DES COMMANDES & TOUCHES", {
@@ -161,7 +158,7 @@ export class SettingsModal extends GameObjects.Container {
       .setOrigin(0, 0.5);
     this.add(controlsInfo);
 
-    // Bouton de bascule de la touche dialogue (Espace vs Entrée)
+    // Dialogue key toggle button (Space vs Enter)
     const toggleKeyBtn = this.scene.add
       .rectangle(winX + 160, winY - 20, 240, 34, 0x2e3846)
       .setStrokeStyle(1, 0x00d2ff)
@@ -184,7 +181,7 @@ export class SettingsModal extends GameObjects.Container {
     this.add([toggleKeyBtn, toggleKeyText]);
 
     // ==========================================
-    // SECTION 3 : SYSTÈME & NOTATION EPITECH
+    // SECTION 3: SYSTEM & EPITECH REQUIREMENTS
     // ==========================================
     const sysTitle = this.scene.add
       .text(winX - 300, winY + 55, "🔄 GESTION DU JEU & SESSION (Critère Epitech)", {
@@ -196,7 +193,7 @@ export class SettingsModal extends GameObjects.Container {
       .setOrigin(0, 0.5);
     this.add(sysTitle);
 
-    // Bouton Redémarrer le jeu
+    // Restart game button
     this.createActionButton(
       winX - 155,
       winY + 115,
@@ -209,21 +206,20 @@ export class SettingsModal extends GameObjects.Container {
       280
     );
 
-    // Bouton Supprimer la sauvegarde locale
+    // Delete local save button
     this.createActionButton(
       winX + 155,
       winY + 115,
       "🗑️ Effacer la sauvegarde",
       0xb91c1c,
       () => {
-        SaveManager.deleteSave();
         this.close();
-        this.onRestart();
+        this.onClearSave();
       },
       280
     );
 
-    // Bouton Fermer
+    // Close button
     this.createActionButton(
       winX,
       winY + 200,
@@ -266,7 +262,7 @@ export class SettingsModal extends GameObjects.Container {
   }
 
   close() {
-    if (this.onKeyDown) {
+    if (this.scene && this.scene.input && this.scene.input.keyboard && this.onKeyDown) {
       this.scene.input.keyboard.off("keydown", this.onKeyDown);
     }
     this.destroy();
