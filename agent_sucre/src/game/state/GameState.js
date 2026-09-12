@@ -25,7 +25,7 @@ export class GameState {
         currentDialogueId: null,
       },
       inventory: {
-        items: [],
+        items: ["badge_recrue", "boite_patissiere"],
       },
       gauges: {
         affection: {},

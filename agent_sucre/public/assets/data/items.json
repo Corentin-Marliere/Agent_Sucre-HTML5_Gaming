@@ -1,0 +1,58 @@
+{
+  "badge_recrue": {
+    "name": "Badge d'Apprenti Lyfe",
+    "category": "Identité & Sécurité",
+    "icon": "🪪",
+    "description": "Badge magnétique officiel délivré à l'Agent Sucre pour son infiltration à l'Institut Lyfe.",
+    "inspection": "Au verso, une bande magnétique dorée et une mention manuscrite : 'Accès Couloirs & R&D uniquement. En cas de contrôle, présenter au Chef de la Sécurité Philippe Etchebest.'",
+    "usable": false
+  },
+  "tablier_pare_balles": {
+    "name": "Tablier Pare-Balles du Chef",
+    "category": "Équipement Tactique",
+    "icon": "🥋",
+    "description": "Tablier de cuisine renforcé de fibres de kevlar tressées, remis par le Chef Gordon Ramsay lors de l'entraînement physique.",
+    "inspection": "Un rembourrage secret protège les organes vitaux contre les éclaboussures brûlantes et les tirs ennemis. Il porte le sceau de Ramsay : 'Done to perfection'.",
+    "usable": true,
+    "action": "EQUIP",
+    "actionLabel": "Équiper le tablier",
+    "outfitId": "tablier_pare_balles"
+  },
+  "macaron_explosif": {
+    "name": "Macaron R&D Explosif",
+    "category": "Gadget Gourmand",
+    "icon": "🧁",
+    "description": "Un macaron à la framboise concocté par Cyril Lignac dans son laboratoire secret au four à 180°C.",
+    "inspection": "Attention : la ganache renferme une micro-charge thermique télécommandée. Détonation croquante garantie en cas de besoin d'évacuation d'urgence !",
+    "usable": false
+  },
+  "boite_patissiere": {
+    "name": "Boîte à Gâteaux Scellée",
+    "category": "Conteneur Mystère",
+    "icon": "📦",
+    "description": "Une élégante boîte pâtissière hermétique ceinte d'un ruban en satin rouge.",
+    "inspection": "En examinant la boîte de près, vous remarquez que le ruban peut être défait. Une inscription indique : 'À n'ouvrir qu'en cas d'extrême urgence'.",
+    "usable": true,
+    "action": "OPEN",
+    "actionLabel": "Ouvrir la boîte",
+    "rewardItemId": "cle_reserve",
+    "rewardMessage": "Vous ouvrez la boîte... Elle contenait le Passe-Partout de la Réserve !"
+  },
+  "cle_reserve": {
+    "name": "Passe-Partout de Réserve",
+    "category": "Outil d'Infiltration",
+    "icon": "🗝️",
+    "description": "Clé ouvragée en laiton massif avec un panneton complexe.",
+    "inspection": "La tête de la clé est gravée aux armoiries du château. Les encoches correspondent parfaitement aux serrures des portes de stockage et des réserves secrètes.",
+    "usable": false
+  },
+  "monocle_decodeur": {
+    "name": "Monocle Décodeur UV",
+    "category": "Outil d'Analyse",
+    "icon": "🔍",
+    "description": "Lentille tactique grossissante à filtre ultraviolet conçue par la brigade R&D.",
+    "inspection": "En l'orientant vers la lumière, elle révèle les encres sympathiques, les traces digitales et les annotations secrètes sur les fiches de recettes.",
+    "usable": false
+  }
+}
+

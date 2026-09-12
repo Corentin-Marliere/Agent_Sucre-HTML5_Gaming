@@ -5,6 +5,7 @@ import { ProfileModal } from "../components/ProfileModal.js";
 import { SettingsModal } from "../components/SettingsModal.js";
 import { WardrobeModal } from "../components/WardrobeModal.js";
 import { ConfirmModal } from "../components/ConfirmModal.js";
+import { InventoryModal } from "../components/InventoryModal.js";
 
 /**
  * Main Menu scene.
@@ -34,6 +35,13 @@ export class MainMenu extends Scene {
 
     // Session check on launch
     this.checkInitialSession();
+
+    // Toggle inventory with [I] key
+    this.input.keyboard.on("keydown", (event) => {
+      if (event.key === "i" || event.key === "I") {
+        this.handleInventory();
+      }
+    });
   }
 
   /* ========================================================================== */
@@ -43,7 +51,7 @@ export class MainMenu extends Scene {
   createDesktopIcons() {
     const iconsData = [
       {
-        x: 420,
+        x: 400,
         y: 158,
         label: "Mission Dialogue",
         sub: "(Boîte de dialogue)",
@@ -51,7 +59,7 @@ export class MainMenu extends Scene {
         action: () => this.scene.start("Game"),
       },
       {
-        x: 685,
+        x: 620,
         y: 158,
         label: "New Mission",
         sub: "(Créer profil PIN)",
@@ -59,7 +67,7 @@ export class MainMenu extends Scene {
         action: () => this.handleNewMission(),
       },
       {
-        x: 950,
+        x: 840,
         y: 158,
         label: "Load Save",
         sub: "(Charger avec PIN)",
@@ -67,7 +75,15 @@ export class MainMenu extends Scene {
         action: () => this.handleLoadSave(),
       },
       {
-        x: 1215,
+        x: 1060,
+        y: 158,
+        label: "Inventaire [I]",
+        sub: "(Sacoche d'agent)",
+        color: "#00ff88",
+        action: () => this.handleInventory(),
+      },
+      {
+        x: 1280,
         y: 158,
         label: "Wardrobe",
         sub: "(Dressing tactique)",
@@ -75,7 +91,7 @@ export class MainMenu extends Scene {
         action: () => this.handleWardrobe(),
       },
       {
-        x: 1480,
+        x: 1500,
         y: 158,
         label: "Institut Secret",
         sub: "(Carte interactive)",
@@ -183,6 +199,30 @@ export class MainMenu extends Scene {
   handleWardrobe() {
     this.closeStartMenu();
     new WardrobeModal(this);
+  }
+
+  /**
+   * 'Inventory' action: Opens the Point & Click inventory modal
+   */
+  handleInventory() {
+    this.closeStartMenu();
+
+    if (this.currentModal) {
+      const isSame = this.currentModal instanceof InventoryModal;
+      this.currentModal.close();
+      this.currentModal = null;
+      if (isSame) return;
+    }
+
+    this.currentModal = new InventoryModal(this, {
+      onClose: () => {
+        this.currentModal = null;
+      },
+    });
+
+    this.currentModal.on("destroy", () => {
+      this.currentModal = null;
+    });
   }
 
   /**
@@ -309,12 +349,13 @@ export class MainMenu extends Scene {
     this.startMenuContainer.setDepth(1050);
 
     const menuBg = this.add
-      .rectangle(100, 0, 260, 250, 0x1e222d, 0.98)
+      .rectangle(100, 0, 260, 290, 0x1e222d, 0.98)
       .setStrokeStyle(2, 0x00d2ff);
     this.startMenuContainer.add(menuBg);
 
     const items = [
       { text: "💬 Mission Dialogue", action: () => { this.closeStartMenu(); this.scene.start("Game"); } },
+      { text: "🎒 Sacoche & Inventaire", action: () => { this.closeStartMenu(); this.handleInventory(); } },
       { text: "🚀 Nouvelle Mission", action: () => this.handleNewMission() },
       { text: "📂 Charger Sauvegarde", action: () => this.handleLoadSave() },
       { text: "👗 Vestiaire Tactique", action: () => this.handleWardrobe() },
@@ -323,7 +364,7 @@ export class MainMenu extends Scene {
     ];
 
     items.forEach((item, idx) => {
-      const yPos = -95 + idx * 40;
+      const yPos = -115 + idx * 38;
       const btn = this.add
         .rectangle(100, yPos, 240, 32, 0x103460, 0.8)
         .setInteractive({ useHandCursor: true });

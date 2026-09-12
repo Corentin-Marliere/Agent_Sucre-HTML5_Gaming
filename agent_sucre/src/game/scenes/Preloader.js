@@ -33,6 +33,7 @@ export class Preloader extends Scene {
 
     this.load.json("dialogs", "data/dialogs_example.json");
     this.load.json("maps", "data/maps.json");
+    this.load.json("items", "data/items.json");
   }
 
   create() {
