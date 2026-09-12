@@ -1,0 +1,27 @@
+{
+  "secretInstitute": {
+    "mapKey": "secret_institute_map",
+    "zones": [
+      {
+        "x": 502,
+        "y": 295,
+        "width": 240,
+        "height": 80,
+        "type": "map",
+        "target": "institute"
+      },
+      {
+        "x": 700,
+        "y": 90,
+        "width": 500,
+        "height": 160,
+        "type": "scene",
+        "target": "MainMenu"
+      }
+    ]
+  },
+  "institute": {
+    "mapKey": "pc_screen",
+    "zones": []
+  }
+}

@@ -15,7 +15,7 @@ export class DialogueManager {
     }
 
     this.dialogBox.start(
-			data.speaker || null,
+      data.speaker || null,
       data.lines,
       data.choices,
       (selectedChoice) => this.handleNavigation(selectedChoice),
