@@ -1,5 +1,6 @@
 import { Scene } from "phaser";
 import { InteractiveArea } from "../components/InteractiveArea.js";
+import { gameState } from "../state/GameState.js";
 
 export class GenericMapScene extends Scene {
   constructor() {
@@ -8,6 +9,10 @@ export class GenericMapScene extends Scene {
 
   init(data) {
     this.currentMapId = data.mapId;
+    gameState.setCurrentScene("GenericMapScene");
+    if (data.mapId) {
+      gameState.setCurrentMap(data.mapId);
+    }
   }
 
   create() {
