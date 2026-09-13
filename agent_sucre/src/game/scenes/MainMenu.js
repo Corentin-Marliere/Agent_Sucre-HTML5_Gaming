@@ -4,6 +4,8 @@ import { SaveManager } from "../manager/SaveManager.js";
 import { ProfileModal } from "../components/ProfileModal.js";
 import { ConfirmModal } from "../components/ConfirmModal.js";
 import { Taskbar } from "../components/Taskbar.js";
+import { MusicPlayerModal } from "../components/MusicPlayerModal.js";
+import { MediaFolderModal } from "../components/MediaFolderModal.js";
 
 /**
  * Main Menu scene representing the retro Agent OS PC desktop.
@@ -11,6 +13,10 @@ import { Taskbar } from "../components/Taskbar.js";
 export class MainMenu extends Scene {
   constructor() {
     super("MainMenu");
+  }
+
+  init(data) {
+    this.initData = data || {};
   }
 
   create() {
@@ -37,6 +43,17 @@ export class MainMenu extends Scene {
 
     // Session check on launch
     this.checkInitialSession();
+
+    // Auto-launch music player if requested (e.g. at end of Chapter 1)
+    if (this.initData && this.initData.autoPlayMusic) {
+      const isChapterEnd = !!this.initData.isChapterEnd;
+      this.time.delayedCall(300, () => {
+        this.openMusicPlayer(this.initData.autoPlayMusic, {
+          singleTrack: isChapterEnd,
+          volume: isChapterEnd ? 0.5 : undefined,
+        });
+      });
+    }
 
     // Keydown listeners: [I] for Inventory, [M] for Map, [=]/[+] for ShootEmUp (Only when authenticated)
     this.input.keyboard.on("keydown", (event) => {
@@ -68,9 +85,13 @@ export class MainMenu extends Scene {
   /* ========================================================================== */
 
   createDesktopIcons() {
+    // Container grouping all desktop foreground icons and banner to allow hiding them during media playback
+    this.desktopContainer = this.add.container(0, 0);
+
     // Game Logo Header inside CRT monitor
     if (this.textures.exists("game_logo")) {
-      this.add.image(960, 150, "game_logo").setScale(0.85);
+      const logo = this.add.image(960, 150, "game_logo").setScale(0.85);
+      this.desktopContainer.add(logo);
     }
 
     // Active Quest Objective Banner
@@ -88,11 +109,15 @@ export class MainMenu extends Scene {
       })
       .setOrigin(0.5);
 
-    // 2-row by 3-column grid comfortably centered inside the CRT monitor
+    this.desktopContainer.add([objBg, this.objectiveBannerText]);
+
+    // 2-row layout inside the CRT monitor screen:
+    // Row 1 (y = 280) : 4 icons (Mission Dialogue, New Mission, Load Save, Multimédia)
+    // Row 2 (y = 480) : 3 icons (Inventaire, Wardrobe, Guide Michelin)
     const iconsData = [
       // Row 1 (y = 280)
       {
-        x: 640,
+        x: 570,
         y: 280,
         texture: "icon_dialogue",
         label: "Mission Dialogue",
@@ -118,7 +143,7 @@ export class MainMenu extends Scene {
         },
       },
       {
-        x: 960,
+        x: 830,
         y: 280,
         texture: "icon_new_mission",
         label: "New Mission",
@@ -126,16 +151,25 @@ export class MainMenu extends Scene {
         action: () => this.handleNewMission(),
       },
       {
-        x: 1280,
+        x: 1090,
         y: 280,
         texture: "icon_load_save",
         label: "Load Save",
         color: "#ffffff",
         action: () => this.handleLoadSave(),
       },
+      {
+        x: 1350,
+        y: 280,
+        texture: "folder",
+        label: "Multimédia",
+        sub: "(Musiques / Images)",
+        color: "#ffffff",
+        action: () => this.openMediaFolder(),
+      },
       // Row 2 (y = 480)
       {
-        x: 640,
+        x: 700,
         y: 480,
         texture: "icon_inventory",
         label: "Inventaire [I]",
@@ -147,11 +181,12 @@ export class MainMenu extends Scene {
         y: 480,
         texture: "icon_wardrobe",
         label: "Wardrobe",
-        sub: "(Dressing tactique)",        color: "#ffffff",
+        sub: "(Dressing tactique)",
+        color: "#ffffff",
         action: () => this.taskbar.handleWardrobe(),
       },
       {
-        x: 1280,
+        x: 1220,
         y: 480,
         texture: "icon_map_guide",
         label: "Guide\nMichelin",
@@ -215,7 +250,66 @@ export class MainMenu extends Scene {
         labelText.setColor(item.color);
       });
       hitZone.on("pointerdown", item.action);
+
+      this.desktopContainer.add([iconImg, labelText, subText, hitZone]);
     });
+  }
+
+  /**
+   * Opens the retro OS File Explorer for the 'Multimédia' folder.
+   * @param {string} [initialView="root"]
+   */
+  openMediaFolder(initialView = "root") {
+    if (this.currentModal) return;
+    this.currentModal = new MediaFolderModal(this, {
+      initialView,
+      onPlayMusic: (trackId) => {
+        this.currentModal = null;
+        this.openMusicPlayer(trackId);
+      },
+      onClose: () => {
+        this.currentModal = null;
+      },
+    });
+  }
+
+  /**
+   * Opens the retro vinyl music player with a clean/minimal desktop background.
+   * @param {string} [trackId="Mission_Mille_Feuille"]
+   * @param {Object} [options]
+   */
+  openMusicPlayer(trackId = "Mission_Mille_Feuille", options = {}) {
+    if (this.currentModal) {
+      if (typeof this.currentModal.close === "function") {
+        this.currentModal.close();
+      } else {
+        this.currentModal.destroy();
+      }
+      this.currentModal = null;
+    }
+
+    // Hide desktop icons and banner so background is pristine and focused on the vinyl
+    this.setDesktopVisibility(false);
+
+    this.currentModal = new MusicPlayerModal(this, {
+      trackId,
+      singleTrack: options.singleTrack || false,
+      volume: typeof options.volume === "number" ? options.volume : null,
+      onClose: () => {
+        this.currentModal = null;
+        this.setDesktopVisibility(true);
+      },
+    });
+  }
+
+  /**
+   * Toggles visibility of desktop icons and active quest banner.
+   * @param {boolean} visible
+   */
+  setDesktopVisibility(visible) {
+    if (this.desktopContainer) {
+      this.desktopContainer.setVisible(visible);
+    }
   }
 
   /* ========================================================================== */

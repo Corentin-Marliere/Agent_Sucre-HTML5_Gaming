@@ -567,13 +567,9 @@
     ],
     "choices": [
       {
-        "text": "Retourner au Bureau Principal",
-        "nextSceneId": "MainMenu"
-      },
-      {
-        "text": "Consulter la Carte de l'Académie [M]",
-        "nextSceneId": "GenericMapScene",
-        "sceneData": { "mapId": "secretInstitute" }
+        "text": "Terminer le Chapitre 1 ▶",
+        "nextSceneId": "MainMenu",
+        "sceneData": { "autoPlayMusic": "Mission_Mille_Feuille", "isChapterEnd": true }
       }
     ]
   },
