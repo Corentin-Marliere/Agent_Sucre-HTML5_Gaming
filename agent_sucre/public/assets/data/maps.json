@@ -5,13 +5,67 @@
     "title": "ACADÉMIE SECRÈTE - INSTITUT LYFE",
     "zones": [
       {
-        "x": 700,
-        "y": 380,
-        "width": 340,
-        "height": 100,
+        "x": 702,
+        "y": 378,
+        "width": 333,
+        "height": 98,
         "type": "map",
         "target": "security_hall",
         "label": "🏛️ Hall de Sécurité (Philippe Etchebest)"
+      },
+      {
+        "x": 1249,
+        "y": 378,
+        "width": 333,
+        "height": 98,
+        "type": "map",
+        "target": "monitor_room",
+        "label": "🏛️ Salle des moniteurs ()"
+      },
+      {
+        "x": 695,
+        "y": 710,
+        "width": 370,
+        "height": 110,
+        "type": "map",
+        "target": "lecture_room",
+        "label": "🏛️ Salle de classe ()"
+      },
+      {
+        "x": 1214,
+        "y": 710,
+        "width": 290,
+        "height": 110,
+        "type": "map",
+        "target": "dorms",
+        "label": "🏛️ Dortoirs ()"
+      },
+      {
+        "x": 1504,
+        "y": 710,
+        "width": 222,
+        "height": 110,
+        "type": "map",
+        "target": "cantina",
+        "label": "🏛️ Refectoire ()"
+      },
+      {
+        "x": 918,
+        "y": 852,
+        "width": 565,
+        "height": 125,
+        "type": "map",
+        "target": "secret_corridor",
+        "label": "🏛️ Couloirs secrets ()"
+      },
+      {
+        "x": 1328,
+        "y": 860,
+        "width": 175,
+        "height": 110,
+        "type": "map",
+        "target": "archives",
+        "label": "🏛️ Archives ()"
       },
       {
         "x": 1367,
