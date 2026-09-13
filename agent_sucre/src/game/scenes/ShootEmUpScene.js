@@ -40,15 +40,17 @@ export class ShootEmUpScene extends Scene {
     this.isJumping = false;
     this.isCrouching = false;
 
-    // Shooting & Ammo system (3 shots magazine, 1.8s reload, ~0.85s cooldown)
+    // Shooting & Ammo system (3 shots magazine, 1.8s reload, 0.75s cooldown)
     this.maxAmmo = 3;
     this.currentAmmo = 3;
     this.isReloading = false;
     this.reloadDuration = 1800; // ms to reload 3 bullets
     this.reloadStartTime = 0;
     this.lastShotTime = 0;
-    this.shootCooldown = 850; // ms between laser shots (0.75 - 1.0s)
+    this.shootCooldown = 750; // ms between laser shots (0.75s)
     this.lastEmptyClickTime = 0;
+    this.lastBackwardsFireTime = 0; // Timestamp of last Space backwards shot
+    this.crosshair = null;
 
     // Flying Bonus Hearts system (3 to 5 hearts across the run)
     this.bonusHearts = [];
@@ -101,10 +103,13 @@ export class ShootEmUpScene extends Scene {
     // 5. HUD Display (Distance, Health, Ammo, Score, Controls Reminder)
     this.createHUD();
 
-    // 6. Keyboard & Mouse Input Handlers
+    // 6. Aiming Reticle (Crosshair)
+    this.createCrosshair();
+
+    // 7. Keyboard & Mouse Input Handlers
     this.setupInputs();
 
-    // 7. Pre-run Briefing modal presenting game controls
+    // 8. Pre-run Briefing modal presenting game controls
     this.showStartBriefingModal();
   }
 
@@ -308,6 +313,20 @@ export class ShootEmUpScene extends Scene {
     });
   }
 
+  createCrosshair() {
+    this.crosshair = this.add.container(960, 490).setDepth(250);
+    const ring = this.add
+      .circle(0, 0, 15, 0x00f3ff, 0.15)
+      .setStrokeStyle(1.5, 0x00f3ff, 0.9);
+    const dot = this.add.circle(0, 0, 2.5, 0xffffff, 1);
+    const lineT = this.add.line(0, 0, 0, -6, 0, -16, 0x00f3ff, 0.85);
+    const lineB = this.add.line(0, 0, 0, 6, 0, 16, 0x00f3ff, 0.85);
+    const lineL = this.add.line(0, 0, -6, 0, -16, 0, 0x00f3ff, 0.85);
+    const lineR = this.add.line(0, 0, 6, 0, 16, 0, 0x00f3ff, 0.85);
+    this.crosshair.add([ring, dot, lineT, lineB, lineL, lineR]);
+    this.crosshair.setVisible(false);
+  }
+
   setupInputs() {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keyZ = this.input.keyboard.addKey("Z");
@@ -326,7 +345,17 @@ export class ShootEmUpScene extends Scene {
       }
     });
 
-    // Mouse aiming & shooting
+    // Space key: Shoots directly backwards towards pursuing chefs behind
+    this.spaceKey.on("down", () => {
+      if (!this.isGameStarted || this.isGameOver || this.isVictory) return;
+      this.lastBackwardsFireTime = this.time.now;
+      if (this.eclairLaser) {
+        this.eclairLaser.setRotation(Math.PI);
+      }
+      this.attemptFireLaser(this.playerContainer.x - 600, this.playerContainer.y + 14);
+    });
+
+    // Mouse click: Shoots towards mouse pointer location (aim at hearts or obstacles)
     this.input.on("pointerdown", (pointer) => {
       if (!this.isGameStarted || this.isGameOver || this.isVictory) return;
       this.attemptFireLaser(pointer.x, pointer.y);
@@ -412,7 +441,7 @@ export class ShootEmUpScene extends Scene {
       .text(
         -400,
         40,
-        "• [ESPACE] ou [CLIC SOURIS] : Tir directionnel vers la souris (Cadence ~0.8s)\n• Chargeur limité : 3 tirs consécutifs maximum\n• 🔄 [TOUCHE R] : Recharger l'Éclair Laser (Délai 1.8s ou automatique)",
+        "• [ESPACE] : Tir direct en arrière vers les poursuivants\n• [CLIC SOURIS] : Tir vers le curseur (viser les cœurs volants)\n• Chargeur : 3 tirs consécutifs (0.75s)  |  🔄 [TOUCHE R] : Recharger (1.8s)",
         {
           fontFamily: "Courier, monospace",
           fontSize: "13px",
@@ -492,6 +521,7 @@ export class ShootEmUpScene extends Scene {
     // Space or Enter key starts the run
     const onBriefingKey = (e) => {
       if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
         this.input.keyboard.off("keydown", onBriefingKey);
         confirmStart();
       }
@@ -502,6 +532,8 @@ export class ShootEmUpScene extends Scene {
   startGameAction() {
     if (this.isGameStarted) return;
     this.isGameStarted = true;
+    // Grace period so starting Space key does not consume ammo or fire a laser
+    this.lastShotTime = this.time.now + 350;
 
     this.showFloatingText(this.playerX, this.playerY - 80, "🚨 FUYEZ !", "#ff3344");
 
@@ -662,7 +694,7 @@ export class ShootEmUpScene extends Scene {
       .setStrokeStyle(1.5, 0xffaa00);
 
     this.scoreText = this.add
-      .text(scoreCardX, scoreCardY, "👨‍🍳 Brigade semée : 0", {
+      .text(scoreCardX, scoreCardY, "🚨 Poursuivants : 0", {
         fontFamily: "Arial, sans-serif",
         fontSize: "13px",
         fontStyle: "bold",
@@ -724,9 +756,19 @@ export class ShootEmUpScene extends Scene {
     // Handle Player Movement (Jump, Crouch, Lateral adjustments)
     this.handlePlayerMovement(delta);
 
-    // Spacebar continuous fire check (honors rate of fire and ammo)
-    if (this.spaceKey.isDown) {
-      this.attemptFireLaser(this.playerContainer.x - 500, this.playerContainer.y);
+    // Crosshair tracking with mouse cursor
+    const pointer = this.input.activePointer;
+    if (this.crosshair) {
+      this.crosshair.setPosition(pointer.x, pointer.y);
+      this.crosshair.setVisible(true);
+    }
+
+    // Continuously aim laser towards mouse cursor, unless recently fired backwards with Space (< 220ms)
+    if (this.eclairLaser && this.time.now > this.lastBackwardsFireTime + 220) {
+      const muzzleX = this.playerContainer.x - 25;
+      const muzzleY = this.playerContainer.y + 12;
+      const angle = PMath.Angle.Between(muzzleX, muzzleY, pointer.x, pointer.y);
+      this.eclairLaser.setRotation(angle);
     }
 
     // Update Entities (Bullets, Bonus Hearts, Obstacles, Pursuers, Enemy Projectiles, Speedlines)
@@ -1225,7 +1267,7 @@ export class ShootEmUpScene extends Scene {
       if (!obs.cleared && obs.x < this.playerX - 50) {
         obs.cleared = true;
         this.obstaclesAvoided += 1;
-        const msg = obs.obstacleType === "LOW" ? "+50 SAUT PARFAIT ! ⬆️" : "+50 GLISSADE ! ⬇️";
+        const msg = obs.obstacleType === "LOW" ? "SAUT PARFAIT ! ⬆️" : "GLISSADE ! ⬇️";
         this.showFloatingText(this.playerX, this.playerY - 70, msg, "#00ff88");
       }
 
@@ -1420,9 +1462,7 @@ export class ShootEmUpScene extends Scene {
             this.updateHealthDisplay();
             this.showFloatingText(h.container.x, h.container.y, "+1 ❤️ VITALITÉ !", "#ff3366");
           } else {
-            this.enemiesDefeated += 1;
-            this.scoreText.setText(`👨‍🍳 Brigade semée : ${this.enemiesDefeated}`);
-            this.showFloatingText(h.container.x, h.container.y, "⭐ +150 BONUS !", "#ffd700");
+            this.showFloatingText(h.container.x, h.container.y, "❤️ Vitalité Maximale !", "#ff6699");
           }
 
           h.container.destroy();
@@ -1546,17 +1586,17 @@ export class ShootEmUpScene extends Scene {
   defeatPursuer(index) {
     const p = this.pursuers[index];
     this.enemiesDefeated += 1;
-    this.scoreText.setText(`👨‍🍳 Brigade semée : ${this.enemiesDefeated}`);
+    this.scoreText.setText(`🚨 Poursuivants : ${this.enemiesDefeated}`);
 
     // Flour puff & sparkle explosion
     this.createFlourPuff(p.container.x, p.container.y);
     this.createSparks(p.container.x, p.container.y, 0xffdd00);
 
-    // Floating score popup
+    // Floating notification (no score points)
     this.showFloatingText(
       p.container.x,
       p.container.y - 50,
-      "+100 💥 Cuisinier Repoussé !",
+      "💥 Cuisinier Repoussé !",
       "#00ffcc"
     );
 
