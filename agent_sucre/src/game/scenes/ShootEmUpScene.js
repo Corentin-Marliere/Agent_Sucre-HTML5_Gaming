@@ -24,6 +24,7 @@ export class ShootEmUpScene extends Scene {
     this.elapsedTime = 0;
     this.playerHealth = 3;
     this.maxHealth = 3;
+    this.timesHit = 0; // Tracks total hits taken during the run
     this.enemiesDefeated = 0;
     this.obstaclesAvoided = 0;
     this.isGameOver = false;
@@ -464,12 +465,13 @@ export class ShootEmUpScene extends Scene {
     const sec3Text = this.add
       .text(
         -400,
-        140,
-        "• Des cœurs traversent le couloir en hauteur : TIREZ DESSUS pour récupérer +1 ❤️ de vitalité !",
+        145,
+        "• Des cœurs traversent le couloir en hauteur : TIREZ DESSUS pour récupérer +1 ❤️ !\n• RÉCOMPENSE : 100% infiltration si 0 dégât  |  75% si 3/3 cœurs finaux  |  50% standard",
         {
           fontFamily: "Courier, monospace",
-          fontSize: "13px",
+          fontSize: "12px",
           color: "#ffccdd",
+          lineSpacing: 4,
         }
       )
       .setOrigin(0, 0.5);
@@ -1552,6 +1554,7 @@ export class ShootEmUpScene extends Scene {
   }
 
   handlePlayerHit(reason) {
+    this.timesHit += 1;
     this.playerHealth -= 1;
     this.invulnerableUntil = this.time.now + 1600; // 1.6s of invulnerability
 
@@ -1718,8 +1721,33 @@ export class ShootEmUpScene extends Scene {
       });
     });
 
-    // Restore infiltration back to 50%
-    gameState.restoreInfiltrationAfterEscape(50);
+    // Calculate Infiltration Restoration according to performance:
+    // 1. Zero hits taken throughout the run => 100% infiltration
+    // 2. Hit taken, but recovered and finishes with all 3 hearts => 75% infiltration
+    // 3. Finished with 1 or 2 hearts => 50% infiltration
+    let restoredAmount = 50;
+    let rankBadge = "🏃 ÉVASION STANDARD";
+    let rankColor = "#cbd5e1";
+
+    if (this.timesHit === 0) {
+      restoredAmount = 100;
+      rankBadge = "⭐ PARFAIT (ZÉRO DÉGÂT) : Infiltration restaurée à 100 % !";
+      rankColor = "#00ffcc";
+    } else if (this.playerHealth >= 3) {
+      restoredAmount = 75;
+      rankBadge = "💖 RÉCUPÉRATION COMPLÈTE (3/3 CŒURS) : Infiltration restaurée à 75 % !";
+      rankColor = "#00ff88";
+    } else {
+      restoredAmount = 50;
+      rankBadge = "🛡️ ÉVASION STANDARD : Infiltration restaurée à 50 % !";
+      rankColor = "#94a3b8";
+    }
+
+    this.restoredInfiltration = restoredAmount;
+    this.victoryRankBadge = rankBadge;
+    this.victoryRankColor = rankColor;
+
+    gameState.restoreInfiltrationAfterEscape(restoredAmount);
 
     this.time.delayedCall(900, () => {
       this.showVictoryModal();
@@ -1768,12 +1796,12 @@ export class ShootEmUpScene extends Scene {
       .text(
         0,
         -15,
-        `📊 Bilan de l'évasion :\n• Cuisiniers repoussés à l'Éclair Laser : ${this.enemiesDefeated}\n• Obstacles franchis : ${this.obstaclesAvoided}\n• Cœurs restants : ${this.playerHealth} / ${this.maxHealth}\n• Couverture d'infiltration restaurée à 50 % !`,
+        `📊 Bilan de l'évasion :\n• Poursuivants repoussés : ${this.enemiesDefeated}\n• Obstacles franchis : ${this.obstaclesAvoided}\n• Cœurs restants : ${this.playerHealth} / ${this.maxHealth}\n• Dégâts subis : ${this.timesHit}\n\n${this.victoryRankBadge}`,
         {
           fontFamily: "Arial, sans-serif",
-          fontSize: "17px",
-          color: "#cbd5e1",
-          lineSpacing: 10,
+          fontSize: "16px",
+          color: this.victoryRankColor || "#cbd5e1",
+          lineSpacing: 8,
           align: "center",
         }
       )
