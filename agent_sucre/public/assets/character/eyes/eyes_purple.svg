@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Eyebrows -->
+  <path d="M 66 84 Q 78 80 88 85" stroke="#334155" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M 112 85 Q 122 80 134 84" stroke="#334155" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  
+  <!-- Left Eye -->
+  <ellipse cx="76" cy="98" rx="11" ry="14" fill="#ffffff" stroke="#1e293b" stroke-width="1.5"/>
+  <!-- Left Iris -->
+  <ellipse cx="77" cy="99" rx="8.5" ry="12" fill="#7c3aed"/>
+  <ellipse cx="77" cy="97" rx="8.5" ry="7" fill="#4c1d95"/>
+  <ellipse cx="77" cy="103" rx="6" ry="5" fill="#a78bfa"/>
+  <circle cx="77" cy="99" r="4" fill="#0f172a"/>
+  <!-- Left Highlights -->
+  <circle cx="74" cy="94" r="3.5" fill="#ffffff"/>
+  <circle cx="79" cy="104" r="1.8" fill="#ffffff"/>
+  <!-- Left Eyelash -->
+  <path d="M 63 94 Q 76 87 89 94" stroke="#0f172a" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M 63 94 L 60 91" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Right Eye -->
+  <ellipse cx="124" cy="98" rx="11" ry="14" fill="#ffffff" stroke="#1e293b" stroke-width="1.5"/>
+  <!-- Right Iris -->
+  <ellipse cx="123" cy="99" rx="8.5" ry="12" fill="#7c3aed"/>
+  <ellipse cx="123" cy="97" rx="8.5" ry="7" fill="#4c1d95"/>
+  <ellipse cx="123" cy="103" rx="6" ry="5" fill="#a78bfa"/>
+  <circle cx="123" cy="99" r="4" fill="#0f172a"/>
+  <!-- Right Highlights -->
+  <circle cx="120" cy="94" r="3.5" fill="#ffffff"/>
+  <circle cx="125" cy="104" r="1.8" fill="#ffffff"/>
+  <!-- Right Eyelash -->
+  <path d="M 111 94 Q 124 87 137 94" stroke="#0f172a" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M 137 94 L 140 91" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+</svg>

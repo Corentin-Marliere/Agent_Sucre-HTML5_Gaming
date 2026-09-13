@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Navy Pants -->
+  <path d="M 74 205 L 72 272 Q 72 278 85 278 Q 96 278 96 272 L 95 205 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
+  <path d="M 105 205 L 104 272 Q 104 278 115 278 Q 128 278 128 272 L 126 205 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
+  <!-- White Chef Jacket Body -->
+  <path d="M 65 158 Q 100 165 135 158 L 138 210 L 62 210 Z" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/>
+  <!-- Double-breasted jacket closure -->
+  <line x1="108" y1="160" x2="108" y2="210" stroke="#cbd5e1" stroke-width="1.5"/>
+  <circle cx="102" cy="172" r="2.5" fill="#0f172a"/>
+  <circle cx="114" cy="172" r="2.5" fill="#0f172a"/>
+  <circle cx="102" cy="188" r="2.5" fill="#0f172a"/>
+  <circle cx="114" cy="188" r="2.5" fill="#0f172a"/>
+  <!-- Chef Apron (Tablier) over jacket -->
+  <path d="M 78 170 L 122 170 L 125 245 Q 100 248 75 245 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <!-- Apron pocket with Lyfe embroidery -->
+  <rect x="86" y="205" width="28" height="22" rx="2" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+  <path d="M 93 216 L 98 220 L 107 212" stroke="#3b82f6" stroke-width="1.5" fill="none"/>
+  <!-- Apron straps -->
+  <path d="M 78 170 L 70 205" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+  <path d="M 122 170 L 130 205" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+  <!-- Red neck scarf / Foulard rouge -->
+  <path d="M 88 152 Q 100 162 112 152 L 106 166 L 100 164 L 94 166 Z" fill="#ef4444" stroke="#b91c1c" stroke-width="1"/>
+  <!-- Sleeves & Cuffs -->
+  <path d="M 65 158 Q 50 185 52 205 L 68 202 L 73 165 Z" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/>
+  <path d="M 135 158 Q 150 185 148 205 L 132 202 L 127 165 Z" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/>
+  <!-- Blue-White-Red Collar detail -->
+  <path d="M 86 150 L 92 150 L 92 158 L 86 158 Z" fill="#3b82f6"/>
+  <path d="M 92 150 L 98 150 L 98 158 L 92 158 Z" fill="#ffffff"/>
+  <path d="M 98 150 L 104 150 L 104 158 L 98 158 Z" fill="#ef4444"/>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Chef Toque Band angled on head -->
+  <polygon points="68,52 132,44 130,58 66,66" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/>
+  <!-- Pleated puffed crown -->
+  <path d="M 68 52 C 55 25 75 8 95 14 C 110 5 135 15 132 44 Z" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+  <circle cx="80" cy="28" r="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <circle cx="105" cy="22" r="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <circle cx="125" cy="30" r="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <!-- Pleat lines -->
+  <line x1="82" y1="38" x2="80" y2="58" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="100" y1="32" x2="100" y2="54" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="118" y1="36" x2="118" y2="50" stroke="#cbd5e1" stroke-width="1.5"/>
+</svg>

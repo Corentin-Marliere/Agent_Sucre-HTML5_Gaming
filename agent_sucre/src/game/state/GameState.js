@@ -16,6 +16,14 @@ export class GameState {
         pinCode: null,
         createdAt: now,
         updatedAt: now,
+        customization: {
+          skinTone: "light",
+          hairStyle: "hair_short",
+          hairColor: 0x4a2e18,
+          eyeColor: "eyes_blue",
+          outfit: "apprenti_lyfe",
+          accessory: "none",
+        },
       },
       progression: {
         currentChapter: 1,
@@ -88,6 +96,10 @@ export class GameState {
       profile: {
         ...defaultState.profile,
         ...(loadedState.profile || {}),
+        customization: {
+          ...defaultState.profile.customization,
+          ...(loadedState.profile?.customization || {}),
+        },
       },
       progression: {
         ...defaultState.progression,
@@ -115,12 +127,48 @@ export class GameState {
       },
     };
 
+    // If an outfit flag is present, keep customization.outfit in sync
+    if (this.state.flags.equippedOutfit) {
+      this.state.profile.customization.outfit = this.state.flags.equippedOutfit;
+    }
+
     this._touch();
   }
 
-  /* ========================================================================== */
-  /* PROFILE                                                                    */
-  /* ========================================================================== */
+  /* ========================================================================= */
+  /* PROFILE & CUSTOMIZATION                                                   */
+  /* ========================================================================= */
+
+  /**
+   * Returns a copy of the player profile.
+   * @returns {Object}
+   */
+  getProfile() {
+    return JSON.parse(JSON.stringify(this.state.profile));
+  }
+
+  /**
+   * Returns current character customization options.
+   * @returns {Object}
+   */
+  getCustomization() {
+    return { ...this.state.profile.customization };
+  }
+
+  /**
+   * Updates character appearance customization settings.
+   * @param {Object} updates
+   */
+  setCustomization(updates = {}) {
+    this.state.profile.customization = {
+      ...this.state.profile.customization,
+      ...updates,
+    };
+    if (updates.outfit) {
+      this.setFlag("equippedOutfit", updates.outfit);
+    }
+    this._touch();
+  }
 
   /**
    * Defines the agent profile information.

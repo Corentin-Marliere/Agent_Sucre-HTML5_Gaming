@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Right ear tactical comm device -->
+  <rect x="146" y="96" width="9" height="12" rx="3" fill="#0f172a" stroke="#00ffcc" stroke-width="1.5"/>
+  <!-- Blinking comm LED -->
+  <circle cx="150" cy="102" r="1.8" fill="#00ffcc"/>
+  <!-- Discreet boom mic curving to jaw -->
+  <path d="M 148 105 Q 140 120 125 125" stroke="#0f172a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <circle cx="125" cy="125" r="2" fill="#334155"/>
+</svg>
