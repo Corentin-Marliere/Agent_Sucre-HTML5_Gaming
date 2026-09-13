@@ -1759,18 +1759,18 @@ export class ShootEmUpScene extends Scene {
 
     // Dimmed background
     const bgDim = this.add
-      .rectangle(0, 0, 1920, 980, 0x000000, 0.75)
+      .rectangle(0, 0, 1920, 980, 0x000000, 0.8)
       .setInteractive();
 
     // Dialog card
     const card = this.add
-      .rectangle(0, 0, 780, 420, 0x0c1524, 0.98)
+      .rectangle(0, 0, 800, 480, 0x0c1524, 0.98)
       .setStrokeStyle(3, 0x00ff88);
 
     const title = this.add
-      .text(0, -145, "🎉 FUITE RÉUSSIE !", {
+      .text(0, -180, "🎉 FUITE RÉUSSIE !", {
         fontFamily: "Arial Black, sans-serif",
-        fontSize: "30px",
+        fontSize: "28px",
         color: "#00ff88",
         stroke: "#000000",
         strokeThickness: 5,
@@ -1780,41 +1780,75 @@ export class ShootEmUpScene extends Scene {
     const subtitle = this.add
       .text(
         0,
-        -90,
+        -135,
         "Vous avez semé la brigade et plongé dans le conduit de ventilation secret !",
         {
           fontFamily: "Arial, sans-serif",
-          fontSize: "16px",
-          color: "#ffffff",
+          fontSize: "15px",
+          color: "#94a3b8",
           stroke: "#000000",
           strokeThickness: 2,
         }
       )
       .setOrigin(0.5);
 
+    // Stats panel container / box
+    const statsBox = this.add
+      .rectangle(0, -15, 720, 140, 0x07111e, 0.85)
+      .setStrokeStyle(1, 0x1e293b);
+
+    const statsHeader = this.add
+      .text(0, -68, "— BILAN DE L'ÉVASION —", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "13px",
+        fontStyle: "bold",
+        color: "#38bdf8",
+      })
+      .setOrigin(0.5);
+
     const stats = this.add
       .text(
         0,
-        -15,
-        `📊 Bilan de l'évasion :\n• Poursuivants repoussés : ${this.enemiesDefeated}\n• Obstacles franchis : ${this.obstaclesAvoided}\n• Cœurs restants : ${this.playerHealth} / ${this.maxHealth}\n• Dégâts subis : ${this.timesHit}\n\n${this.victoryRankBadge}`,
+        -46,
+        `• Poursuivants repoussés : ${this.enemiesDefeated}\n• Obstacles franchis : ${this.obstaclesAvoided}\n• Cœurs restants : ${this.playerHealth} / ${this.maxHealth}     |     Dégâts subis : ${this.timesHit}`,
         {
           fontFamily: "Arial, sans-serif",
-          fontSize: "16px",
-          color: this.victoryRankColor || "#cbd5e1",
-          lineSpacing: 8,
+          fontSize: "15px",
+          color: "#e2e8f0",
+          lineSpacing: 10,
           align: "center",
         }
       )
+      .setOrigin(0.5, 0);
+
+    // Reward Badge Box
+    const badgeBorderColor =
+      this.restoredInfiltration === 100
+        ? 0x00ffcc
+        : this.restoredInfiltration === 75
+        ? 0x00ff88
+        : 0x64748b;
+    const badgeBg = this.add
+      .rectangle(0, 95, 720, 48, 0x091c18, 0.9)
+      .setStrokeStyle(2, badgeBorderColor);
+
+    const badgeText = this.add
+      .text(0, 95, this.victoryRankBadge, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "15px",
+        fontStyle: "bold",
+        color: this.victoryRankColor || "#cbd5e1",
+      })
       .setOrigin(0.5);
 
     // Continue button
     const resumeBtn = this.add
-      .rectangle(0, 130, 320, 52, 0x15803d, 0.95)
+      .rectangle(0, 175, 340, 50, 0x15803d, 0.95)
       .setStrokeStyle(2, 0x00ff88)
       .setInteractive({ useHandCursor: true });
 
     const resumeText = this.add
-      .text(0, 130, "🚪 Reprendre la mission", {
+      .text(0, 175, "🚪 Reprendre la mission", {
         fontFamily: "Arial, sans-serif",
         fontSize: "17px",
         fontStyle: "bold",
@@ -1840,7 +1874,19 @@ export class ShootEmUpScene extends Scene {
       }
     });
 
-    modal.add([bgDim, card, title, subtitle, stats, resumeBtn, resumeText]);
+    modal.add([
+      bgDim,
+      card,
+      title,
+      subtitle,
+      statsBox,
+      statsHeader,
+      stats,
+      badgeBg,
+      badgeText,
+      resumeBtn,
+      resumeText,
+    ]);
   }
 
   triggerDefeat() {
