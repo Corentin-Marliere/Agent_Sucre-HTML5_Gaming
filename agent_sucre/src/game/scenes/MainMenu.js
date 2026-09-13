@@ -20,6 +20,13 @@ export class MainMenu extends Scene {
     // Centered retro CRT monitor frame
     this.add.image(960, 490, "pc_screen").setScale(1.3);
 
+    // Desktop wallpaper logo inside CRT monitor screen (55% opacity)
+    if (this.textures.exists("pc_wallpaper_logo")) {
+      const wallpaper = this.add.image(960, 460, "pc_wallpaper_logo");
+      wallpaper.setDisplaySize(540, 540);
+      wallpaper.setAlpha(0.1);
+    }
+
     this.currentModal = null;
 
     // Agent OS taskbar at the bottom
@@ -78,8 +85,8 @@ export class MainMenu extends Scene {
       {
         x: 640,
         y: 280,
+        texture: "icon_dialogue",
         label: "Mission Dialogue",
-        sub: "(Continuer histoire)",
         color: "#ffffff",
         action: () => {
           const objective = gameState.getCurrentObjective();
@@ -104,42 +111,42 @@ export class MainMenu extends Scene {
       {
         x: 960,
         y: 280,
+        texture: "icon_new_mission",
         label: "New Mission",
-        sub: "(Créer profil PIN)",
-        color: "#00ffcc",
+        color: "#ffffff",
         action: () => this.handleNewMission(),
       },
       {
         x: 1280,
         y: 280,
+        texture: "icon_load_save",
         label: "Load Save",
-        sub: "(Charger avec PIN)",
-        color: "#ffdd00",
+        color: "#ffffff",
         action: () => this.handleLoadSave(),
       },
       // Row 2 (y = 480)
       {
         x: 640,
         y: 480,
+        texture: "icon_inventory",
         label: "Inventaire [I]",
-        sub: "(Sacoche d'agent)",
-        color: "#00ff88",
+        color: "#ffffff",
         action: () => this.taskbar.handleInventory(),
       },
       {
         x: 960,
         y: 480,
+        texture: "icon_wardrobe",
         label: "Wardrobe",
-        sub: "(Dressing tactique)",
-        color: "#e082ff",
+        sub: "(Dressing tactique)",        color: "#ffffff",
         action: () => this.taskbar.handleWardrobe(),
       },
       {
         x: 1280,
         y: 480,
-        label: "Institut Secret [M]",
-        sub: "(Carte interactive)",
-        color: "#38bdf8",
+        texture: "icon_map_guide",
+        label: "Guide\nMichelin",
+        color: "#ffffff",
         action: () => {
           if (!gameState.getFlag("chap1_scene1_completed")) {
             this.scene.start("Game", { dialogId: "bocuse_welcome" });
@@ -151,37 +158,51 @@ export class MainMenu extends Scene {
     ];
 
     iconsData.forEach((item) => {
-      const folder = this.add.image(item.x, item.y, "folder");
-      folder.setScale(0.1);
+      const iconKey = item.texture || "folder";
+      const iconImg = this.add.image(item.x, item.y, iconKey);
+
+      // Scale proportionally to fit comfortably in a 68x68 box
+      const targetDim = 68;
+      const baseScale = Math.min(
+        targetDim / (iconImg.width || 100),
+        targetDim / (iconImg.height || 100)
+      );
+      iconImg.setScale(baseScale);
+
+      const hasMultiline = item.label.includes("\n");
+      const labelY = item.y + (hasMultiline ? 46 : 44);
+      const subY = item.y + (hasMultiline ? 70 : 64);
 
       const labelText = this.add
-        .text(item.x, item.y + 44, item.label, {
+        .text(item.x, labelY, item.label, {
           fontFamily: "Arial, sans-serif",
           fontSize: "14px",
           fontStyle: "bold",
           color: item.color,
+          align: "center",
         })
         .setOrigin(0.5);
 
       const subText = this.add
-        .text(item.x, item.y + 64, item.sub, {
+        .text(item.x, subY, item.sub, {
           fontFamily: "Arial, sans-serif",
           fontSize: "11px",
           color: "#94a3b8",
+          align: "center",
         })
         .setOrigin(0.5);
 
       // Interactive hit zone covering both icon and labels
       const hitZone = this.add
-        .rectangle(item.x, item.y + 20, 180, 120, 0x000000, 0)
+        .rectangle(item.x, item.y + 20, 180, 130, 0x000000, 0)
         .setInteractive({ useHandCursor: true });
 
       hitZone.on("pointerover", () => {
-        folder.setScale(0.11);
+        iconImg.setScale(baseScale * 1.12);
         labelText.setColor("#ffffff");
       });
       hitZone.on("pointerout", () => {
-        folder.setScale(0.1);
+        iconImg.setScale(baseScale);
         labelText.setColor(item.color);
       });
       hitZone.on("pointerdown", item.action);

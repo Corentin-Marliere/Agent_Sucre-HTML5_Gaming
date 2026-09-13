@@ -27,6 +27,13 @@ export class Game extends Scene {
     const bgKey = this.getBackgroundTextureKey();
     if (bgKey === "pc_screen" && this.textures.exists("pc_screen")) {
       this.add.image(960, 490, "pc_screen").setScale(1.3).setDepth(0);
+      if (this.textures.exists("pc_wallpaper_logo")) {
+        this.add
+          .image(960, 460, "pc_wallpaper_logo")
+          .setDisplaySize(540, 540)
+          .setAlpha(0.55)
+          .setDepth(0);
+      }
       const dimOverlay = this.add.rectangle(960, 490, 1920, 980, 0x050811, 0.45);
       dimOverlay.setDepth(1);
     } else if (this.textures.exists(bgKey)) {
