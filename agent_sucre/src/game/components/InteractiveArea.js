@@ -42,14 +42,38 @@ export class InteractiveArea extends GameObjects.Container {
   }
 
   changeZone() {
-    this.scene.cameras.main.fadeOut(300, 0, 0, 0, (camera, progress) => {
-      if (progress === 1) {
+    if (this.target === "archives") {
+      if (typeof this.scene.handleArchivesAccess === "function") {
+        this.scene.handleArchivesAccess();
+        return;
+      }
+    }
+
+    if (this.target === "secret_corridor") {
+      if (typeof this.scene.launchMazeMinigame === "function") {
+        this.scene.launchMazeMinigame();
+        return;
+      }
+    }
+
+    let transitioned = false;
+    const executeTransition = () => {
+      if (!transitioned) {
+        transitioned = true;
         if (this.type === "map") {
           this.scene.scene.start("GenericMapScene", { mapId: this.target });
         } else if (this.type === "scene") {
           this.scene.scene.start(this.target);
         }
       }
+    };
+
+    this.scene.cameras.main.fadeOut(300, 0, 0, 0, (camera, progress) => {
+      if (progress >= 1) {
+        executeTransition();
+      }
     });
+
+    this.scene.time.delayedCall(350, executeTransition);
   }
 }
