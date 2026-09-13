@@ -42,6 +42,8 @@ export class MainMenu extends Scene {
     this.input.keyboard.on("keydown", (event) => {
       if (event.key === "i" || event.key === "I") {
         this.taskbar.handleInventory();
+      } else if (event.key === "=" || event.key === "+") {
+        this.scene.start("ShootEmUpScene", { originScene: "MainMenu" });
       } else if (event.key === "m" || event.key === "M") {
         if (!this.currentModal && !this.taskbar.currentModal) {
           if (!gameState.getFlag("chap1_scene1_completed")) {

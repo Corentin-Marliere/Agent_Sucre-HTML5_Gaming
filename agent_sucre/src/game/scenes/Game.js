@@ -87,15 +87,6 @@ export class Game extends Scene {
       if (event.key === "i" || event.key === "I") {
         this.toggleInventory();
         return;
-      } else if (event.key === "m" || event.key === "M") {
-        // Prevent bypassing the introductory Bocuse briefing
-        if (!gameState.getFlag("chap1_scene1_completed")) {
-          return;
-        }
-        if (!this.currentModal) {
-          this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
-        }
-        return;
       }
 
       // Do not advance dialogues if an interactive modal is currently open
@@ -369,6 +360,66 @@ export class Game extends Scene {
         toastBg.destroy();
         toastText.destroy();
       },
+    });
+  }
+
+  /**
+   * Triggers emergency alert sequence when infiltration reaches 0 and transitions to ShootEmUpScene.
+   */
+  triggerCoverBlownAlert() {
+    // Red strobe flash
+    const alertOverlay = this.add
+      .rectangle(960, 490, 1920, 980, 0xff0033, 0.45)
+      .setDepth(2000);
+
+    this.tweens.add({
+      targets: alertOverlay,
+      alpha: 0.1,
+      yoyo: true,
+      repeat: 4,
+      duration: 180,
+    });
+
+    // Alert Banner
+    const banner = this.add.container(960, 490).setDepth(2100);
+    const box = this.add
+      .rectangle(0, 0, 840, 170, 0x0a101d, 0.96)
+      .setStrokeStyle(3, 0xff0033);
+    const title = this.add
+      .text(0, -32, "🚨 ALERTE ROUGE : COUVERTURE COMPROMISE ! 🚨", {
+        fontFamily: "Arial Black, sans-serif",
+        fontSize: "26px",
+        color: "#ff3344",
+        stroke: "#000000",
+        strokeThickness: 5,
+      })
+      .setOrigin(0.5);
+    const subtitle = this.add
+      .text(
+        0,
+        28,
+        "Votre jauge d'infiltration est tombée à 0 % !\nLa brigade de sécurité fonce sur vous... FUYEZ !",
+        {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "18px",
+          color: "#ffffff",
+          align: "center",
+          stroke: "#000000",
+          strokeThickness: 3,
+        }
+      )
+      .setOrigin(0.5);
+
+    banner.add([box, title, subtitle]);
+
+    this.cameras.main.shake(400, 0.015);
+
+    this.time.delayedCall(1600, () => {
+      this.scene.start("ShootEmUpScene", {
+        originScene: "Game",
+        dialogId: this.dialogId,
+        roomReturnId: this.roomReturnId,
+      });
     });
   }
 }
