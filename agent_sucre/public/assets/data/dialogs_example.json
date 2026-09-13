@@ -50,7 +50,7 @@
         "text": "Tenter une diversion audacieuse",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "etchebest", "amount": 10 },
-          { "type": "ADD_INFILTRATION", "amount": -15 },
+          { "type": "ADD_INFILTRATION", "amount": -100 },
           { "type": "SET_FLAG", "flag": "chap1_scene2_completed", "value": true }
         ],
         "nextDialogId": "etchebest_reponse_audacieux"
