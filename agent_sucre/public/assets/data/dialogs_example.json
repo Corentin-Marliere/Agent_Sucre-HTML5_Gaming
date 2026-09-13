@@ -145,20 +145,17 @@
     "speaker": "Cyril Lignac",
     "lines": [
       "Ah, Philippe, tu m'amènes la nouvelle recrue ! Bienvenue dans mon laboratoire R&D !",
-      "Je surveille un prototype de macaron explosif dans le four à 180°C, alors je fais vite. C'est ici que tu trouveras tes gadgets gourmands-croquants.",
-      "Dans notre brigade, chaque douceur est une arme de précision. Tiens, prends ton pack de gadgets R&D : le Macaron explosif, le Brookie-Walkie chiffré, la Poche à douille cryogénique et l'Éclair laser !"
+      "Je peaufine mes prototypes dans le four à 180°C. C'est ici que sont conçus tous nos gadgets gourmands-croquants.",
+      "Pour débuter ton entraînement et garder le contact avec nous sur les ondes sécurisées, tiens : prends ce Brookie-Walkie Chiffré ! Gourmand et discret, personne ne soupçonnera une radio dans une pâtisserie !"
     ],
     "actions": [
-      { "type": "ADD_ITEM", "itemId": "macaron_explosif", "quantity": 1 },
       { "type": "ADD_ITEM", "itemId": "brookie_walkie", "quantity": 1 },
-      { "type": "ADD_ITEM", "itemId": "poche_a_douille", "quantity": 1 },
-      { "type": "ADD_ITEM", "itemId": "eclair_laser", "quantity": 1 },
       { "type": "ADD_AFFECTION", "target": "lignac", "amount": 5 },
       { "type": "SET_FLAG", "flag": "chap1_scene3_item_received", "value": true }
     ],
     "choices": [
       {
-        "text": "Faire une remarque gourmande et croquante sur l'explosion",
+        "text": "Faire une remarque gourmande sur la texture mi-brownie mi-cookie",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "lignac", "amount": 5 },
           { "type": "ADD_INFILTRATION", "amount": -5 }
@@ -166,14 +163,14 @@
         "nextDialogId": "lignac_reponse_audacieux"
       },
       {
-        "text": "Demander les spécifications de la charge thermique",
+        "text": "Demander les spécifications de fréquence et de chiffrement du brookie",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "lignac", "amount": 10 }
         ],
         "nextDialogId": "lignac_reponse_pro"
       },
       {
-        "text": "Regarder le macaron avec appréhension",
+        "text": "Hésiter en se demandant si on risque de mordre dans l'antenne",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "lignac", "amount": -5 }
         ],
@@ -184,8 +181,8 @@
   "lignac_reponse_pro": {
     "speaker": "Cyril Lignac",
     "lines": [
-      "Une ganache thermo-réactive stabilisée au beurre de cacao ! Une merveille d'ingénierie pâtissière.",
-      "J'adore les recrues attentives aux textures. Vous ferez un excellent agent de terrain."
+      "Une fréquence ultra-haute camouflée dans les pépites de chocolat noir ! Une merveille d'ingénierie pâtissière.",
+      "J'adore les recrues attentives aux détails techniques. Vous ferez un excellent agent de terrain."
     ],
     "choices": [
       {
@@ -197,8 +194,8 @@
   "lignac_reponse_audacieux": {
     "speaker": "Cyril Lignac",
     "lines": [
-      "Haha ! Gourmand, croquant ET détonant ! C'est exactement la signature de la maison !",
-      "Mais attention, évitez de transformer les couloirs en confettis de meringue !"
+      "Haha ! Moelleux en dessous, croquant au-dessus, et 100% intraçable ! C'est la signature de la maison !",
+      "Mais attention, évitez de le croquer en plein briefing d'espionnage !"
     ],
     "choices": [
       {
@@ -210,8 +207,8 @@
   "lignac_reponse_hesitant": {
     "speaker": "Cyril Lignac",
     "lines": [
-      "Ne tremblez pas comme ça ! La coque meringuée est parfaitement isolée.",
-      "Un agent secret d'élite ne doit jamais reculer devant une petite friandise !"
+      "Ne vous inquiétez pas ! L'antenne est souple et rétractable sous le glaçage.",
+      "Un agent secret d'élite doit savoir faire confiance à son matériel de transmission !"
     ],
     "choices": [
       {
@@ -448,7 +445,7 @@
   "lignac_rappel_ramsay": {
     "speaker": "Cyril Lignac",
     "lines": [
-      "Ton macaron explosif est bien au chaud dans ta sacoche ?",
+      "Ton Brookie-Walkie est bien réglé sur notre fréquence sécurisée ?",
       "Fonce vite voir Gordon Ramsay à la Cour d'Entraînement pour tester ta condition physique. Et bon courage avec lui !"
     ],
     "choices": [
@@ -564,7 +561,7 @@
     "speaker": "Paul Bocuse",
     "lines": [
       "Transmission prioritaire chiffrée... Agent Sucre, rapport d'évaluation reçu avec les félicitations du Conseil.",
-      "Vous avez franchi le barrage de Philippe, récupéré l'arsenal secret de Cyril et surmonté l'épreuve de Gordon en équipant le tablier pare-balles.",
+      "Vous avez franchi le barrage de Philippe, sécurisé vos communications avec le Brookie-Walkie de Cyril et surmonté l'épreuve de Gordon en équipant le tablier pare-balles.",
       "Votre couverture d'apprenti est désormais totale. Le Chapitre 1 « Mise en Bouche Confidentielle » est un franc succès !",
       "Restez vigilant. L'agent double se rapprocherait des cuisines centrales du professeur Grolet. Préparez-vous pour le Chapitre 2 !"
     ],
