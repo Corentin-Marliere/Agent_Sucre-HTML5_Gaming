@@ -29,7 +29,7 @@
         "height": 110,
         "type": "map",
         "target": "lecture_room",
-        "label": "🏛️ Salle de classe ()"
+        "label": "🏛️ Masterclass Pâtisserie (Mercotte)"
       },
       {
         "x": 1214,
@@ -140,6 +140,14 @@
     "type": "room",
     "title": "Couloirs Secrets de Dérivation",
     "description": "Conduits techniques et sas de maintenance reliant les différentes ailes de l'Institut.",
+    "zones": []
+  },
+  "lecture_room": {
+    "type": "room",
+    "title": "Salle de Masterclass & Pâtisserie",
+    "description": "Atelier de haute pâtisserie et cours techniques animé par Mercotte.",
+    "character": "Mercotte",
+    "dialogId": "mercotte_bloque",
     "zones": []
   }
 }

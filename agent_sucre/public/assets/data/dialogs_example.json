@@ -595,5 +595,384 @@
         "sceneData": { "mapId": "secretInstitute" }
       }
     ]
+  },
+  "lignac_chap2_alert": {
+    "speaker": "Cyril Lignac",
+    "lines": [
+      "Bip... bip... Agent Sucre, tu me reçois sur le Brookie-Walkie ?! C'est Cyril ! Alerte rouge !",
+      "Je viens de détecter une intrusion anormale et ultra-agressive dans le réseau crypté de mes gadgets... Quelqu'un pirate nos fréquences !",
+      "Nos pires craintes se confirment : l'agent double est passé à l'offensive et notre véritable mission commence maintenant !",
+      "Paul Bocuse a convoqué un débriefing d'urgence dans la salle des Archives Secrètes. Fonce le retrouver là-bas sans te faire repérer !"
+    ],
+    "choices": [
+      {
+        "text": "Rejoindre les Archives Secrètes via le passage dérobé ▶",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap2_started", "value": true },
+          { "type": "SET_FLAG", "flag": "chap2_step", "value": "goto_archives" }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "bocuse_chap2_archives": {
+    "speaker": "Paul Bocuse",
+    "lines": [
+      "Impressionnant, recrue. Vous avez franchi les sécurités du conduit et atteint la salle des Archives Secrètes.",
+      "Il est temps que vous sachiez toute la vérité sur la menace qui pèse sur l'Institut Lyfe et sur le monde culinaire.",
+      "Cet ennemi tapi dans l'ombre... c'est Cédric Grolet. Un pâtissier de génie mais dévoré par une jalousie maladive envers Cyril et aveuglé par son obsession du trompe-l'œil parfait.",
+      "Autrefois, Cédric était mon élève le plus prometteur, presque un ami. Mais il m'a trahi pour dérober une prestigieuse médaille d'or... Rejeté par la confrérie des Agents Sucrés, il cherche vengeance depuis des années.",
+      "Aujourd'hui, il s'approche dangereusement de son but ultime : dérober la légendaire Recette du Bonbon Ultime. S'il synthétise cette formule d'asservissement gustatif, Cédric Grolet pourrait contrôler l'humanité !",
+      "Si nous vous avons recruté, c'est pour l'en empêcher et sauver le monde. Visez l'excellence d'un Bocuse d'Or ! Commencez par aller voir Gordon Ramsay dans la cour d'entraînement : il va falloir forger votre mental."
+    ],
+    "choices": [
+      {
+        "text": "Je ne faillirai pas, Directeur. Je vais voir le Chef Ramsay ▶",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "bocuse", "amount": 10 },
+          { "type": "SET_FLAG", "flag": "chap2_bocuse_done", "value": true },
+          { "type": "SET_FLAG", "flag": "chap2_step", "value": "ramsay_mental" }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "ramsay_chap2_mental": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "Vous voilà enfin ! Entrez dans cette chambre froide d'entraînement et fermez cette fichue porte !",
+      "[Ramsay vous agrippe fermement par le col de votre Tablier Pare-Balles, le regard noir et le visage glacial.]",
+      "Vous pensez être prêt pour affronter un pervers du trompe-l'œil comme Grolet ?! Vous n'êtes RIEN !",
+      "Prenez ces deux tranches de pain de mie sur le plan de travail, et collez-les immédiatement de chaque côté de votre tête !",
+      "Regardez-moi dans les yeux et dites-moi : QU'EST-CE QUE VOUS ÊTES ?!"
+    ],
+    "choices": [
+      {
+        "text": "Un agent en pleine préparation ?",
+        "nextDialogId": "ramsay_chap2_wrong_prep"
+      },
+      {
+        "text": "Un idiot sandwich, Chef !",
+        "nextDialogId": "ramsay_chap2_correct"
+      },
+      {
+        "text": "Un croque-monsieur ?",
+        "nextDialogId": "ramsay_chap2_wrong_croque"
+      }
+    ]
+  },
+  "ramsay_chap2_wrong_prep": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "FAUX ! Complètement à côté de la plaque ! Vous avez de la purée à la place du cerveau ou quoi ?!",
+      "On recommence depuis le début ! Réfléchissez avec vos tripes !"
+    ],
+    "choices": [
+      {
+        "text": "Réessayer l'épreuve de Ramsay ▶",
+        "nextDialogId": "ramsay_chap2_mental"
+      }
+    ]
+  },
+  "ramsay_chap2_wrong_croque": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "Un croque-monsieur ?! Est-ce que j'ai l'air d'un bistrot de gare parisien avec du fromage râpé ?!",
+      "Arrêtez de plaisanter avec la discipline ! Répondez sérieusement !"
+    ],
+    "choices": [
+      {
+        "text": "Réessayer l'épreuve de Ramsay ▶",
+        "nextDialogId": "ramsay_chap2_mental"
+      }
+    ]
+  },
+  "ramsay_chap2_correct": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "EXACTEMENT ! Un idiot sandwich ! Enfin un éclair de lucidité !",
+      "Mais un idiot sandwich avec du cran, qui va peut-être réussir à sauver l'Institut de la catastrophe.",
+      "Votre égo est brisé, votre esprit est affûté : vous ne craquerez pas sous la pression.",
+      "Filez voir Etchebest au bureau de la sécurité, c'est lui qui gère les accès du château."
+    ],
+    "choices": [
+      {
+        "text": "Compris Chef ! Direction le Hall de Sécurité d'Etchebest ▶",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "ramsay", "amount": 15 },
+          { "type": "SET_FLAG", "flag": "chap2_ramsay_done", "value": true },
+          { "type": "SET_FLAG", "flag": "chap2_step", "value": "etchebest_ego" }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "ramsay_chap2_post": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "Fuck off ; you are an idiot sandwich !",
+      "On a du pain sur la planche, dégagez d'ici et allez faire votre boulot !"
+    ],
+    "choices": [
+      {
+        "text": "Compris Chef, je file ! ▶",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "etchebest_chap2_ego_1": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "[Dans le bureau de sécurité, Philippe Etchebest vous fixe, les bras croisés, le regard d'acier et le tablier impeccablement serré.]",
+      "Alors comme ça, Ramsay t'a fait le coup du sandwich dans la chambre froide ? C'est bien, il t'a vidé la tête. Mais ça ne suffit pas pour ce qui nous attend.",
+      "Cédric Grolet n'est pas un vulgaire commis de cuisine. C'est un manipulateur hors pair, capable de déstabiliser les meilleurs agents avec ses illusions et son arrogance.",
+      "Pour lui tenir tête dans ce château, il ne te faut aucun doute. Pas l'ombre d'une hésitation. Regarde-moi droit dans les yeux...",
+      "C'EST QUI LE PATRON ?!"
+    ],
+    "choices": [
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_2" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_2" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_2" }
+    ]
+  },
+  "etchebest_chap2_ego_2": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "J'entends rien ! Les mouches volent plus fort que ça dans ma brigade ! C'EST QUI LE PATRON ?!"
+    ],
+    "choices": [
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_3" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_3" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_3" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_3" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_3" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_3" }
+    ]
+  },
+  "etchebest_chap2_ego_3": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "Encore plus fort, fais trembler les murs du château ! C'EST QUI LE PATRON ?!"
+    ],
+    "choices": [
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" },
+      { "text": "C'EST MOI !", "nextDialogId": "etchebest_chap2_ego_final" }
+    ]
+  },
+  "etchebest_chap2_ego_final": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "VOILÀ ! C'EST ÇA QUE JE VEUX ENTENDRE !",
+      "Là, je reconnais un véritable Agent Sucré ! Ton mental est forgé, ton égo est blindé comme une porte coupe-feu.",
+      "Ne baisse jamais la tête devant personne, et surtout pas devant un sculpteur de noisettes en trompe-l'œil !",
+      "Cyril Lignac t'attend au Laboratoire R&D. Il a intercepté un résidu suspect sur le réseau de nos gadgets. Fonce l'analyser !"
+    ],
+    "choices": [
+      {
+        "text": "Compris Chef Etchebest ! En route pour le Labo R&D ▶",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "etchebest", "amount": 15 },
+          { "type": "SET_FLAG", "flag": "chap2_etchebest_done", "value": true },
+          { "type": "SET_FLAG", "flag": "chap2_step", "value": "lignac_lead" }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "etchebest_chap2_post": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "C'est toujours toi le patron ! Maintenant fonce faire ta mission !"
+    ],
+    "choices": [
+      {
+        "text": "Compris Chef ! ▶",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "lignac_chap2_lead": {
+    "speaker": "Cyril Lignac",
+    "lines": [
+      "Te voilà enfin, Agent Sucre ! Entre, entre dans le labo ! Dis-moi... Philippe ne t'a pas trop braillé dessus ?",
+      "Ne me dis rien : il t'a fait le coup du 'C'est qui le patron ?!', c'est ça ?! Ah ah ! Classique ! Il le fait même à son grille-pain le matin pour le faire chauffer plus vite !",
+      "Entre Ramsay qui te prend pour un croque-monsieur et Etchebest qui te prend pour un tambour de fanfare, tu as survécu au pire. Mais trêve de bavardages, on a du lourd.",
+      "Pendant que tu te faisais postillonner dessus, mon spectromètre pâtissier à induction a tourné à plein régime. J'ai analysé les particules laissées par l'intrus sur le réseau de mes gadgets.",
+      "Verdict : c'est un résidu de sucre filé caramélisé aux piments d'Espelette et à la fève tonka. C'est audacieux, c'est malin... mais c'est surtout diaboliquement gourmand-croquant !",
+      "Cette signature culinaire n'appartient qu'à une seule personne : Cédric Grolet. Et le pire, c'est que la trace thermique mène tout droit vers l'aile Ouest...",
+      "Mon amie Mercotte est en plein atelier dans la salle de Masterclass (la classe) ! Elle l'a vu débuter à l'époque où il pochait ses premiers éclairs sans savoir faire un chou droit.",
+      "J'ai un très mauvais pressentiment... Si Grolet s'en prend à Mercotte ou à ses gâteaux, ça va péter ! Fonce là-bas à toute allure et garde l'œil bien ouvert !"
+    ],
+    "choices": [
+      {
+        "text": "Je fonce à la Masterclass sauver Mercotte et ses pâtisseries ! ▶",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "lignac", "amount": 15 },
+          { "type": "SET_FLAG", "flag": "chap2_lignac_done", "value": true },
+          { "type": "SET_FLAG", "flag": "chap2_step", "value": "mercotte_class" }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      },
+      {
+        "text": "Etchebest hurle même sur son grille-pain ?! J'y vais tout de suite ! ▶",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "lignac", "amount": 20 },
+          { "type": "SET_FLAG", "flag": "chap2_lignac_done", "value": true },
+          { "type": "SET_FLAG", "flag": "chap2_step", "value": "mercotte_class" }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "lignac_chap2_post": {
+    "speaker": "Cyril Lignac",
+    "lines": [
+      "Qu'est-ce que tu fais encore là, fripouille ?!",
+      "Mercotte t'attend dans la salle de Masterclass ! File vite avant qu'elle ne commence à disséquer un entremets suspect !"
+    ],
+    "choices": [
+      {
+        "text": "J'y vole, Chef Lignac ! ▶",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "mercotte_bloque": {
+    "speaker": "Mercotte",
+    "lines": [
+      "Tu es bien roulé, mais tes gâteaux ne le sont pas ; reviens quand tu seras prêt !!"
+    ],
+    "choices": [
+      {
+        "text": "Compris Mercotte, je reviendrai préparé ! ▶",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "mercotte_post_chap2": {
+    "speaker": "Mercotte",
+    "lines": [
+      "Grâce à toi, l'atelier de Masterclass est hors de danger !",
+      "N'oublie pas d'étudier mon Grimoire Technique avant d'aller fouiller les anciennes caves !"
+    ],
+    "choices": [
+      {
+        "text": "Merci Mercotte ! ▶",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "mercotte_chap2_macaron": {
+    "speaker": "Mercotte",
+    "lines": [
+      "[Tu pousses la porte de la salle de Masterclass. Mercotte est là, tout sourire, ajustant ses lunettes colorées devant un pupitre rempli d'ustensiles.]",
+      "Ah, la nouvelle recrue de Paul ! Lignac m'a prévenue de ton arrivée. Mais avant de parler affaires et de ce chenapan de Cédric... goûte donc ce magnifique macaron géant !",
+      "Il a été livré ce matin anonymement pour ma masterclass. Une merveille de gourmandise, tu ne trouves pas ?",
+      "[Le joueur observe le macaron posé sur son présentoir. Un très léger cliquetis régulier s'en échappe... Bip... bip... bip...]"
+    ],
+    "choices": [
+      {
+        "text": "Ne touchez à rien. Observez la collerette, Mercotte. Elle est irrégulière et dégage une odeur de poudre noire.",
+        "nextDialogId": "mercotte_chap2_explosion_pro"
+      },
+      {
+        "text": "Règle numéro un de l'espionnage gastronomique : on ne croque jamais un dessert qui fait bip, Mercotte.",
+        "nextDialogId": "mercotte_chap2_explosion_audacious"
+      },
+      {
+        "text": "Il est très beau, mais... c'est normal qu'il clignote en rouge sous la ganache ?",
+        "nextDialogId": "mercotte_chap2_explosion_hesitant"
+      }
+    ]
+  },
+  "mercotte_chap2_explosion_pro": {
+    "speaker": "Mercotte",
+    "lines": [
+      "Une collerette irrégulière et de la poudre noire ?! Ciel ! Mais c'est une hérésie pâtissière absolue !",
+      "[Mercotte, avec un sang-froid impressionnant, attrape le macaron avec une pince à gâteau et le jette par la fenêtre de la classe.]",
+      "[Une fraction de seconde plus tard... BOUM ! Une explosion retentit, recouvrant la cour d'un nuage de sucre glace rose fluo !]",
+      "Cédric a toujours eu un ego surdimensionné, mais là, il va trop loin. Écoute-moi bien, Agent.",
+      "S'il cherche à protéger ses arrières avec ce genre de piège, c'est qu'il est sur le point de finaliser le Bonbon Ultime.",
+      "Je l'ai vu rôder hier soir avec des caisses de colorant de synthèse... Il se terre dans les anciennes caves à vin du château. C'est un véritable labyrinthe souterrain.",
+      "Prends mon Grimoire Technique Secret. Tu en auras besoin pour déceler ses pièges dans les caves !"
+    ],
+    "choices": [
+      {
+        "text": "Recevoir le Grimoire & Terminer le Chapitre 2 🏆",
+        "actions": [
+          { "type": "ADD_ITEM", "itemId": "grimoire_mercotte", "quantity": 1 },
+          { "type": "ADD_AFFECTION", "target": "mercotte", "amount": 25 },
+          { "type": "SET_FLAG", "flag": "chap2_completed", "value": true },
+          { "type": "SET_CHAPTER", "chapter": 3 }
+        ],
+        "nextSceneId": "MainMenu"
+      }
+    ]
+  },
+  "mercotte_chap2_explosion_audacious": {
+    "speaker": "Mercotte",
+    "lines": [
+      "Un dessert qui fait bip ?! Oh mon Dieu ! Mais c'est une hérésie pâtissière ! Un macaron avec une ganache explosive ? Ce n'est pas du tout la recette originale !",
+      "[Mercotte, avec un sang-froid impressionnant, attrape le macaron avec une pince à gâteau et le jette par la fenêtre de la classe.]",
+      "[Une fraction de seconde plus tard... BOUM ! Une explosion retentit, recouvrant la cour d'un nuage de sucre glace rose fluo !]",
+      "Cédric a toujours eu un ego surdimensionné, mais là, il va trop loin. Écoute-moi bien, Agent.",
+      "S'il cherche à protéger ses arrières avec ce genre de piège, c'est qu'il est sur le point de finaliser le Bonbon Ultime.",
+      "Je l'ai vu rôder hier soir avec des caisses de colorant de synthèse... Il se terre dans les anciennes caves à vin du château. C'est un véritable labyrinthe souterrain.",
+      "Prends mon Grimoire Technique Secret. Tu en auras besoin pour déceler ses pièges dans les caves !"
+    ],
+    "choices": [
+      {
+        "text": "Recevoir le Grimoire & Terminer le Chapitre 2 🏆",
+        "actions": [
+          { "type": "ADD_ITEM", "itemId": "grimoire_mercotte", "quantity": 1 },
+          { "type": "ADD_AFFECTION", "target": "mercotte", "amount": 25 },
+          { "type": "SET_FLAG", "flag": "chap2_completed", "value": true },
+          { "type": "SET_CHAPTER", "chapter": 3 }
+        ],
+        "nextSceneId": "MainMenu"
+      }
+    ]
+  },
+  "mercotte_chap2_explosion_hesitant": {
+    "speaker": "Mercotte",
+    "lines": [
+      "Clignoter en rouge sous la ganache ?! Ciel, c'est un détonateur thermique au coulis de fraise !",
+      "[Mercotte, avec un sang-froid impressionnant, attrape le macaron avec une pince à gâteau et le jette par la fenêtre de la classe.]",
+      "[Une fraction de seconde plus tard... BOUM ! Une explosion retentit, recouvrant la cour d'un nuage de sucre glace rose fluo !]",
+      "Cédric a toujours eu un ego surdimensionné, mais là, il va trop loin. Écoute-moi bien, Agent.",
+      "S'il cherche à protéger ses arrières avec ce genre de piège, c'est qu'il est sur le point de finaliser le Bonbon Ultime.",
+      "Je l'ai vu rôder hier soir avec des caisses de colorant de synthèse... Il se terre dans les anciennes caves à vin du château. C'est un véritable labyrinthe souterrain.",
+      "Prends mon Grimoire Technique Secret. Tu en auras besoin pour déceler ses pièges dans les caves !"
+    ],
+    "choices": [
+      {
+        "text": "Recevoir le Grimoire & Terminer le Chapitre 2 🏆",
+        "actions": [
+          { "type": "ADD_ITEM", "itemId": "grimoire_mercotte", "quantity": 1 },
+          { "type": "ADD_AFFECTION", "target": "mercotte", "amount": 25 },
+          { "type": "SET_FLAG", "flag": "chap2_completed", "value": true },
+          { "type": "SET_CHAPTER", "chapter": 3 }
+        ],
+        "nextSceneId": "MainMenu"
+      }
+    ]
   }
 }

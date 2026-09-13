@@ -118,6 +118,9 @@ export class Game extends Scene {
     if (this.dialogId && this.dialogId.startsWith("ramsay") && this.textures.exists("bg_training_grounds")) {
       return "bg_training_grounds";
     }
+    if (this.dialogId && this.dialogId.startsWith("mercotte") && this.textures.exists("bg_lecture_room")) {
+      return "bg_lecture_room";
+    }
     if (this.textures.exists("bg_security_hall")) {
       return "bg_security_hall";
     }
@@ -200,6 +203,10 @@ export class Game extends Scene {
       texture = "char_bocuse";
       color = 0x38bdf8;
       displayName = "Directeur Paul Bocuse";
+    } else if (clean.includes("mercotte")) {
+      texture = "char_mercotte";
+      color = 0xff66cc;
+      displayName = "Mercotte - Cheffe de Masterclass";
     }
 
     if (!texture || !this.textures.exists(texture)) {

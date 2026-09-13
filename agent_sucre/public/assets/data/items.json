@@ -99,6 +99,14 @@
     "description": "Lentille tactique grossissante à filtre ultraviolet conçue par la brigade R&D.",
     "inspection": "En l'orientant vers la lumière, elle révèle les encres sympathiques, les traces digitales et les annotations secrètes sur les fiches de recettes.",
     "usable": false
+  },
+  "grimoire_mercotte": {
+    "name": "Grimoire Technique de Mercotte",
+    "category": "Manuel Tactique & Détection",
+    "icon": "📖",
+    "description": "Le précieux carnet secret de Mercotte, rempli de recettes ancestrales et d'analyses de faux desserts.",
+    "inspection": "Chaque page regorge d'annotations minutieuses pour démasquer les trompe-l'œil complexes de Cédric Grolet.",
+    "usable": false
   }
 }
 
