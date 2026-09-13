@@ -19,6 +19,7 @@ export class ShootEmUpScene extends Scene {
     this.roomReturnId = data?.roomReturnId || null;
 
     // Mini-game configuration & progression variables
+    this.isGameStarted = false; // Game begins once the player dismisses the briefing modal
     this.targetDuration = 35; // 35 seconds to reach safe ventilation duct
     this.elapsedTime = 0;
     this.playerHealth = 3;
@@ -39,9 +40,30 @@ export class ShootEmUpScene extends Scene {
     this.isJumping = false;
     this.isCrouching = false;
 
-    // Shooting variables
+    // Shooting & Ammo system (3 shots magazine, 1.8s reload, ~0.85s cooldown)
+    this.maxAmmo = 3;
+    this.currentAmmo = 3;
+    this.isReloading = false;
+    this.reloadDuration = 1800; // ms to reload 3 bullets
+    this.reloadStartTime = 0;
     this.lastShotTime = 0;
-    this.shootCooldown = 180; // ms between laser shots
+    this.shootCooldown = 850; // ms between laser shots (0.75 - 1.0s)
+    this.lastEmptyClickTime = 0;
+
+    // Flying Bonus Hearts system (3 to 5 hearts across the run)
+    this.bonusHearts = [];
+    this.totalBonusHearts = Phaser.Math.Between(3, 5);
+    this.heartSpawnSchedule = [];
+    const minHeartTime = 5;
+    const maxHeartTime = 29;
+    const heartInterval = (maxHeartTime - minHeartTime) / this.totalBonusHearts;
+    for (let i = 0; i < this.totalBonusHearts; i++) {
+      const spawnAt =
+        minHeartTime +
+        i * heartInterval +
+        Phaser.Math.FloatBetween(0.5, Math.max(1, heartInterval - 0.5));
+      this.heartSpawnSchedule.push(spawnAt);
+    }
 
     // Spawning timers
     this.obstacleSpawnTimer = 0;
@@ -56,6 +78,8 @@ export class ShootEmUpScene extends Scene {
     this.obstacles = [];
     this.speedlines = [];
     this.invulnerableUntil = 0;
+    this.defeatRedirectTimer = null;
+    this.briefingModal = null;
   }
 
   create() {
@@ -74,16 +98,14 @@ export class ShootEmUpScene extends Scene {
     // 4. Emergency Alarm Beacon Lights
     this.createAlarmBeacons();
 
-    // 5. HUD Display (Distance, Health, Score, Controls Reminder)
+    // 5. HUD Display (Distance, Health, Ammo, Score, Controls Reminder)
     this.createHUD();
 
     // 6. Keyboard & Mouse Input Handlers
     this.setupInputs();
 
-    // Spawn initial pursuer behind player after a brief suspense delay
-    this.time.delayedCall(1200, () => {
-      this.spawnPursuer();
-    });
+    // 7. Pre-run Briefing modal presenting game controls
+    this.showStartBriefingModal();
   }
 
   /* ========================================================================== */
@@ -294,12 +316,200 @@ export class ShootEmUpScene extends Scene {
     this.keyD = this.input.keyboard.addKey("D");
     this.keyW = this.input.keyboard.addKey("W");
     this.keyA = this.input.keyboard.addKey("A");
+    this.keyR = this.input.keyboard.addKey("R");
     this.spaceKey = this.input.keyboard.addKey("SPACE");
+
+    // Manual reload hotkey
+    this.keyR.on("down", () => {
+      if (this.isGameStarted && !this.isGameOver && !this.isVictory) {
+        this.startReload();
+      }
+    });
 
     // Mouse aiming & shooting
     this.input.on("pointerdown", (pointer) => {
-      if (this.isGameOver || this.isVictory) return;
-      this.fireLaser(pointer.x, pointer.y);
+      if (!this.isGameStarted || this.isGameOver || this.isVictory) return;
+      this.attemptFireLaser(pointer.x, pointer.y);
+    });
+  }
+
+  /* ========================================================================== */
+  /* START BRIEFING MODAL                                                       */
+  /* ========================================================================== */
+
+  showStartBriefingModal() {
+    this.isGameStarted = false;
+
+    this.briefingModal = this.add.container(960, 490).setDepth(600);
+
+    const bgDim = this.add
+      .rectangle(0, 0, 1920, 980, 0x000000, 0.82)
+      .setInteractive();
+
+    const card = this.add
+      .rectangle(0, 0, 900, 530, 0x0a101f, 0.98)
+      .setStrokeStyle(3, 0x00d2ff);
+
+    const title = this.add
+      .text(0, -215, "🚨 ALERTE GÉNÉRALE : INFILTRATION COMPROMISE !", {
+        fontFamily: "Arial Black, sans-serif",
+        fontSize: "24px",
+        color: "#ff3344",
+        stroke: "#000000",
+        strokeThickness: 4,
+      })
+      .setOrigin(0.5);
+
+    const subtitle = this.add
+      .text(
+        0,
+        -170,
+        "La brigade de sécurité fonce sur vous ! Fuyez à travers les couloirs pour atteindre la sortie de secours.",
+        {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "14px",
+          color: "#94a3b8",
+          align: "center",
+        }
+      )
+      .setOrigin(0.5);
+
+    // Section 1: Déplacement & Évasion
+    const sec1Title = this.add
+      .text(-400, -120, "🏃 DÉPLACEMENT & ÉVASION :", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "15px",
+        fontStyle: "bold",
+        color: "#00ffcc",
+      })
+      .setOrigin(0, 0.5);
+
+    const sec1Text = this.add
+      .text(
+        -400,
+        -75,
+        "• ⬆️ [HAUT / Z] : Sauter par-dessus les obstacles bas (chariots)\n• ⬇️ [BAS / S] : Se baisser / Glisser sous les obstacles hauts (vapeur)\n• ⬅️ ➡️ [GAUCHE / DROITE / Q / D] : Ajuster votre position sur la piste",
+        {
+          fontFamily: "Courier, monospace",
+          fontSize: "13px",
+          color: "#ffffff",
+          lineSpacing: 5,
+        }
+      )
+      .setOrigin(0, 0.5);
+
+    // Section 2: Armement & Munitions
+    const sec2Title = this.add
+      .text(-400, -5, "🎯 DÉFENSE (ÉCLAIR LASER) :", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "15px",
+        fontStyle: "bold",
+        color: "#00f3ff",
+      })
+      .setOrigin(0, 0.5);
+
+    const sec2Text = this.add
+      .text(
+        -400,
+        40,
+        "• [ESPACE] ou [CLIC SOURIS] : Tir directionnel vers la souris (Cadence ~0.8s)\n• Chargeur limité : 3 tirs consécutifs maximum\n• 🔄 [TOUCHE R] : Recharger l'Éclair Laser (Délai 1.8s ou automatique)",
+        {
+          fontFamily: "Courier, monospace",
+          fontSize: "13px",
+          color: "#ffffff",
+          lineSpacing: 5,
+        }
+      )
+      .setOrigin(0, 0.5);
+
+    // Section 3: Cœurs volants bonus
+    const sec3Title = this.add
+      .text(-400, 110, "💖 CŒURS VOLANTS BONUS :", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "15px",
+        fontStyle: "bold",
+        color: "#ff3366",
+      })
+      .setOrigin(0, 0.5);
+
+    const sec3Text = this.add
+      .text(
+        -400,
+        140,
+        "• Des cœurs traversent le couloir en hauteur : TIREZ DESSUS pour récupérer +1 ❤️ de vitalité !",
+        {
+          fontFamily: "Courier, monospace",
+          fontSize: "13px",
+          color: "#ffccdd",
+        }
+      )
+      .setOrigin(0, 0.5);
+
+    // Start Button
+    const startBtn = this.add
+      .rectangle(0, 210, 360, 48, 0x15803d, 0.95)
+      .setStrokeStyle(2, 0x00ff88)
+      .setInteractive({ useHandCursor: true });
+
+    const startText = this.add
+      .text(0, 210, "🏃 COMMENCER LA FUITE [ ESPACE ]", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "16px",
+        fontStyle: "bold",
+        color: "#ffffff",
+      })
+      .setOrigin(0.5);
+
+    startBtn.on("pointerover", () => startBtn.setFillStyle(0x16a34a, 1));
+    startBtn.on("pointerout", () => startBtn.setFillStyle(0x15803d, 0.95));
+
+    const confirmStart = () => {
+      if (this.isGameStarted) return;
+      if (this.briefingModal) {
+        this.briefingModal.destroy();
+        this.briefingModal = null;
+      }
+      this.startGameAction();
+    };
+
+    startBtn.on("pointerdown", confirmStart);
+
+    this.briefingModal.add([
+      bgDim,
+      card,
+      title,
+      subtitle,
+      sec1Title,
+      sec1Text,
+      sec2Title,
+      sec2Text,
+      sec3Title,
+      sec3Text,
+      startBtn,
+      startText,
+    ]);
+
+    // Space or Enter key starts the run
+    const onBriefingKey = (e) => {
+      if (e.key === " " || e.key === "Enter") {
+        this.input.keyboard.off("keydown", onBriefingKey);
+        confirmStart();
+      }
+    };
+    this.input.keyboard.on("keydown", onBriefingKey);
+  }
+
+  startGameAction() {
+    if (this.isGameStarted) return;
+    this.isGameStarted = true;
+
+    this.showFloatingText(this.playerX, this.playerY - 80, "🚨 FUYEZ !", "#ff3344");
+
+    // Spawn initial pursuer behind player after a brief suspense delay
+    this.time.delayedCall(1200, () => {
+      if (!this.isGameOver && !this.isVictory) {
+        this.spawnPursuer();
+      }
     });
   }
 
@@ -310,10 +520,89 @@ export class ShootEmUpScene extends Scene {
   createHUD() {
     this.hudContainer = this.add.container(0, 0).setDepth(200);
 
-    // 1. Top Escape Distance Progress Bar
-    const distCardX = 960;
+    // 1. Health Hearts (Top Left) - Added BEFORE hearts so bg stays behind!
+    const hpCardX = 180;
+    const hpCardY = 36;
+    const hpCardW = 210;
+    const hpCardH = 46;
+
+    const hpCardBg = this.add
+      .rectangle(hpCardX, hpCardY, hpCardW, hpCardH, 0x0e1726, 0.94)
+      .setStrokeStyle(1.5, 0xff3366);
+
+    this.hpLabel = this.add
+      .text(hpCardX - hpCardW / 2 + 15, hpCardY, "VITALITÉ :", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "12px",
+        fontStyle: "bold",
+        color: "#ffffff",
+      })
+      .setOrigin(0, 0.5);
+
+    // Add background and label first
+    this.hudContainer.add([hpCardBg, this.hpLabel]);
+
+    // Add hearts on top of background
+    this.heartTexts = [];
+    for (let i = 0; i < 3; i++) {
+      const heart = this.add
+        .text(hpCardX + 15 + i * 32, hpCardY, "❤️", {
+          fontSize: "22px",
+        })
+        .setOrigin(0.5);
+      this.heartTexts.push(heart);
+      this.hudContainer.add(heart);
+    }
+
+    // 2. Ammo Magazine HUD (Top Left-Center)
+    const ammoCardX = 440;
+    const ammoCardY = 36;
+    const ammoCardW = 250;
+    const ammoCardH = 46;
+
+    const ammoCardBg = this.add
+      .rectangle(ammoCardX, ammoCardY, ammoCardW, ammoCardH, 0x0e1726, 0.94)
+      .setStrokeStyle(1.5, 0x00d2ff);
+
+    const ammoLabel = this.add
+      .text(ammoCardX - ammoCardW / 2 + 14, ammoCardY - 8, "ÉCLAIR :", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "12px",
+        fontStyle: "bold",
+        color: "#00f3ff",
+      })
+      .setOrigin(0, 0.5);
+
+    this.ammoIcons = [];
+    for (let i = 0; i < 3; i++) {
+      const icon = this.add
+        .text(ammoCardX - 10 + i * 26, ammoCardY - 8, "⚡", {
+          fontSize: "18px",
+        })
+        .setOrigin(0.5);
+      this.ammoIcons.push(icon);
+    }
+
+    this.ammoStatusText = this.add
+      .text(ammoCardX, ammoCardY + 12, "PRÊT [3/3]", {
+        fontFamily: "Courier, monospace",
+        fontSize: "11px",
+        fontStyle: "bold",
+        color: "#00ffcc",
+      })
+      .setOrigin(0.5);
+
+    this.hudContainer.add([
+      ammoCardBg,
+      ammoLabel,
+      ...this.ammoIcons,
+      this.ammoStatusText,
+    ]);
+
+    // 3. Top Escape Distance Progress Bar (Center)
+    const distCardX = 1000;
     const distCardY = 36;
-    const distCardW = 640;
+    const distCardW = 600;
     const distCardH = 46;
 
     const distCardBg = this.add
@@ -321,7 +610,7 @@ export class ShootEmUpScene extends Scene {
       .setStrokeStyle(1.5, 0x00d2ff);
 
     this.distLabel = this.add
-      .text(distCardX - distCardW / 2 + 20, distCardY - 10, "🏃 DISTANCE DE FUITE (SORTIE DE SECOURS)", {
+      .text(distCardX - distCardW / 2 + 18, distCardY - 10, "🏃 DISTANCE DE FUITE (SORTIE DE SECOURS)", {
         fontFamily: "Arial, sans-serif",
         fontSize: "12px",
         fontStyle: "bold",
@@ -330,7 +619,7 @@ export class ShootEmUpScene extends Scene {
       .setOrigin(0, 0.5);
 
     this.distPercentText = this.add
-      .text(distCardX + distCardW / 2 - 20, distCardY - 10, "0 % (1000m)", {
+      .text(distCardX + distCardW / 2 - 18, distCardY - 10, "0 % (1000m)", {
         fontFamily: "Courier, monospace",
         fontSize: "13px",
         fontStyle: "bold",
@@ -338,7 +627,7 @@ export class ShootEmUpScene extends Scene {
       })
       .setOrigin(1, 0.5);
 
-    this.distTrackW = 600;
+    this.distTrackW = 560;
     this.distTrackH = 10;
     const distTrack = this.add
       .rectangle(distCardX, distCardY + 11, this.distTrackW, this.distTrackH, 0x1f293d)
@@ -362,40 +651,8 @@ export class ShootEmUpScene extends Scene {
       this.distFill,
     ]);
 
-    // 2. Health Hearts (Top Left)
-    const hpCardX = 220;
-    const hpCardY = 36;
-    const hpCardW = 220;
-    const hpCardH = 46;
-
-    const hpCardBg = this.add
-      .rectangle(hpCardX, hpCardY, hpCardW, hpCardH, 0x0e1726, 0.94)
-      .setStrokeStyle(1.5, 0xff3366);
-
-    this.hpLabel = this.add
-      .text(hpCardX - hpCardW / 2 + 15, hpCardY, "VITALITÉ :", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "12px",
-        fontStyle: "bold",
-        color: "#ffffff",
-      })
-      .setOrigin(0, 0.5);
-
-    this.heartTexts = [];
-    for (let i = 0; i < 3; i++) {
-      const heart = this.add
-        .text(hpCardX + 10 + i * 32, hpCardY, "❤️", {
-          fontSize: "20px",
-        })
-        .setOrigin(0.5);
-      this.heartTexts.push(heart);
-      this.hudContainer.add(heart);
-    }
-
-    this.hudContainer.add([hpCardBg, this.hpLabel]);
-
-    // 3. Enemies Repelled Counter (Top Right)
-    const scoreCardX = 1700;
+    // 4. Enemies Repelled Counter (Top Right)
+    const scoreCardX = 1680;
     const scoreCardY = 36;
     const scoreCardW = 260;
     const scoreCardH = 46;
@@ -415,16 +672,16 @@ export class ShootEmUpScene extends Scene {
 
     this.hudContainer.add([scoreCardBg, this.scoreText]);
 
-    // 4. Instructions Banner at the bottom
+    // 5. Instructions Banner at the bottom
     const instBg = this.add
-      .rectangle(960, 950, 960, 36, 0x0a101d, 0.92)
+      .rectangle(960, 950, 1020, 36, 0x0a101d, 0.92)
       .setStrokeStyle(1.2, 0x00d2ff, 0.8);
 
     const instText = this.add
       .text(
         960,
         950,
-        "⬆️ [HAUT / Z] : Sauter par-dessus  |  ⬇️ [BAS / S] : Se baisser / Glisser  |  🎯 [ESPACE / CLIC] : Tir Éclair Laser",
+        "⬆️ [HAUT / Z] : Sauter  |  ⬇️ [BAS / S] : Glisser  |  🎯 [ESPACE / CLIC] : Tir (~0.8s)  |  🔄 [R] : Recharger",
         {
           fontFamily: "Arial, sans-serif",
           fontSize: "13px",
@@ -442,7 +699,7 @@ export class ShootEmUpScene extends Scene {
   /* ========================================================================== */
 
   update(time, delta) {
-    if (this.isGameOver || this.isVictory) return;
+    if (!this.isGameStarted || this.isGameOver || this.isVictory) return;
 
     const dt = delta / 1000;
     this.elapsedTime += dt;
@@ -467,18 +724,27 @@ export class ShootEmUpScene extends Scene {
     // Handle Player Movement (Jump, Crouch, Lateral adjustments)
     this.handlePlayerMovement(delta);
 
-    // Spacebar auto-fire
-    if (this.spaceKey.isDown && time > this.lastShotTime + this.shootCooldown) {
-      this.fireLaser(this.playerContainer.x - 500, this.playerContainer.y);
-      this.lastShotTime = time;
+    // Spacebar continuous fire check (honors rate of fire and ammo)
+    if (this.spaceKey.isDown) {
+      this.attemptFireLaser(this.playerContainer.x - 500, this.playerContainer.y);
     }
 
-    // Update Entities (Bullets, Obstacles, Pursuers, Enemy Projectiles, Speedlines)
+    // Update Entities (Bullets, Bonus Hearts, Obstacles, Pursuers, Enemy Projectiles, Speedlines)
     this.updateBullets(dt);
+    this.updateBonusHearts(dt);
     this.updateObstacles(dt);
     this.updatePursuers(dt);
     this.updateEnemyProjectiles(dt);
     this.updateSpeedlines(dt);
+
+    // Check scheduled bonus heart spawns
+    if (
+      this.heartSpawnSchedule.length > 0 &&
+      this.elapsedTime >= this.heartSpawnSchedule[0]
+    ) {
+      this.heartSpawnSchedule.shift();
+      this.spawnBonusHeart();
+    }
 
     // Periodic Spawners
     this.obstacleSpawnTimer += delta;
@@ -628,8 +894,85 @@ export class ShootEmUpScene extends Scene {
   }
 
   /* ========================================================================== */
-  /* SHOOTING (ÉCLAIR LASER)                                                   */
+  /* SHOOTING & AMMO (ÉCLAIR LASER)                                            */
   /* ========================================================================== */
+
+  attemptFireLaser(targetX, targetY) {
+    if (!this.isGameStarted || this.isGameOver || this.isVictory) return;
+
+    if (this.isReloading) {
+      if (this.time.now > this.lastEmptyClickTime + 700) {
+        this.lastEmptyClickTime = this.time.now;
+        this.showFloatingText(this.playerX, this.playerY - 60, "⚡ RECHARGEMENT...", "#f59e0b");
+      }
+      return;
+    }
+
+    if (this.currentAmmo <= 0) {
+      this.startReload();
+      return;
+    }
+
+    const now = this.time.now;
+    if (now < this.lastShotTime + this.shootCooldown) {
+      return;
+    }
+
+    this.currentAmmo -= 1;
+    this.lastShotTime = now;
+    this.fireLaser(targetX, targetY);
+    this.updateAmmoHUD();
+
+    if (this.currentAmmo <= 0) {
+      this.startReload();
+    }
+  }
+
+  startReload() {
+    if (!this.isGameStarted || this.isGameOver || this.isVictory) return;
+    if (this.isReloading || this.currentAmmo >= this.maxAmmo) return;
+
+    this.isReloading = true;
+    this.reloadStartTime = this.time.now;
+    this.updateAmmoHUD();
+    this.showFloatingText(this.playerX, this.playerY - 60, "⚡ Rechargement...", "#00d2ff");
+
+    this.time.delayedCall(this.reloadDuration, () => {
+      if (this.isGameOver || this.isVictory) return;
+      this.currentAmmo = this.maxAmmo;
+      this.isReloading = false;
+      this.updateAmmoHUD();
+      this.createSparks(this.playerContainer.x - 50, this.playerContainer.y + 14, 0x00f3ff);
+      this.showFloatingText(this.playerX, this.playerY - 60, "⚡ CHARGÉ (3/3) !", "#00ffcc");
+    });
+  }
+
+  updateAmmoHUD() {
+    if (!this.ammoIcons || !this.ammoStatusText) return;
+
+    for (let i = 0; i < 3; i++) {
+      if (i < this.currentAmmo) {
+        this.ammoIcons[i].setText("⚡");
+        this.ammoIcons[i].setColor("#00f3ff");
+        this.ammoIcons[i].setAlpha(1);
+      } else {
+        this.ammoIcons[i].setText("⚫");
+        this.ammoIcons[i].setColor("#475569");
+        this.ammoIcons[i].setAlpha(0.6);
+      }
+    }
+
+    if (this.isReloading) {
+      this.ammoStatusText.setText("⚡ RECHARGE...");
+      this.ammoStatusText.setColor("#f59e0b");
+    } else if (this.currentAmmo === 0) {
+      this.ammoStatusText.setText("VIDE [0/3]");
+      this.ammoStatusText.setColor("#ff3344");
+    } else {
+      this.ammoStatusText.setText(`PRÊT [${this.currentAmmo}/3]`);
+      this.ammoStatusText.setColor("#00ffcc");
+    }
+  }
 
   fireLaser(targetX, targetY) {
     const muzzleX = this.playerContainer.x - 55;
@@ -698,6 +1041,100 @@ export class ShootEmUpScene extends Scene {
         b.container.destroy();
         this.bullets.splice(i, 1);
       }
+    }
+  }
+
+  /* ========================================================================== */
+  /* FLYING BONUS HEARTS                                                       */
+  /* ========================================================================== */
+
+  spawnBonusHeart() {
+    const startX = 2050;
+    const startY = Phaser.Math.Between(340, 560);
+
+    const heartContainer = this.add.container(startX, startY).setDepth(34);
+
+    // Glowing circle aura
+    const aura = this.add.circle(0, 0, 24, 0xff3366, 0.35);
+    this.tweens.add({
+      targets: aura,
+      scale: 1.4,
+      alpha: 0.15,
+      duration: 500,
+      yoyo: true,
+      repeat: -1,
+    });
+
+    // Outer heart symbol
+    const heartTxt = this.add
+      .text(0, 0, "💖", {
+        fontSize: "30px",
+      })
+      .setOrigin(0.5);
+
+    // Sparkle pulsing tween
+    this.tweens.add({
+      targets: heartTxt,
+      scale: 1.15,
+      duration: 350,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    // Small bonus label
+    const label = this.add
+      .text(0, 26, "+1 ❤️", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "11px",
+        fontStyle: "bold",
+        color: "#ff6699",
+        stroke: "#000000",
+        strokeThickness: 2,
+      })
+      .setOrigin(0.5);
+
+    heartContainer.add([aura, heartTxt, label]);
+
+    this.bonusHearts.push({
+      container: heartContainer,
+      baseY: startY,
+      timeOffset: Phaser.Math.FloatBetween(0, Math.PI * 2),
+      speed: Phaser.Math.Between(220, 260),
+      radius: 26,
+    });
+  }
+
+  updateBonusHearts(dt) {
+    for (let i = this.bonusHearts.length - 1; i >= 0; i--) {
+      const h = this.bonusHearts[i];
+      h.container.x -= h.speed * dt;
+      h.container.y = h.baseY + Math.sin(this.time.now * 0.004 + h.timeOffset) * 20;
+
+      if (h.container.x < -100) {
+        h.container.destroy();
+        this.bonusHearts.splice(i, 1);
+      }
+    }
+  }
+
+  createHeartSparks(x, y) {
+    for (let i = 0; i < 14; i++) {
+      const spark = this.add
+        .circle(x, y, Phaser.Math.Between(3, 7), 0xff3366, 0.9)
+        .setDepth(48);
+
+      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+      const dist = Phaser.Math.Between(30, 80);
+
+      this.tweens.add({
+        targets: spark,
+        x: x + Math.cos(angle) * dist,
+        y: y + Math.sin(angle) * dist,
+        alpha: 0,
+        duration: 450,
+        onComplete: () => spark.destroy(),
+      });
     }
   }
 
@@ -960,10 +1397,50 @@ export class ShootEmUpScene extends Scene {
       }
     }
 
+    // 2. Player Bullets vs Bonus Flying Hearts
+    for (let bIdx = this.bullets.length - 1; bIdx >= 0; bIdx--) {
+      const bullet = this.bullets[bIdx];
+      let hitHeart = false;
+
+      for (let hIdx = this.bonusHearts.length - 1; hIdx >= 0; hIdx--) {
+        const h = this.bonusHearts[hIdx];
+        const dist = Phaser.Math.Distance.Between(
+          bullet.container.x,
+          bullet.container.y,
+          h.container.x,
+          h.container.y
+        );
+
+        if (dist < bullet.radius + h.radius) {
+          hitHeart = true;
+          this.createHeartSparks(h.container.x, h.container.y);
+
+          if (this.playerHealth < this.maxHealth) {
+            this.playerHealth += 1;
+            this.updateHealthDisplay();
+            this.showFloatingText(h.container.x, h.container.y, "+1 ❤️ VITALITÉ !", "#ff3366");
+          } else {
+            this.enemiesDefeated += 1;
+            this.scoreText.setText(`👨‍🍳 Brigade semée : ${this.enemiesDefeated}`);
+            this.showFloatingText(h.container.x, h.container.y, "⭐ +150 BONUS !", "#ffd700");
+          }
+
+          h.container.destroy();
+          this.bonusHearts.splice(hIdx, 1);
+          break;
+        }
+      }
+
+      if (hitHeart) {
+        bullet.container.destroy();
+        this.bullets.splice(bIdx, 1);
+      }
+    }
+
     // If currently invulnerable after getting hit, skip damage checks
     if (this.time.now < this.invulnerableUntil) return;
 
-    // 2. Player vs Obstacles
+    // 3. Player vs Obstacles
     for (let i = 0; i < this.obstacles.length; i++) {
       const obs = this.obstacles[i];
       const distHoriz = Math.abs(obs.x - playerBox.x);
@@ -988,7 +1465,7 @@ export class ShootEmUpScene extends Scene {
       }
     }
 
-    // 3. Player vs Enemy Projectiles (Rolling Pins)
+    // 4. Player vs Enemy Projectiles (Rolling Pins)
     for (let i = this.enemyProjectiles.length - 1; i >= 0; i--) {
       const ep = this.enemyProjectiles[i];
       const dist = Phaser.Math.Distance.Between(
@@ -1006,7 +1483,7 @@ export class ShootEmUpScene extends Scene {
       }
     }
 
-    // 4. Player vs Pursuer Body Contact
+    // 5. Player vs Pursuer Body Contact
     for (let i = 0; i < this.pursuers.length; i++) {
       const p = this.pursuers[i];
       const dist = Math.abs(p.container.x - playerBox.x);
@@ -1021,6 +1498,19 @@ export class ShootEmUpScene extends Scene {
   /* DAMAGE & HEALTH HANDLING                                                  */
   /* ========================================================================== */
 
+  updateHealthDisplay() {
+    if (!this.heartTexts) return;
+    for (let i = 0; i < 3; i++) {
+      if (i < this.playerHealth) {
+        this.heartTexts[i].setText("❤️");
+        this.heartTexts[i].setAlpha(1.0);
+      } else {
+        this.heartTexts[i].setText("🖤");
+        this.heartTexts[i].setAlpha(0.35);
+      }
+    }
+  }
+
   handlePlayerHit(reason) {
     this.playerHealth -= 1;
     this.invulnerableUntil = this.time.now + 1600; // 1.6s of invulnerability
@@ -1030,13 +1520,7 @@ export class ShootEmUpScene extends Scene {
     this.cameras.main.flash(200, 255, 0, 0, 0.4);
 
     // Update hearts display
-    for (let i = 0; i < 3; i++) {
-      if (i < this.playerHealth) {
-        this.heartTexts[i].setText("❤️");
-      } else {
-        this.heartTexts[i].setText("🖤");
-      }
-    }
+    this.updateHealthDisplay();
 
     // Flashing invulnerability tween
     this.tweens.add({
@@ -1294,29 +1778,30 @@ export class ShootEmUpScene extends Scene {
   triggerDefeat() {
     this.isGameOver = true;
 
+    // Dramatic impact without permanent camera fade
     this.cameras.main.shake(500, 0.02);
-    this.cameras.main.fade(800, 180, 0, 0);
+    this.cameras.main.flash(350, 255, 0, 0, 0.6);
 
-    this.time.delayedCall(850, () => {
+    this.time.delayedCall(700, () => {
       this.showDefeatModal();
     });
   }
 
   showDefeatModal() {
-    const modal = this.add.container(960, 490).setDepth(500);
+    const modal = this.add.container(960, 490).setDepth(800);
 
     const bgDim = this.add
-      .rectangle(0, 0, 1920, 980, 0x000000, 0.85)
+      .rectangle(0, 0, 1920, 980, 0x000000, 0.88)
       .setInteractive();
 
     const card = this.add
-      .rectangle(0, 0, 780, 420, 0x140a10, 0.98)
+      .rectangle(0, 0, 780, 390, 0x140a10, 0.98)
       .setStrokeStyle(3, 0xff3344);
 
     const title = this.add
-      .text(0, -145, "❌ CAPTURÉ PAR LA SÉCURITÉ !", {
+      .text(0, -135, "❌ VOUS AVEZ ÉTÉ CAPTURÉ !", {
         fontFamily: "Arial Black, sans-serif",
-        fontSize: "30px",
+        fontSize: "28px",
         color: "#ff3344",
         stroke: "#000000",
         strokeThickness: 5,
@@ -1326,27 +1811,41 @@ export class ShootEmUpScene extends Scene {
     const subtitle = this.add
       .text(
         0,
-        -80,
-        "La brigade de cuisiniers vous a plaqué au sol et démasqué !\nVotre infiltration s'arrête ici.",
+        -70,
+        "La brigade de sécurité de l'Institut vous a appréhendé et démasqué !\nVotre session a été verrouillée pour des raisons de sécurité.",
         {
           fontFamily: "Arial, sans-serif",
-          fontSize: "17px",
-          color: "#ffffff",
+          fontSize: "16px",
+          color: "#cbd5e1",
           align: "center",
-          stroke: "#000000",
-          strokeThickness: 2,
+          lineSpacing: 6,
         }
       )
       .setOrigin(0.5);
 
-    // Retry Button
-    const retryBtn = this.add
-      .rectangle(-160, 120, 240, 50, 0x991b1b, 0.95)
+    let remainingSeconds = 4;
+    const countdownText = this.add
+      .text(
+        0,
+        5,
+        `Redirection vers l'écran de connexion dans ${remainingSeconds} s...`,
+        {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "15px",
+          fontStyle: "italic",
+          color: "#f59e0b",
+        }
+      )
+      .setOrigin(0.5);
+
+    // Return to Login Button (Single action, no retry)
+    const loginBtn = this.add
+      .rectangle(0, 95, 380, 52, 0x991b1b, 0.95)
       .setStrokeStyle(2, 0xff4444)
       .setInteractive({ useHandCursor: true });
 
-    const retryText = this.add
-      .text(-160, 120, "🔄 Réessayer la fuite", {
+    const loginText = this.add
+      .text(0, 95, "🔐 Écran de connexion (Charger sauvegarde)", {
         fontFamily: "Arial, sans-serif",
         fontSize: "16px",
         fontStyle: "bold",
@@ -1354,37 +1853,45 @@ export class ShootEmUpScene extends Scene {
       })
       .setOrigin(0.5);
 
-    retryBtn.on("pointerover", () => retryBtn.setFillStyle(0xb91c1c, 1));
-    retryBtn.on("pointerout", () => retryBtn.setFillStyle(0x991b1b, 0.95));
-    retryBtn.on("pointerdown", () => {
-      modal.destroy();
-      this.scene.restart({
-        originScene: this.originScene,
-        dialogId: this.dialogId,
-        roomReturnId: this.roomReturnId,
+    loginBtn.on("pointerover", () => loginBtn.setFillStyle(0xb91c1c, 1));
+    loginBtn.on("pointerout", () => loginBtn.setFillStyle(0x991b1b, 0.95));
+
+    let isRedirecting = false;
+    const goToLogin = () => {
+      if (isRedirecting) return;
+      isRedirecting = true;
+      if (this.defeatRedirectTimer) {
+        this.defeatRedirectTimer.remove();
+        this.defeatRedirectTimer = null;
+      }
+
+      // Lock session to prompt for PIN and reload save
+      gameState.setProfile({ pinCode: null });
+
+      this.cameras.main.fadeOut(400, 0, 0, 0, (cam, progress) => {
+        if (progress >= 1) {
+          this.scene.start("MainMenu");
+        }
       });
-    });
+    };
 
-    // Return to Desktop Button
-    const menuBtn = this.add
-      .rectangle(160, 120, 240, 50, 0x1e293b, 0.95)
-      .setStrokeStyle(2, 0x00d2ff)
-      .setInteractive({ useHandCursor: true });
+    loginBtn.on("pointerdown", goToLogin);
 
-    const menuText = this.add
-      .text(160, 120, "🖥️ Bureau Principal", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "16px",
-        fontStyle: "bold",
-        color: "#ffffff",
-      })
-      .setOrigin(0.5);
-
-    menuBtn.on("pointerover", () => menuBtn.setFillStyle(0x334155, 1));
-    menuBtn.on("pointerout", () => menuBtn.setFillStyle(0x1e293b, 0.95));
-    menuBtn.on("pointerdown", () => {
-      modal.destroy();
-      this.scene.start("MainMenu");
+    // Dynamic timer countdown
+    this.defeatRedirectTimer = this.time.addEvent({
+      delay: 1000,
+      repeat: 3,
+      callback: () => {
+        remainingSeconds -= 1;
+        if (countdownText.active) {
+          countdownText.setText(
+            `Redirection vers l'écran de connexion dans ${remainingSeconds} s...`
+          );
+        }
+        if (remainingSeconds <= 0) {
+          goToLogin();
+        }
+      },
     });
 
     modal.add([
@@ -1392,10 +1899,9 @@ export class ShootEmUpScene extends Scene {
       card,
       title,
       subtitle,
-      retryBtn,
-      retryText,
-      menuBtn,
-      menuText,
+      countdownText,
+      loginBtn,
+      loginText,
     ]);
   }
 }
