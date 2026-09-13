@@ -84,7 +84,10 @@ export class MainMenu extends Scene {
         action: () => {
           const objective = gameState.getCurrentObjective();
           if (objective.targetMap === "MainMenu" || !gameState.getFlag("chap1_scene1_completed")) {
-            this.scene.start("Game", { dialogId: "bocuse_welcome" });
+            const dialogId = gameState.getFlag("chap1_completed")
+              ? "bocuse_chap1_conclusion"
+              : "bocuse_welcome";
+            this.scene.start("Game", { dialogId });
           } else if (objective.targetMap === "inventory") {
             this.taskbar.handleInventory();
           } else if (objective.targetMap && objective.targetMap !== "secretInstitute") {

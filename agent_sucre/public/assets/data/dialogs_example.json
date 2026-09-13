@@ -146,10 +146,13 @@
     "lines": [
       "Ah, Philippe, tu m'amènes la nouvelle recrue ! Bienvenue dans mon laboratoire R&D !",
       "Je surveille un prototype de macaron explosif dans le four à 180°C, alors je fais vite. C'est ici que tu trouveras tes gadgets gourmands-croquants.",
-      "Dans notre brigade, chaque douceur est une arme de précision. Tiens, prends ce macaron explosif tout juste sorti du four !"
+      "Dans notre brigade, chaque douceur est une arme de précision. Tiens, prends ton pack de gadgets R&D : le Macaron explosif, le Brookie-Walkie chiffré, la Poche à douille cryogénique et l'Éclair laser !"
     ],
     "actions": [
       { "type": "ADD_ITEM", "itemId": "macaron_explosif", "quantity": 1 },
+      { "type": "ADD_ITEM", "itemId": "brookie_walkie", "quantity": 1 },
+      { "type": "ADD_ITEM", "itemId": "poche_a_douille", "quantity": 1 },
+      { "type": "ADD_ITEM", "itemId": "eclair_laser", "quantity": 1 },
       { "type": "ADD_AFFECTION", "target": "lignac", "amount": 5 },
       { "type": "SET_FLAG", "flag": "chap1_scene3_item_received", "value": true }
     ],

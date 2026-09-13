@@ -536,6 +536,7 @@ export class InventoryModal extends GameObjects.Container {
    * Triggers celebration modal and progression advancement when completing Chapter 1.
    */
   triggerChapter1Completion() {
+    gameState.setFlag("chap1_scene4_completed", true);
     gameState.setFlag("chap1_completed", true);
     gameState.completeChapter(1);
     gameState.setChapter(2);
@@ -622,10 +623,7 @@ export class InventoryModal extends GameObjects.Container {
       continueBtn.destroy();
       continueLabel.destroy();
 
-      if (this.scene.taskbar && typeof this.scene.taskbar.refreshStatus === "function") {
-        this.scene.taskbar.refreshStatus();
-        this.scene.taskbar.showToast("✓ Chapitre 2 débloqué !");
-      }
+      this.scene.scene.start("Game", { dialogId: "bocuse_chap1_conclusion" });
     });
   }
 

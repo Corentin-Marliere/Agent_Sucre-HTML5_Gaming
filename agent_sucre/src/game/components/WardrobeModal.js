@@ -165,6 +165,19 @@ export class WardrobeModal extends GameObjects.Container {
           this.equippedOutfit = outfit.id;
           gameState.setFlag("equippedOutfit", outfit.id);
           this.initUI();
+
+          if (
+            outfit.id === "tablier_pare_balles" &&
+            gameState.getFlag("chap1_scene4_dialog_completed") &&
+            !gameState.getFlag("chap1_completed")
+          ) {
+            gameState.setFlag("chap1_scene4_completed", true);
+            gameState.setFlag("chap1_completed", true);
+            gameState.completeChapter(1);
+            gameState.setChapter(2);
+            this.close();
+            this.scene.scene.start("Game", { dialogId: "bocuse_chap1_conclusion" });
+          }
         });
 
         this.add([equipBtn, equipText]);

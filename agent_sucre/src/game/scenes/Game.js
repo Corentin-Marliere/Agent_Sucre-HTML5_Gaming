@@ -331,4 +331,37 @@ export class Game extends Scene {
       this.objectiveText.setText(`🎯 OBJECTIF : ${currentObjective.instruction}`);
     }
   }
+
+  /**
+   * Displays an animated toast notification banner at the top of the scene.
+   * @param {string} msg
+   */
+  showToast(msg) {
+    const toastBg = this.add
+      .rectangle(960, 95, 520, 38, 0x0a101d, 0.95)
+      .setStrokeStyle(1.5, 0x00ffcc)
+      .setDepth(999);
+
+    const toastText = this.add
+      .text(960, 95, msg, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "13px",
+        fontStyle: "bold",
+        color: "#00ffcc",
+      })
+      .setOrigin(0.5)
+      .setDepth(1000);
+
+    this.tweens.add({
+      targets: [toastBg, toastText],
+      y: 75,
+      alpha: { from: 1, to: 0 },
+      delay: 2200,
+      duration: 600,
+      onComplete: () => {
+        toastBg.destroy();
+        toastText.destroy();
+      },
+    });
+  }
 }
