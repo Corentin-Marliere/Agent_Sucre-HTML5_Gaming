@@ -1,5 +1,6 @@
 import { GameObjects } from "phaser";
 import { gameState } from "../state/GameState.js";
+import { SaveManager } from "../manager/SaveManager.js";
 
 /**
  * Point & Click visual inventory and inspection modal.
@@ -494,11 +495,122 @@ export class InventoryModal extends GameObjects.Container {
         if (typeof this.scene.refreshStatus === "function") {
           this.scene.refreshStatus();
         }
+        if (this.scene.taskbar && typeof this.scene.taskbar.refreshStatus === "function") {
+          this.scene.taskbar.refreshStatus();
+        }
+
+        // Check Chapter 1 completion condition
+        if (
+          itemMeta.outfitId === "tablier_pare_balles" &&
+          gameState.getFlag("chap1_scene4_dialog_completed") &&
+          !gameState.getFlag("chap1_completed")
+        ) {
+          this.triggerChapter1Completion();
+          return;
+        }
+
         this.initUI();
       });
 
       this.add([equipBtn, equipLabel]);
     }
+  }
+
+  /**
+   * Triggers celebration modal and progression advancement when completing Chapter 1.
+   */
+  triggerChapter1Completion() {
+    gameState.setFlag("chap1_completed", true);
+    gameState.completeChapter(1);
+    gameState.setChapter(2);
+    SaveManager.save();
+
+    // Close inventory modal
+    this.close();
+
+    // Celebration modal
+    const overlay = this.scene.add
+      .rectangle(960, 490, 1920, 980, 0x000000, 0.85)
+      .setDepth(2000)
+      .setInteractive();
+
+    const box = this.scene.add
+      .rectangle(960, 490, 840, 460, 0x0b1326, 0.98)
+      .setStrokeStyle(3, 0xffdd00)
+      .setDepth(2001);
+
+    const title = this.scene.add
+      .text(960, 310, "🏆 MISSION ACCOMPLIE : CHAPITRE 1 VALIDÉ !", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "22px",
+        fontStyle: "bold",
+        color: "#ffdd00",
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    const sub = this.scene.add
+      .text(960, 345, "« Mise en Bouche Confidentielle »", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "15px",
+        fontStyle: "italic",
+        color: "#00ffcc",
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    const bodyText =
+      "Félicitations Recrue ! Votre couverture d'apprenti est désormais scellée.\n\n" +
+      "✓ Dossier initialisé auprès du Directeur Paul Bocuse.\n" +
+      "✓ Accréditation et badge validés par Philippe Etchebest.\n" +
+      "✓ Arsenal secret et macaron explosif obtenus auprès de Cyril Lignac.\n" +
+      "✓ Épreuve physique surmontée et Tablier Pare-Balles de Gordon Ramsay équipé !\n\n" +
+      "Votre véritable mission d'infiltration au château commence maintenant.\n" +
+      "Progression automatiquement sauvegardée. Bienvenue au Chapitre 2 !";
+
+    const content = this.scene.add
+      .text(960, 460, bodyText, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "14px",
+        color: "#e2e8f0",
+        align: "center",
+        lineSpacing: 5,
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    const continueBtn = this.scene.add
+      .rectangle(960, 640, 260, 42, 0x155d27)
+      .setStrokeStyle(2, 0x00ff88)
+      .setInteractive({ useHandCursor: true })
+      .setDepth(2002);
+
+    const continueLabel = this.scene.add
+      .text(960, 640, "Continuer l'aventure ▶", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "15px",
+        fontStyle: "bold",
+        color: "#ffffff",
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    continueBtn.on("pointerover", () => continueBtn.setFillStyle(0x1d7c34));
+    continueBtn.on("pointerout", () => continueBtn.setFillStyle(0x155d27));
+    continueBtn.on("pointerdown", () => {
+      overlay.destroy();
+      box.destroy();
+      title.destroy();
+      sub.destroy();
+      content.destroy();
+      continueBtn.destroy();
+      continueLabel.destroy();
+
+      if (this.scene.taskbar && typeof this.scene.taskbar.refreshStatus === "function") {
+        this.scene.taskbar.refreshStatus();
+        this.scene.taskbar.showToast("✓ Chapitre 2 débloqué !");
+      }
+    });
   }
 
   /**

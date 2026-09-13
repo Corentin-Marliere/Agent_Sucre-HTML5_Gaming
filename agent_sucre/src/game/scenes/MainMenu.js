@@ -57,7 +57,17 @@ export class MainMenu extends Scene {
         label: "Mission Dialogue",
         sub: "(Boîte de dialogue)",
         color: "#ffffff",
-        action: () => this.scene.start("Game"),
+        action: () => {
+          let dialogId = "bocuse_welcome";
+          if (gameState.getFlag("chap1_scene3_completed")) {
+            dialogId = "ramsay_intro";
+          } else if (gameState.getFlag("chap1_scene2_completed")) {
+            dialogId = "lignac_intro";
+          } else if (gameState.getFlag("chap1_scene1_completed")) {
+            dialogId = "etchebest_intro";
+          }
+          this.scene.start("Game", { dialogId });
+        },
       },
       {
         x: 960,
@@ -222,8 +232,11 @@ export class MainMenu extends Scene {
         this.taskbar.refreshStatus();
         if (result.mode === "CREATE") {
           this.taskbar.showToast(
-            `Bienvenue, agent ${result.agentName} ! Dossier initialisé.`,
+            `Bienvenue, agent ${result.agentName} ! Connexion sécurisée...`,
           );
+          this.time.delayedCall(700, () => {
+            this.scene.start("Game", { dialogId: "bocuse_welcome" });
+          });
         } else {
           this.taskbar.showToast(`Session déverrouillée ! Bon retour, agent.`);
         }

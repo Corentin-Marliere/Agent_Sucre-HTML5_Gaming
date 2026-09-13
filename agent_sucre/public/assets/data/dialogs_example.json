@@ -1,4 +1,30 @@
 {
+  "bocuse_welcome": {
+    "speaker": "Paul Bocuse",
+    "lines": [
+      "Dossier d'agent validé. Félicitations pour votre trompe-l'œil, recrue.",
+      "Votre couverture d'apprenti à l'Institut Lyfe est active. Une menace plane sur notre académie : un agent double tente de voler la recette du Bonbon Ultime du professeur Grolet.",
+      "Sortez de vos quartiers et présentez-vous immédiatement au chef de la sécurité dans le grand hall. Ne me décevez pas."
+    ],
+    "choices": [
+      {
+        "text": "Compris, Directeur. Je rejoins le Grand Hall de Sécurité.",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap1_scene1_completed", "value": true }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "security_hall" }
+      },
+      {
+        "text": "Consulter d'abord la carte de l'académie [M]",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap1_scene1_completed", "value": true }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
   "etchebest_intro": {
     "speaker": "Philippe Etchebest",
     "lines": [
@@ -73,30 +99,216 @@
   "etchebest_fin": {
     "speaker": "Philippe Etchebest",
     "lines": [
-      "Bien. Rendez-vous au laboratoire R&D pour découvrir vos gadgets auprès de Cyril Lignac."
+      "Très bien. Je vous autorise le passage.",
+      "Rendez-vous immédiatement au laboratoire R&D pour découvrir vos gadgets auprès de Cyril Lignac !"
+    ],
+    "actions": [
+      { "type": "SET_FLAG", "flag": "chap1_scene2_completed", "value": true }
     ],
     "choices": [
       {
-        "text": "Consulter la carte de l'Institut Secret",
-        "nextSceneId": "GenericMapScene"
+        "text": "Rejoindre le Laboratoire R&D (Cyril Lignac)",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "rd_lab" }
       },
       {
-        "text": "Retourner au Bureau virtuel",
-        "nextSceneId": "MainMenu"
+        "text": "Consulter la carte de l'Institut [M]",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
       }
     ]
   },
-  "explications": {
-    "speaker": "Philippe Etchebest",
+  "lignac_intro": {
+    "speaker": "Cyril Lignac",
     "lines": [
-      "Halte-là la recrue ! Personne ne circule sans autorisation dans les couloirs.",
-      "Montrez-moi votre badge et justifiez votre présence immédiatement !"
+      "Ah, Philippe, tu m'amènes la nouvelle recrue ! Bienvenue dans mon laboratoire R&D !",
+      "Je surveille un prototype de macaron explosif dans le four à 180°C, alors je fais vite. C'est ici que tu trouveras tes gadgets gourmands-croquants.",
+      "Dans notre brigade, chaque douceur est une arme de précision. Tiens, prends ce macaron explosif tout juste sorti du four !"
     ],
-    "nextDialogId": "etchebest_intro"
+    "actions": [
+      { "type": "ADD_ITEM", "itemId": "macaron_explosif", "quantity": 1 },
+      { "type": "ADD_AFFECTION", "target": "lignac", "amount": 5 },
+      { "type": "SET_FLAG", "flag": "chap1_scene3_item_received", "value": true }
+    ],
+    "choices": [
+      {
+        "text": "Demander les spécifications de la charge thermique (Pro)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "lignac", "amount": 10 }
+        ],
+        "nextDialogId": "lignac_reponse_pro"
+      },
+      {
+        "text": "Faire une remarque gourmande et croquante sur l'explosion (Audacieux)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "lignac", "amount": 5 },
+          { "type": "ADD_INFILTRATION", "amount": -5 }
+        ],
+        "nextDialogId": "lignac_reponse_audacieux"
+      },
+      {
+        "text": "Regarder le macaron avec appréhension (Hésitant)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "lignac", "amount": -5 }
+        ],
+        "nextDialogId": "lignac_reponse_hesitant"
+      }
+    ]
   },
-  "dialogue_1": {
-    "speaker": "Philippe Etchebest",
-    "lines": ["Prêt pour la mission ?"],
-    "nextDialogId": "etchebest_intro"
+  "lignac_reponse_pro": {
+    "speaker": "Cyril Lignac",
+    "lines": [
+      "Une ganache thermo-réactive stabilisée au beurre de cacao ! Une merveille d'ingénierie pâtissière.",
+      "J'adore les recrues attentives aux textures. Vous ferez un excellent agent de terrain."
+    ],
+    "choices": [
+      {
+        "text": "Merci Chef Lignac ! Où dois-je me rendre ensuite ?",
+        "nextDialogId": "lignac_fin"
+      }
+    ]
+  },
+  "lignac_reponse_audacieux": {
+    "speaker": "Cyril Lignac",
+    "lines": [
+      "Haha ! Gourmand, croquant ET détonant ! C'est exactement la signature de la maison !",
+      "Mais attention, évitez de transformer les couloirs en confettis de meringue !"
+    ],
+    "choices": [
+      {
+        "text": "C'est noté ! Quelle est la prochaine étape ?",
+        "nextDialogId": "lignac_fin"
+      }
+    ]
+  },
+  "lignac_reponse_hesitant": {
+    "speaker": "Cyril Lignac",
+    "lines": [
+      "Ne tremblez pas comme ça ! La coque meringuée est parfaitement isolée.",
+      "Un agent secret d'élite ne doit jamais reculer devant une petite friandise !"
+    ],
+    "choices": [
+      {
+        "text": "Me voilà rassuré. Où dois-je aller maintenant ?",
+        "nextDialogId": "lignac_fin"
+      }
+    ]
+  },
+  "lignac_fin": {
+    "speaker": "Cyril Lignac",
+    "lines": [
+      "Maintenant, direction la cour d'entraînement souterraine. Gordon Ramsay vous attend pour votre test physique.",
+      "Attention... il n'est pas réputé pour sa douceur sucrée ! Prenez la carte [M] pour le rejoindre sans vous perdre."
+    ],
+    "actions": [
+      { "type": "SET_FLAG", "flag": "chap1_scene3_completed", "value": true }
+    ],
+    "choices": [
+      {
+        "text": "Rejoindre Gordon Ramsay (Cour d'Entraînement)",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "training_grounds" }
+      },
+      {
+        "text": "Consulter la carte de l'Institut [M]",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "ramsay_intro": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "C'est donc ça la nouvelle recrue ? Vous avez l'air d'un flan mal démoulé !",
+      "Vous croyez qu'on infiltre l'Institut Lyfe en traînant des pieds ? Montrez-moi ce que vous avez dans le ventre !"
+    ],
+    "choices": [
+      {
+        "text": "Garde-à-vous : 'Prêt à servir avec discipline et rigueur, Chef !' (Pro)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "ramsay", "amount": 10 }
+        ],
+        "nextDialogId": "ramsay_reponse_pro"
+      },
+      {
+        "text": "Sourire en coin : 'Mon flan est parfaitement cuit, Chef, vous allez voir.' (Audacieux)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "ramsay", "amount": 15 },
+          { "type": "ADD_INFILTRATION", "amount": -15 }
+        ],
+        "nextDialogId": "ramsay_reponse_audacieux"
+      },
+      {
+        "text": "Baisser les yeux en s'excusant d'un ton hésitant (Hésitant)",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "ramsay", "amount": -15 },
+          { "type": "ADD_INFILTRATION", "amount": -5 }
+        ],
+        "nextDialogId": "ramsay_reponse_hesitant"
+      }
+    ]
+  },
+  "ramsay_reponse_pro": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "Enfin quelqu'un qui a un minimum de tenue ! La discipline, c'est ce qui fait la différence entre un grand chef et un désastre culinaire.",
+      "J'espère que votre endurance sera à la hauteur de votre garde-à-vous."
+    ],
+    "choices": [
+      {
+        "text": "Écouter les ordres de Gordon Ramsay",
+        "nextDialogId": "ramsay_fin"
+      }
+    ]
+  },
+  "ramsay_reponse_audacieux": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "Quel culot effronté ! Vous avez des tripes, petit arrogant !",
+      "Votre audace pourrait vous faire repérer, mais au moins vous n'êtes pas une mauviette sans saveur !"
+    ],
+    "choices": [
+      {
+        "text": "Recevoir les consignes du Chef",
+        "nextDialogId": "ramsay_fin"
+      }
+    ]
+  },
+  "ramsay_reponse_hesitant": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "Idiot sandwich ! Réveillez-vous !",
+      "Ici, on ne tolère pas les mous du genou ! Relevez la tête avant que je ne vous passe à la poêle !"
+    ],
+    "choices": [
+      {
+        "text": "Se ressaisir et écouter le Chef",
+        "nextDialogId": "ramsay_fin"
+      }
+    ]
+  },
+  "ramsay_fin": {
+    "speaker": "Gordon Ramsay",
+    "lines": [
+      "On verra bien sur le terrain ce que vous avez dans le ventre. Tenez, prenez ça.",
+      "C'est le Tablier pare-balles du chef. Kevlar haute densité, protection optimale contre les tirs et les éclaboussures brûlantes.",
+      "Ouvrez votre sacoche avec la touche [I] et enfilez-le TOUT DE SUITE pour valider votre entraînement !"
+    ],
+    "actions": [
+      { "type": "ADD_ITEM", "itemId": "tablier_pare_balles", "quantity": 1 },
+      { "type": "SET_FLAG", "flag": "chap1_scene4_dialog_completed", "value": true }
+    ],
+    "choices": [
+      {
+        "text": "Ouvrir la sacoche [I] pour équiper le tablier",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "training_grounds" }
+      },
+      {
+        "text": "Consulter la carte [M]",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
   }
 }

@@ -77,7 +77,7 @@ export class DialogueManager {
     }
 
     if (target.nextSceneId) {
-      this.scene.scene.start(target.nextSceneId);
+      this.scene.scene.start(target.nextSceneId, target.sceneData || undefined);
       return;
     }
   }
@@ -94,6 +94,8 @@ export class DialogueManager {
         gameState.addItem(action.itemId, action.quantity || 1);
         if (typeof this.scene.showToast === "function") {
           this.scene.showToast(`📦 Objet obtenu : ${action.itemId}`);
+        } else if (this.gaugeHUD && typeof this.gaugeHUD.showFeedback === "function") {
+          this.gaugeHUD.showFeedback(`+1 📦 ${action.itemId}`, "#00ffcc", 960, 100);
         }
         break;
 
@@ -145,8 +147,12 @@ export class DialogueManager {
         gameState.setFlag(action.flag, action.value ?? true);
         break;
 
+      case "SET_CHAPTER":
+        gameState.setChapter(Number(action.chapter) || 1);
+        break;
+
       default:
-        console.warn(`Action de dialogue non reconnue : ${action.type}`);
+        console.warn(`Unrecognized dialogue action: ${action.type}`);
     }
   }
 }
