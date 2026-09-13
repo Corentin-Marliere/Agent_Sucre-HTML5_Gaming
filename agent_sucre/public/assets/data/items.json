@@ -7,18 +7,6 @@
     "inspection": "Au verso, une bande magnétique dorée et une mention manuscrite : 'Accès Couloirs & R&D uniquement. En cas de contrôle, présenter au Chef de la Sécurité Philippe Etchebest.'",
     "usable": false
   },
-  "tablier_pare_balles": {
-    "name": "Tablier Pare-Balles du Chef",
-    "category": "Équipement Tactique",
-    "icon": "🥋",
-    "texture": "item_tablier_pare_balles",
-    "description": "Tablier de cuisine renforcé de fibres de kevlar tressées, remis par le Chef Gordon Ramsay lors de l'entraînement physique.",
-    "inspection": "Un rembourrage secret protège les organes vitaux contre les éclaboussures brûlantes et les tirs ennemis. Il porte le sceau de Ramsay : 'Done to perfection'.",
-    "usable": true,
-    "action": "EQUIP",
-    "actionLabel": "Équiper le tablier",
-    "outfitId": "tablier_pare_balles"
-  },
   "macaron_explosif": {
     "name": "Macaron R&D Explosif",
     "category": "Gadget Gourmand",
