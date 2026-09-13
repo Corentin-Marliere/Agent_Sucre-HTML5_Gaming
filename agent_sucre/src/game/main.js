@@ -4,6 +4,7 @@ import { GameOver } from './scenes/GameOver';
 import { GenericMapScene } from './scenes/GenericMapScene';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
+import { ShootEmUpScene } from './scenes/ShootEmUpScene';
 import { AUTO, Game, Scale } from 'phaser';
 
 //  Find out more information about the Game Config at:
@@ -24,6 +25,7 @@ const config = {
         MainMenu,
         GenericMapScene,
         MainGame,
+        ShootEmUpScene,
         GameOver
     ]
 };
