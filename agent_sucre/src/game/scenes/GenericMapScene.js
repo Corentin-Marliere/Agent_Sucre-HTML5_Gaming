@@ -23,6 +23,12 @@ export class GenericMapScene extends Scene {
   }
 
   create() {
+    // If the prologue briefing with Director Bocuse was not completed, redirect immediately to Bocuse
+    if (!gameState.getFlag("chap1_scene1_completed")) {
+      this.scene.start("Game", { dialogId: "bocuse_welcome" });
+      return;
+    }
+
     const mapsData = this.cache.json.get("maps");
     const mapData = mapsData ? mapsData[this.currentMapId] : null;
 

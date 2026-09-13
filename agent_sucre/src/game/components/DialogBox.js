@@ -106,8 +106,18 @@ export class DialogBox extends GameObjects.Container {
     const choiceHeight = 40;
     const spacing = 12;
 
-    this.choices.forEach((choice, index) => {
-      const buttonY = -(choiceHeight + spacing) * (this.choices.length - index) - 10;
+    // Shuffle choice display order if they represent narrative dialogue responses
+    const isDialogueResponse =
+      Array.isArray(this.choices) &&
+      this.choices.length > 1 &&
+      this.choices.every((c) => c.nextDialogId);
+
+    const displayedChoices = isDialogueResponse
+      ? [...this.choices].sort(() => Math.random() - 0.5)
+      : this.choices;
+
+    displayedChoices.forEach((choice, index) => {
+      const buttonY = -(choiceHeight + spacing) * (displayedChoices.length - index) - 10;
 
       const btnBg = this.scene.add
         .rectangle(this.width / 2, buttonY, choiceWidth, choiceHeight, 0x101a28, 0.95)

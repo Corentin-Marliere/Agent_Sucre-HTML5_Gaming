@@ -262,6 +262,10 @@ export class GameState {
    * @returns {string}
    */
   getDialogueForRoom(roomId) {
+    if (!this.getFlag("chap1_scene1_completed")) {
+      return "etchebest_bloque_bocuse";
+    }
+
     if (roomId === "security_hall" || roomId === "institute") {
       if (!this.getFlag("chap1_scene2_completed")) return "etchebest_intro";
       if (!this.getFlag("chap1_scene3_completed")) return "etchebest_rappel_lignac";

@@ -181,7 +181,11 @@ export class Taskbar extends GameObjects.Container {
         text: "🗺️ Carte de l'Institut [M]",
         action: () => {
           this.closeStartMenu();
-          this.scene.scene.start("GenericMapScene", { mapId: "secretInstitute" });
+          if (!gameState.getFlag("chap1_scene1_completed")) {
+            this.scene.scene.start("Game", { dialogId: "bocuse_welcome" });
+          } else {
+            this.scene.scene.start("GenericMapScene", { mapId: "secretInstitute" });
+          }
         },
       },
       {

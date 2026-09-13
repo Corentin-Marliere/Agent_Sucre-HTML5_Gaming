@@ -25,6 +25,20 @@
       }
     ]
   },
+  "etchebest_bloque_bocuse": {
+    "speaker": "Philippe Etchebest",
+    "lines": [
+      "Halte-là ! Votre dossier d'incorporation n'a même pas été validé par le Directeur Bocuse !",
+      "Retournez immédiatement écouter sa transmission secrète de bienvenue avant de venir me faire perdre mon temps !"
+    ],
+    "choices": [
+      {
+        "text": "Retourner immédiatement écouter le Directeur Bocuse",
+        "nextSceneId": "Game",
+        "sceneData": { "dialogId": "bocuse_welcome" }
+      }
+    ]
+  },
   "etchebest_intro": {
     "speaker": "Philippe Etchebest",
     "lines": [
@@ -33,25 +47,28 @@
     ],
     "choices": [
       {
-        "text": "Présenter calmement le badge d'apprenti (Pro)",
-        "actions": [
-          { "type": "ADD_AFFECTION", "target": "etchebest", "amount": 5 }
-        ],
-        "nextDialogId": "etchebest_reponse_pro"
-      },
-      {
-        "text": "Tenter une diversion audacieuse (Audacieux)",
+        "text": "Tenter une diversion audacieuse",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "etchebest", "amount": 10 },
-          { "type": "ADD_INFILTRATION", "amount": -15 }
+          { "type": "ADD_INFILTRATION", "amount": -15 },
+          { "type": "SET_FLAG", "flag": "chap1_scene2_completed", "value": true }
         ],
         "nextDialogId": "etchebest_reponse_audacieux"
       },
       {
-        "text": "Bafouiller nerveusement en cherchant ses mots (Hésitant)",
+        "text": "Présenter calmement le badge d'apprenti",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "etchebest", "amount": 5 },
+          { "type": "SET_FLAG", "flag": "chap1_scene2_completed", "value": true }
+        ],
+        "nextDialogId": "etchebest_reponse_pro"
+      },
+      {
+        "text": "Bafouiller nerveusement en cherchant ses mots",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "etchebest", "amount": -10 },
-          { "type": "ADD_INFILTRATION", "amount": -10 }
+          { "type": "ADD_INFILTRATION", "amount": -10 },
+          { "type": "SET_FLAG", "flag": "chap1_scene2_completed", "value": true }
         ],
         "nextDialogId": "etchebest_reponse_hesitant"
       }
@@ -108,11 +125,17 @@
     "choices": [
       {
         "text": "Rejoindre le Laboratoire R&D (Cyril Lignac)",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap1_scene2_completed", "value": true }
+        ],
         "nextSceneId": "GenericMapScene",
         "sceneData": { "mapId": "rd_lab" }
       },
       {
         "text": "Consulter la carte de l'Institut [M]",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap1_scene2_completed", "value": true }
+        ],
         "nextSceneId": "GenericMapScene",
         "sceneData": { "mapId": "secretInstitute" }
       }
@@ -132,14 +155,7 @@
     ],
     "choices": [
       {
-        "text": "Demander les spécifications de la charge thermique (Pro)",
-        "actions": [
-          { "type": "ADD_AFFECTION", "target": "lignac", "amount": 10 }
-        ],
-        "nextDialogId": "lignac_reponse_pro"
-      },
-      {
-        "text": "Faire une remarque gourmande et croquante sur l'explosion (Audacieux)",
+        "text": "Faire une remarque gourmande et croquante sur l'explosion",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "lignac", "amount": 5 },
           { "type": "ADD_INFILTRATION", "amount": -5 }
@@ -147,7 +163,14 @@
         "nextDialogId": "lignac_reponse_audacieux"
       },
       {
-        "text": "Regarder le macaron avec appréhension (Hésitant)",
+        "text": "Demander les spécifications de la charge thermique",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "lignac", "amount": 10 }
+        ],
+        "nextDialogId": "lignac_reponse_pro"
+      },
+      {
+        "text": "Regarder le macaron avec appréhension",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "lignac", "amount": -5 }
         ],
@@ -206,11 +229,17 @@
     "choices": [
       {
         "text": "Rejoindre Gordon Ramsay (Cour d'Entraînement)",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap1_scene3_completed", "value": true }
+        ],
         "nextSceneId": "GenericMapScene",
         "sceneData": { "mapId": "training_grounds" }
       },
       {
         "text": "Consulter la carte de l'Institut [M]",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap1_scene3_completed", "value": true }
+        ],
         "nextSceneId": "GenericMapScene",
         "sceneData": { "mapId": "secretInstitute" }
       }
@@ -224,14 +253,7 @@
     ],
     "choices": [
       {
-        "text": "Garde-à-vous : 'Prêt à servir avec discipline et rigueur, Chef !' (Pro)",
-        "actions": [
-          { "type": "ADD_AFFECTION", "target": "ramsay", "amount": 10 }
-        ],
-        "nextDialogId": "ramsay_reponse_pro"
-      },
-      {
-        "text": "Sourire en coin : 'Mon flan est parfaitement cuit, Chef, vous allez voir.' (Audacieux)",
+        "text": "Sourire en coin : 'Mon flan est parfaitement cuit, Chef, vous allez voir.'",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "ramsay", "amount": 15 },
           { "type": "ADD_INFILTRATION", "amount": -15 }
@@ -239,7 +261,14 @@
         "nextDialogId": "ramsay_reponse_audacieux"
       },
       {
-        "text": "Baisser les yeux en s'excusant d'un ton hésitant (Hésitant)",
+        "text": "Garde-à-vous : 'Prêt à servir avec discipline et rigueur, Chef !'",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "ramsay", "amount": 10 }
+        ],
+        "nextDialogId": "ramsay_reponse_pro"
+      },
+      {
+        "text": "Baisser les yeux en s'excusant d'un ton hésitant",
         "actions": [
           { "type": "ADD_AFFECTION", "target": "ramsay", "amount": -15 },
           { "type": "ADD_INFILTRATION", "amount": -5 }
@@ -301,11 +330,17 @@
     "choices": [
       {
         "text": "Ouvrir la sacoche [I] pour équiper le tablier",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap1_scene4_dialog_completed", "value": true }
+        ],
         "nextSceneId": "GenericMapScene",
         "sceneData": { "mapId": "training_grounds" }
       },
       {
         "text": "Consulter la carte [M]",
+        "actions": [
+          { "type": "SET_FLAG", "flag": "chap1_scene4_dialog_completed", "value": true }
+        ],
         "nextSceneId": "GenericMapScene",
         "sceneData": { "mapId": "secretInstitute" }
       }
@@ -517,6 +552,26 @@
       },
       {
         "text": "Consulter la carte de l'Institut [M]",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
+  },
+  "bocuse_chap1_conclusion": {
+    "speaker": "Paul Bocuse",
+    "lines": [
+      "Transmission prioritaire chiffrée... Agent Sucre, rapport d'évaluation reçu avec les félicitations du Conseil.",
+      "Vous avez franchi le barrage de Philippe, récupéré l'arsenal secret de Cyril et surmonté l'épreuve de Gordon en équipant le tablier pare-balles.",
+      "Votre couverture d'apprenti est désormais totale. Le Chapitre 1 « Mise en Bouche Confidentielle » est un franc succès !",
+      "Restez vigilant. L'agent double se rapprocherait des cuisines centrales du professeur Grolet. Préparez-vous pour le Chapitre 2 !"
+    ],
+    "choices": [
+      {
+        "text": "Retourner au Bureau Principal",
+        "nextSceneId": "MainMenu"
+      },
+      {
+        "text": "Consulter la Carte de l'Académie [M]",
         "nextSceneId": "GenericMapScene",
         "sceneData": { "mapId": "secretInstitute" }
       }

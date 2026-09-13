@@ -40,6 +40,14 @@ export class DialogueManager {
 
     gameState.setCurrentDialogue(dialogueId);
 
+    // Execute node-level entry actions (e.g. awards, flag updates)
+    if (data.action) {
+      this.executeAction(data.action);
+    }
+    if (Array.isArray(data.actions)) {
+      data.actions.forEach((action) => this.executeAction(action));
+    }
+
     // Update active speaker on the affinity gauge if available
     if (data.speaker && this.gaugeHUD) {
       this.gaugeHUD.setSpeaker(data.speaker);
@@ -158,6 +166,11 @@ export class DialogueManager {
 
       default:
         console.warn(`Unrecognized dialogue action: ${action.type}`);
+    }
+
+    // Refresh active quest banner if current scene supports it
+    if (typeof this.scene.refreshObjectiveBanner === "function") {
+      this.scene.refreshObjectiveBanner();
     }
   }
 }

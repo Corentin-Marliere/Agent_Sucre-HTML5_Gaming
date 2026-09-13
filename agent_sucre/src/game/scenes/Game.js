@@ -25,7 +25,11 @@ export class Game extends Scene {
 
     // Render room-specific visual background
     const bgKey = this.getBackgroundTextureKey();
-    if (this.textures.exists(bgKey)) {
+    if (bgKey === "pc_screen" && this.textures.exists("pc_screen")) {
+      this.add.image(960, 490, "pc_screen").setScale(1.3).setDepth(0);
+      const dimOverlay = this.add.rectangle(960, 490, 1920, 980, 0x050811, 0.45);
+      dimOverlay.setDepth(1);
+    } else if (this.textures.exists(bgKey)) {
       const bg = this.add.image(960, 490, bgKey);
       bg.setDisplaySize(1920, 980);
       bg.setDepth(0);
@@ -77,6 +81,10 @@ export class Game extends Scene {
         this.toggleInventory();
         return;
       } else if (event.key === "m" || event.key === "M") {
+        // Prevent bypassing the introductory Bocuse briefing
+        if (!gameState.getFlag("chap1_scene1_completed")) {
+          return;
+        }
         if (!this.currentModal) {
           this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
         }
@@ -100,13 +108,16 @@ export class Game extends Scene {
    * @returns {string}
    */
   getBackgroundTextureKey() {
+    if (this.dialogId && this.dialogId.startsWith("bocuse")) {
+      return "pc_screen";
+    }
     if (this.roomReturnId && this.textures.exists(`bg_${this.roomReturnId}`)) {
       return `bg_${this.roomReturnId}`;
     }
-    if (this.dialogId.startsWith("lignac") && this.textures.exists("bg_rd_lab")) {
+    if (this.dialogId && this.dialogId.startsWith("lignac") && this.textures.exists("bg_rd_lab")) {
       return "bg_rd_lab";
     }
-    if (this.dialogId.startsWith("ramsay") && this.textures.exists("bg_training_grounds")) {
+    if (this.dialogId && this.dialogId.startsWith("ramsay") && this.textures.exists("bg_training_grounds")) {
       return "bg_training_grounds";
     }
     if (this.textures.exists("bg_security_hall")) {
@@ -128,7 +139,7 @@ export class Game extends Scene {
       .rectangle(0, 0, 460, 460, 0x0a101d, 0.9)
       .setStrokeStyle(3, 0x00d2ff);
 
-    // Character caricature portrait image
+    // Character caricature portrait image (exact 454x454 square matching card inner dimensions)
     this.speakerSprite = this.add.image(0, 0, "char_etchebest");
     this.speakerSprite.setDisplaySize(454, 454);
 
@@ -199,6 +210,8 @@ export class Game extends Scene {
     }
 
     this.speakerSprite.setTexture(texture);
+    this.speakerSprite.setDisplaySize(454, 454);
+
     this.speakerCardBg.setStrokeStyle(3, color);
     this.speakerInnerBorder.setStrokeStyle(1.5, color, 0.6);
     this.speakerBadgeBg.setStrokeStyle(1.5, color);
@@ -221,47 +234,50 @@ export class Game extends Scene {
    * Creates HUD controls including active objective reminder, return button, and inventory shortcut.
    */
   createHUD() {
-    // Center active quest objective banner
+    // Active quest objective banner positioned between Affinity Gauge (ends x=745) and Quitter button (starts x=1660)
     const currentObjective = gameState.getCurrentObjective();
-    const objBg = this.add
-      .rectangle(960, 36, 680, 34, 0x0a101d, 0.92)
-      .setStrokeStyle(1, 0xffdd00, 0.85);
-    objBg.setDepth(30);
+    this.objectiveCardBg = this.add
+      .rectangle(1200, 36, 760, 46, 0x101a28, 0.92)
+      .setStrokeStyle(1.5, 0xffdd00);
+    this.objectiveCardBg.setDepth(30);
 
-    const objText = this.add
-      .text(960, 36, `🎯 OBJECTIF : ${currentObjective.instruction}`, {
+    this.objectiveText = this.add
+      .text(1200, 36, `🎯 OBJECTIF : ${currentObjective.instruction}`, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "12px",
+        fontSize: "13px",
         fontStyle: "bold",
         color: "#ffdd00",
       })
       .setOrigin(0.5);
-    objText.setDepth(30);
+    this.objectiveText.setDepth(30);
 
     // Return button (either to room terminal or to main desktop)
-    const returnTarget = this.roomReturnId
-      ? { scene: "GenericMapScene", data: { mapId: this.roomReturnId }, label: "🚪 Quitter" }
-      : { scene: "MainMenu", data: undefined, label: "🖥️ Bureau" };
+    // Only displayed once the mandatory Bocuse briefing prologue is completed
+    if (gameState.getFlag("chap1_scene1_completed")) {
+      const returnTarget = this.roomReturnId
+        ? { scene: "GenericMapScene", data: { mapId: this.roomReturnId }, label: "🚪 Quitter" }
+        : { scene: "MainMenu", data: undefined, label: "🖥️ Bureau" };
 
-    const desktopBtn = this.add
-      .rectangle(1720, 36, 120, 34, 0x1e222d, 0.92)
-      .setStrokeStyle(1, 0x00d2ff)
-      .setInteractive({ useHandCursor: true });
-    desktopBtn.setDepth(30);
+      const desktopBtn = this.add
+        .rectangle(1720, 36, 120, 34, 0x1e222d, 0.92)
+        .setStrokeStyle(1, 0x00d2ff)
+        .setInteractive({ useHandCursor: true });
+      desktopBtn.setDepth(30);
 
-    const desktopText = this.add
-      .text(1720, 36, returnTarget.label, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "13px",
-        fontStyle: "bold",
-        color: "#ffffff",
-      })
-      .setOrigin(0.5);
-    desktopText.setDepth(30);
+      const desktopText = this.add
+        .text(1720, 36, returnTarget.label, {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "13px",
+          fontStyle: "bold",
+          color: "#ffffff",
+        })
+        .setOrigin(0.5);
+      desktopText.setDepth(30);
 
-    desktopBtn.on("pointerover", () => desktopBtn.setFillStyle(0x0055aa, 1));
-    desktopBtn.on("pointerout", () => desktopBtn.setFillStyle(0x1e222d, 0.92));
-    desktopBtn.on("pointerdown", () => this.scene.start(returnTarget.scene, returnTarget.data));
+      desktopBtn.on("pointerover", () => desktopBtn.setFillStyle(0x0055aa, 1));
+      desktopBtn.on("pointerout", () => desktopBtn.setFillStyle(0x1e222d, 0.92));
+      desktopBtn.on("pointerdown", () => this.scene.start(returnTarget.scene, returnTarget.data));
+    }
 
     // Inventory button
     const invBtn = this.add
@@ -304,5 +320,15 @@ export class Game extends Scene {
     this.currentModal.on("destroy", () => {
       this.currentModal = null;
     });
+  }
+
+  /**
+   * Refreshes the active quest objective banner text dynamically.
+   */
+  refreshObjectiveBanner() {
+    if (this.objectiveText) {
+      const currentObjective = gameState.getCurrentObjective();
+      this.objectiveText.setText(`🎯 OBJECTIF : ${currentObjective.instruction}`);
+    }
   }
 }

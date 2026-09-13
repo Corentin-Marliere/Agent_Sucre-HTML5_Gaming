@@ -37,7 +37,11 @@ export class MainMenu extends Scene {
         this.taskbar.handleInventory();
       } else if (event.key === "m" || event.key === "M") {
         if (!this.currentModal && !this.taskbar.currentModal) {
-          this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
+          if (!gameState.getFlag("chap1_scene1_completed")) {
+            this.scene.start("Game", { dialogId: "bocuse_welcome" });
+          } else {
+            this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
+          }
         }
       }
     });
@@ -59,7 +63,7 @@ export class MainMenu extends Scene {
       .rectangle(960, 205, 840, 32, 0x0a101d, 0.88)
       .setStrokeStyle(1, 0xffdd00, 0.8);
 
-    this.add
+    this.objectiveBannerText = this.add
       .text(960, 205, `🎯 OBJECTIF : ${currentObjective.instruction}`, {
         fontFamily: "Arial, sans-serif",
         fontSize: "12px",
@@ -133,8 +137,13 @@ export class MainMenu extends Scene {
         label: "Institut Secret [M]",
         sub: "(Carte interactive)",
         color: "#38bdf8",
-        action: () =>
-          this.scene.start("GenericMapScene", { mapId: "secretInstitute" }),
+        action: () => {
+          if (!gameState.getFlag("chap1_scene1_completed")) {
+            this.scene.start("Game", { dialogId: "bocuse_welcome" });
+          } else {
+            this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
+          }
+        },
       },
     ];
 
@@ -263,7 +272,8 @@ export class MainMenu extends Scene {
             this.scene.start("Game", { dialogId: "bocuse_welcome" });
           });
         } else {
-          this.taskbar.showToast(`Session déverrouillée ! Bon retour, agent.`);
+          this.refreshObjectiveBanner();
+          this.taskbar.showToast(`✓ Session déverrouillée ! Progression restaurée.`);
         }
         if (onFinished) onFinished(result);
       },
@@ -276,5 +286,15 @@ export class MainMenu extends Scene {
     this.currentModal.on("destroy", () => {
       this.currentModal = null;
     });
+  }
+
+  /**
+   * Refreshes the desktop quest objective banner text dynamically.
+   */
+  refreshObjectiveBanner() {
+    if (this.objectiveBannerText) {
+      const currentObjective = gameState.getCurrentObjective();
+      this.objectiveBannerText.setText(`🎯 OBJECTIF : ${currentObjective.instruction}`);
+    }
   }
 }
