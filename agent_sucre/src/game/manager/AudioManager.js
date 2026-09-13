@@ -44,6 +44,14 @@ class AudioManager {
         file: "assets/musics/Recette_pour_un_agent.mp3",
         durationSec: 152.0,
       },
+      Agent_Sucre_generique: {
+        id: "Agent_Sucré_generique",
+        title: "Agent_Sucré_generique",
+        subtitle: "générique principal du jeu",
+        artist: "Atelier Sucré",
+        file: "assets/musics/Agent_Sucré_generique.mp3",
+        durationSec: 152.0,
+      },
     };
   }
 
