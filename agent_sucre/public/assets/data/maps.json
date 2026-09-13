@@ -5,37 +5,91 @@
     "title": "ACADÉMIE SECRÈTE - INSTITUT LYFE",
     "zones": [
       {
-        "x": 500,
-        "y": 370,
-        "width": 340,
-        "height": 150,
+        "x": 702,
+        "y": 378,
+        "width": 333,
+        "height": 98,
         "type": "map",
         "target": "security_hall",
         "label": "🏛️ Hall de Sécurité (Philippe Etchebest)"
       },
       {
-        "x": 1350,
+        "x": 1249,
+        "y": 378,
+        "width": 333,
+        "height": 98,
+        "type": "map",
+        "target": "monitor_room",
+        "label": "🏛️ Salle des moniteurs ()"
+      },
+      {
+        "x": 695,
+        "y": 710,
+        "width": 370,
+        "height": 110,
+        "type": "map",
+        "target": "lecture_room",
+        "label": "🏛️ Salle de classe ()"
+      },
+      {
+        "x": 1214,
+        "y": 710,
+        "width": 290,
+        "height": 110,
+        "type": "map",
+        "target": "dorms",
+        "label": "🏛️ Dortoirs ()"
+      },
+      {
+        "x": 1504,
+        "y": 710,
+        "width": 222,
+        "height": 110,
+        "type": "map",
+        "target": "cantina",
+        "label": "🏛️ Refectoire ()"
+      },
+      {
+        "x": 918,
+        "y": 852,
+        "width": 565,
+        "height": 125,
+        "type": "map",
+        "target": "secret_corridor",
+        "label": "🏛️ Couloirs secrets ()"
+      },
+      {
+        "x": 1328,
+        "y": 860,
+        "width": 175,
+        "height": 110,
+        "type": "map",
+        "target": "archives",
+        "label": "🏛️ Archives ()"
+      },
+      {
+        "x": 1367,
         "y": 545,
-        "width": 600,
-        "height": 165,
+        "width": 595,
+        "height": 150,
         "type": "map",
         "target": "rd_lab",
         "label": "🔬 Laboratoire R&D (Cyril Lignac)"
       },
       {
-        "x": 490,
+        "x": 583,
         "y": 545,
-        "width": 420,
-        "height": 165,
+        "width": 590,
+        "height": 150,
         "type": "map",
         "target": "training_grounds",
         "label": "🥊 Cour d'Entraînement (Gordon Ramsay)"
       },
       {
-        "x": 960,
-        "y": 170,
+        "x": 975,
+        "y": 125,
         "width": 520,
-        "height": 160,
+        "height": 190,
         "type": "scene",
         "target": "MainMenu",
         "label": "🖥️ Bureau Principal (Retour accueil)"
