@@ -1,6 +1,75 @@
 export class GameState {
   constructor(initialData = {}) {
+    this._listeners = {};
+    this.lastSafeContext = null;
     this.reset(initialData);
+  }
+
+  /**
+   * Enregistre un écouteur d'événement sur GameState.
+   * @param {string} event
+   * @param {Function} fn
+   */
+  on(event, fn) {
+    if (!this._listeners) this._listeners = {};
+    if (!this._listeners[event]) this._listeners[event] = [];
+    this._listeners[event].push(fn);
+  }
+
+  /**
+   * Retire un écouteur d'événement.
+   * @param {string} event
+   * @param {Function} fn
+   */
+  off(event, fn) {
+    if (!this._listeners || !this._listeners[event]) return;
+    this._listeners[event] = this._listeners[event].filter((cb) => cb !== fn);
+  }
+
+  /**
+   * Émet un événement aux écouteurs enregistrés.
+   * @param {string} event
+   * @param {*} [data]
+   */
+  emit(event, data) {
+    if (!this._listeners || !this._listeners[event]) return;
+    this._listeners[event].forEach((fn) => {
+      try {
+        fn(data);
+      } catch (err) {
+        console.error(`Erreur listener GameState (${event}):`, err);
+      }
+    });
+  }
+
+  /**
+   * Définit le contexte de scène pour reprendre après une fuite réussie.
+   * @param {Object} context
+   */
+  setLastSafeContext(context) {
+    this.lastSafeContext = context;
+  }
+
+  /**
+   * Récupère le contexte de reprise après la fuite.
+   * @returns {Object}
+   */
+  getLastSafeContext() {
+    return (
+      this.lastSafeContext || {
+        scene: "GenericMapScene",
+        data: { mapId: "secretInstitute" },
+      }
+    );
+  }
+
+  /**
+   * Restaure la couverture d'infiltration après une fuite réussie.
+   * @param {number} [amount=50]
+   */
+  restoreInfiltrationAfterEscape(amount = 50) {
+    this.setInfiltration(amount);
+    this.setFlag("escape_minigame_won", true);
   }
 
   /**
@@ -517,7 +586,11 @@ export class GameState {
    * @returns {number} New infiltration value
    */
   addInfiltration(amount) {
-    return this.addGauge("infiltration", amount, { min: 0, max: 100 });
+    const newVal = this.addGauge("infiltration", amount, { min: 0, max: 100 });
+    if (newVal <= 0) {
+      this.emit("infiltration_zero", { value: newVal });
+    }
+    return newVal;
   }
 
   /**
@@ -525,7 +598,11 @@ export class GameState {
    * @param {number} value
    */
   setInfiltration(value) {
-    this.setGauge("infiltration", Math.min(100, Math.max(0, value)));
+    const newVal = Math.min(100, Math.max(0, value));
+    this.setGauge("infiltration", newVal);
+    if (newVal <= 0) {
+      this.emit("infiltration_zero", { value: newVal });
+    }
   }
 
   /* ======================================================================= */
