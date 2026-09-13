@@ -88,22 +88,16 @@ export class MainMenu extends Scene {
     // Container grouping all desktop foreground icons and banner to allow hiding them during media playback
     this.desktopContainer = this.add.container(0, 0);
 
-    // Game Logo Header inside CRT monitor
-    if (this.textures.exists("game_logo")) {
-      const logo = this.add.image(960, 150, "game_logo").setScale(0.85);
-      this.desktopContainer.add(logo);
-    }
-
     // Active Quest Objective Banner
     const currentObjective = gameState.getCurrentObjective();
     const objBg = this.add
-      .rectangle(960, 205, 840, 32, 0x0a101d, 0.88)
+      .rectangle(960, 180, 950, 40, 0x0a101d, 0.88)
       .setStrokeStyle(1, 0xffdd00, 0.8);
 
     this.objectiveBannerText = this.add
-      .text(960, 205, `🎯 OBJECTIF : ${currentObjective.instruction}`, {
+      .text(960, 180, `🎯 OBJECTIF : ${currentObjective.instruction}`, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "12px",
+        fontSize: "20px",
         fontStyle: "bold",
         color: "#ffdd00",
       })
@@ -115,12 +109,12 @@ export class MainMenu extends Scene {
     // Row 1 (y = 280) : 4 icons (Mission Dialogue, New Mission, Load Save, Multimédia)
     // Row 2 (y = 480) : 3 icons (Inventaire, Wardrobe, Guide Michelin)
     const iconsData = [
-      // Row 1 (y = 280)
+      // Row 1 (y = 350)
       {
         x: 570,
-        y: 280,
+        y: 350,
         texture: "icon_dialogue",
-        label: "Mission Dialogue",
+        label: "Browkie-Talkie",
         color: "#ffffff",
         action: () => {
           const objective = gameState.getCurrentObjective();
@@ -144,52 +138,49 @@ export class MainMenu extends Scene {
       },
       {
         x: 830,
-        y: 280,
+        y: 350,
         texture: "icon_new_mission",
-        label: "New Mission",
+        label: "Nouvel agent",
         color: "#ffffff",
         action: () => this.handleNewMission(),
       },
       {
         x: 1090,
-        y: 280,
+        y: 350,
         texture: "icon_load_save",
-        label: "Load Save",
+        label: "Récupération de\nvotre dossier",
         color: "#ffffff",
         action: () => this.handleLoadSave(),
       },
       {
         x: 1350,
-        y: 280,
-        texture: "folder",
+        y: 350,
         label: "Multimédia",
-        sub: "(Musiques / Images)",
         color: "#ffffff",
         action: () => this.openMediaFolder(),
       },
-      // Row 2 (y = 480)
+      // Row 2 (y = 510)
       {
         x: 700,
-        y: 480,
+        y: 510,
         texture: "icon_inventory",
-        label: "Inventaire [I]",
+        label: "Poche à douille\ndimensionnelle [I]",
         color: "#ffffff",
         action: () => this.taskbar.handleInventory(),
       },
       {
         x: 960,
-        y: 480,
+        y: 510,
         texture: "icon_wardrobe",
         label: "Wardrobe",
-        sub: "(Dressing tactique)",
         color: "#ffffff",
         action: () => this.taskbar.handleWardrobe(),
       },
       {
         x: 1220,
-        y: 480,
+        y: 510,
         texture: "icon_map_guide",
-        label: "Guide\nMichelin",
+        label: "Guide\nMichelin [M]",
         color: "#ffffff",
         action: () => {
           if (!gameState.getFlag("chap1_scene1_completed")) {
@@ -206,21 +197,30 @@ export class MainMenu extends Scene {
       const iconImg = this.add.image(item.x, item.y, iconKey);
 
       // Scale proportionally to fit comfortably in a 68x68 box
-      const targetDim = 68;
-      const baseScale = Math.min(
-        targetDim / (iconImg.width || 100),
-        targetDim / (iconImg.height || 100)
-      );
-      iconImg.setScale(baseScale);
+      if (item.texture) {
+        const targetDim = 80;
+        const baseScale = Math.min(
+          targetDim / (iconImg.width || 100),
+          targetDim / (iconImg.height || 100)
+        );
+        iconImg.setScale(baseScale);
+      } else {
+        const targetDim = 68;
+        const baseScale = Math.min(
+          targetDim / (iconImg.width || 100),
+          targetDim / (iconImg.height || 100)
+        );
+        iconImg.setScale(baseScale);
+      }
 
       const hasMultiline = item.label.includes("\n");
-      const labelY = item.y + (hasMultiline ? 46 : 44);
-      const subY = item.y + (hasMultiline ? 70 : 64);
+      const labelY = item.y + (hasMultiline ? 54 : 50);
+      const subY = item.y + (hasMultiline ? 74 : 68);
 
       const labelText = this.add
         .text(item.x, labelY, item.label, {
           fontFamily: "Arial, sans-serif",
-          fontSize: "14px",
+          fontSize: "16px",
           fontStyle: "bold",
           color: item.color,
           align: "center",
@@ -238,7 +238,7 @@ export class MainMenu extends Scene {
 
       // Interactive hit zone covering both icon and labels
       const hitZone = this.add
-        .rectangle(item.x, item.y + 20, 180, 130, 0x000000, 0)
+        .rectangle(item.x, item.y + 20, 150, 130, 0x000000, 0)
         .setInteractive({ useHandCursor: true });
 
       hitZone.on("pointerover", () => {
