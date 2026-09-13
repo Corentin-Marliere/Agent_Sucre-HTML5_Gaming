@@ -96,13 +96,33 @@ export class GenericMapScene extends Scene {
       })
       .setOrigin(0.5);
 
-    // Center interactive tooltip banner
+    // Center active quest objective banner
+    const currentObjective = gameState.getCurrentObjective();
+    this.objectiveContainer = this.add.container(960, 36);
+    this.objectiveContainer.setDepth(450);
+
+    const objBg = this.add
+      .rectangle(0, 0, 820, 34, 0x0a101d, 0.92)
+      .setStrokeStyle(1, 0xffdd00, 0.85);
+
+    this.objectiveText = this.add
+      .text(0, 0, `🎯 OBJECTIF : ${currentObjective.instruction}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "13px",
+        fontStyle: "bold",
+        color: "#ffdd00",
+      })
+      .setOrigin(0.5);
+
+    this.objectiveContainer.add([objBg, this.objectiveText]);
+
+    // Center interactive tooltip banner (shown when hovering zones)
     this.tooltipContainer = this.add.container(960, 36);
     this.tooltipContainer.setVisible(false);
     this.tooltipContainer.setDepth(500);
 
     const tooltipBg = this.add
-      .rectangle(0, 0, 520, 36, 0x0d1527, 0.95)
+      .rectangle(0, 0, 680, 34, 0x0d1527, 0.96)
       .setStrokeStyle(1, 0x00ffcc);
 
     this.tooltipText = this.add
@@ -160,12 +180,18 @@ export class GenericMapScene extends Scene {
     if (this.tooltipContainer && this.tooltipText && label) {
       this.tooltipText.setText(label);
       this.tooltipContainer.setVisible(true);
+      if (this.objectiveContainer) {
+        this.objectiveContainer.setVisible(false);
+      }
     }
   }
 
   hideMapTooltip() {
     if (this.tooltipContainer) {
       this.tooltipContainer.setVisible(false);
+    }
+    if (this.objectiveContainer) {
+      this.objectiveContainer.setVisible(true);
     }
   }
 
@@ -186,11 +212,11 @@ export class GenericMapScene extends Scene {
 
     // Room Header Banner inside the CRT monitor
     const headerBg = this.add
-      .rectangle(960, 210, 880, 72, 0x0a101d, 0.88)
+      .rectangle(960, 195, 880, 60, 0x0a101d, 0.88)
       .setStrokeStyle(2, 0x00d2ff, 0.8);
 
     const headerTitle = this.add
-      .text(960, 196, `🏛️ ${roomData.title || "TERMINAL DE SALLE"}`, {
+      .text(960, 182, `🏛️ ${roomData.title || "TERMINAL DE SALLE"}`, {
         fontFamily: "Arial, sans-serif",
         fontSize: "18px",
         fontStyle: "bold",
@@ -199,10 +225,27 @@ export class GenericMapScene extends Scene {
       .setOrigin(0.5);
 
     const headerDesc = this.add
-      .text(960, 226, roomData.description || "Poste de contrôle d'agent secret.", {
+      .text(960, 210, roomData.description || "Poste de contrôle d'agent secret.", {
         fontFamily: "Arial, sans-serif",
         fontSize: "13px",
         color: "#cbd5e1",
+      })
+      .setOrigin(0.5);
+
+    // Active Quest Objective reminder inside the room
+    const currentObjective = gameState.getCurrentObjective();
+    const isTargetRoom = currentObjective.targetMap === this.currentMapId;
+
+    const objBannerBg = this.add
+      .rectangle(960, 260, 880, 36, isTargetRoom ? 0x14281b : 0x0d1527, 0.9)
+      .setStrokeStyle(1, isTargetRoom ? 0x00ff88 : 0x334155);
+
+    this.add
+      .text(960, 260, `🎯 OBJECTIF ACTIF : ${currentObjective.instruction}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "13px",
+        fontStyle: "bold",
+        color: isTargetRoom ? "#00ffcc" : "#e2e8f0",
       })
       .setOrigin(0.5);
 
@@ -228,15 +271,18 @@ export class GenericMapScene extends Scene {
   createRoomIcons(roomData) {
     const icons = [];
 
+    // Dynamically resolve the story dialogue ID for this room
+    const activeDialogId = gameState.getDialogueForRoom(this.currentMapId);
+
     // Story / Dialogue trigger button
-    if (roomData.dialogId) {
+    if (roomData.character || roomData.dialogId) {
       icons.push({
         label: `💬 ${roomData.character ? "Parler à " + roomData.character : "Rapport Mission"}`,
         sub: "(Lancer l'échange)",
         color: "#ffdd00",
         action: () => {
           this.scene.start("Game", {
-            dialogId: roomData.dialogId,
+            dialogId: activeDialogId,
             roomReturnId: this.currentMapId,
           });
         },

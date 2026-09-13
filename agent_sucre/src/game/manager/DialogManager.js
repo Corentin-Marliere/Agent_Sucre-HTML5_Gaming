@@ -45,6 +45,11 @@ export class DialogueManager {
       this.gaugeHUD.setSpeaker(data.speaker);
     }
 
+    // Update character sprite portrait visual on scene
+    if (typeof this.scene.updateSpeakerVisuals === "function") {
+      this.scene.updateSpeakerVisuals(data.speaker);
+    }
+
     this.dialogBox.start(
       data.speaker || null,
       data.lines,

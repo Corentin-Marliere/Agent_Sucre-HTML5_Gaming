@@ -191,14 +191,21 @@ export class InventoryModal extends GameObjects.Container {
           category: "Objet",
         };
 
-        // Item icon (Emoji or symbol)
-        const iconText = this.scene.add
-          .text(slotX, slotY - 10, meta.icon || "📦", {
-            fontFamily: "Arial, sans-serif",
-            fontSize: "28px",
-          })
-          .setOrigin(0.5);
-        this.add(iconText);
+        // Item icon (Sprite texture or Emoji fallback)
+        if (meta.texture && this.scene.textures.exists(meta.texture)) {
+          const itemImg = this.scene.add
+            .image(slotX, slotY - 10, meta.texture)
+            .setDisplaySize(42, 42);
+          this.add(itemImg);
+        } else {
+          const iconText = this.scene.add
+            .text(slotX, slotY - 10, meta.icon || "📦", {
+              fontFamily: "Arial, sans-serif",
+              fontSize: "28px",
+            })
+            .setOrigin(0.5);
+          this.add(iconText);
+        }
 
         // Truncated item label below icon
         const shortName =
@@ -302,13 +309,22 @@ export class InventoryModal extends GameObjects.Container {
     const iconBox = this.scene.add
       .rectangle(panelX - 112, topY + 30, 52, 52, 0x0f141c)
       .setStrokeStyle(1, 0x00d2ff);
-    const iconDisplay = this.scene.add
-      .text(panelX - 112, topY + 30, itemMeta.icon || "📦", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "30px",
-      })
-      .setOrigin(0.5);
-    this.add([iconBox, iconDisplay]);
+    this.add(iconBox);
+
+    if (itemMeta.texture && this.scene.textures.exists(itemMeta.texture)) {
+      const itemImg = this.scene.add
+        .image(panelX - 112, topY + 30, itemMeta.texture)
+        .setDisplaySize(44, 44);
+      this.add(itemImg);
+    } else {
+      const iconDisplay = this.scene.add
+        .text(panelX - 112, topY + 30, itemMeta.icon || "📦", {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "30px",
+        })
+        .setOrigin(0.5);
+      this.add(iconDisplay);
+    }
 
     // Item title
     const itemName = this.scene.add

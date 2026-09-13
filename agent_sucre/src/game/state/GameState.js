@@ -203,6 +203,91 @@ export class GameState {
     this._touch();
   }
 
+  /**
+   * Computes the current active storyline objective for the player.
+   * @returns {{ title: string, instruction: string, targetMap: string, character: string|null }}
+   */
+  getCurrentObjective() {
+    if (!this.getFlag("chap1_scene1_completed")) {
+      return {
+        title: "Briefing de Mission",
+        instruction: "Écouter la transmission secrète du Directeur Paul Bocuse.",
+        targetMap: "MainMenu",
+        character: "Paul Bocuse",
+      };
+    }
+    if (!this.getFlag("chap1_scene2_completed")) {
+      return {
+        title: "Contrôle d'Accès",
+        instruction: "Présenter votre badge à Philippe Etchebest dans le Hall de Sécurité.",
+        targetMap: "security_hall",
+        character: "Philippe Etchebest",
+      };
+    }
+    if (!this.getFlag("chap1_scene3_completed")) {
+      return {
+        title: "Équipement Pâtissier R&D",
+        instruction: "Rejoindre Cyril Lignac au Laboratoire R&D pour obtenir vos gadgets.",
+        targetMap: "rd_lab",
+        character: "Cyril Lignac",
+      };
+    }
+    if (!this.getFlag("chap1_scene4_dialog_completed")) {
+      return {
+        title: "Test Physique & Combat",
+        instruction: "Se présenter à Gordon Ramsay dans la Cour d'Entraînement.",
+        targetMap: "training_grounds",
+        character: "Gordon Ramsay",
+      };
+    }
+    if (!this.getFlag("chap1_scene4_completed")) {
+      return {
+        title: "Équiper le Tablier",
+        instruction: "Ouvrir votre sacoche [I] et équiper le Tablier Pare-Balles du Chef.",
+        targetMap: "inventory",
+        character: "Gordon Ramsay",
+      };
+    }
+    return {
+      title: "Mise en Bouche Validée",
+      instruction: "Félicitations Agent ! Votre couverture tient bon. Préparez-vous pour le Chapitre 2.",
+      targetMap: "secretInstitute",
+      character: null,
+    };
+  }
+
+  /**
+   * Resolves the appropriate dialogue ID for a given room based on current narrative flags.
+   * @param {string} roomId
+   * @returns {string}
+   */
+  getDialogueForRoom(roomId) {
+    if (roomId === "security_hall" || roomId === "institute") {
+      if (!this.getFlag("chap1_scene2_completed")) return "etchebest_intro";
+      if (!this.getFlag("chap1_scene3_completed")) return "etchebest_rappel_lignac";
+      if (!this.getFlag("chap1_scene4_dialog_completed")) return "etchebest_rappel_ramsay";
+      if (!this.getFlag("chap1_scene4_completed")) return "etchebest_rappel_equiper";
+      return "etchebest_post_chap1";
+    }
+
+    if (roomId === "rd_lab") {
+      if (!this.getFlag("chap1_scene2_completed")) return "lignac_bloque";
+      if (!this.getFlag("chap1_scene3_completed")) return "lignac_intro";
+      if (!this.getFlag("chap1_scene4_dialog_completed")) return "lignac_rappel_ramsay";
+      if (!this.getFlag("chap1_scene4_completed")) return "lignac_rappel_equiper";
+      return "lignac_post_chap1";
+    }
+
+    if (roomId === "training_grounds") {
+      if (!this.getFlag("chap1_scene3_completed")) return "ramsay_bloque";
+      if (!this.getFlag("chap1_scene4_dialog_completed")) return "ramsay_intro";
+      if (!this.getFlag("chap1_scene4_completed")) return "ramsay_rappel_equiper";
+      return "ramsay_post_chap1";
+    }
+
+    return "bocuse_welcome";
+  }
+
   /* ======================================================================== */
   /* ITEMS / INVENTORY                                                        */
   /* ======================================================================== */

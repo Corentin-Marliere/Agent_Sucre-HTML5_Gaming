@@ -48,6 +48,26 @@ export class MainMenu extends Scene {
   /* ========================================================================== */
 
   createDesktopIcons() {
+    // Game Logo Header inside CRT monitor
+    if (this.textures.exists("game_logo")) {
+      this.add.image(960, 150, "game_logo").setScale(0.85);
+    }
+
+    // Active Quest Objective Banner
+    const currentObjective = gameState.getCurrentObjective();
+    const objBg = this.add
+      .rectangle(960, 205, 840, 32, 0x0a101d, 0.88)
+      .setStrokeStyle(1, 0xffdd00, 0.8);
+
+    this.add
+      .text(960, 205, `🎯 OBJECTIF : ${currentObjective.instruction}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "12px",
+        fontStyle: "bold",
+        color: "#ffdd00",
+      })
+      .setOrigin(0.5);
+
     // 2-row by 3-column grid comfortably centered inside the CRT monitor
     const iconsData = [
       // Row 1 (y = 280)
@@ -55,18 +75,23 @@ export class MainMenu extends Scene {
         x: 640,
         y: 280,
         label: "Mission Dialogue",
-        sub: "(Boîte de dialogue)",
+        sub: "(Continuer histoire)",
         color: "#ffffff",
         action: () => {
-          let dialogId = "bocuse_welcome";
-          if (gameState.getFlag("chap1_scene3_completed")) {
-            dialogId = "ramsay_intro";
-          } else if (gameState.getFlag("chap1_scene2_completed")) {
-            dialogId = "lignac_intro";
-          } else if (gameState.getFlag("chap1_scene1_completed")) {
-            dialogId = "etchebest_intro";
+          const objective = gameState.getCurrentObjective();
+          if (objective.targetMap === "MainMenu" || !gameState.getFlag("chap1_scene1_completed")) {
+            this.scene.start("Game", { dialogId: "bocuse_welcome" });
+          } else if (objective.targetMap === "inventory") {
+            this.taskbar.handleInventory();
+          } else if (objective.targetMap && objective.targetMap !== "secretInstitute") {
+            const dialogId = gameState.getDialogueForRoom(objective.targetMap);
+            this.scene.start("Game", {
+              dialogId,
+              roomReturnId: objective.targetMap,
+            });
+          } else {
+            this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
           }
-          this.scene.start("Game", { dialogId });
         },
       },
       {
