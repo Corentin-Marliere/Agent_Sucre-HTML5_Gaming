@@ -148,8 +148,8 @@ export class Taskbar extends GameObjects.Container {
     this.closeStartMenu();
     this.startMenuOpen = true;
 
-    const startX = 570;
-    const startY = 630;
+    const startX = 533;
+    const startY = 644;
 
     this.startMenuContainer = this.scene.add.container(startX, startY);
     this.startMenuContainer.setDepth(1100);
