@@ -21,6 +21,8 @@ export class SettingsModal extends GameObjects.Container {
 
     // Active dialogue key (Space by default)
     this.dialogueKey = gameState.getFlag("dialogueKey") || "SPACE";
+    // Movement layout preference (ZQSD by default, or WASD)
+    this.movementLayout = gameState.getFlag("movementLayout") || "ZQSD";
 
     this.initUI();
     this.initKeyboard();
@@ -42,8 +44,8 @@ export class SettingsModal extends GameObjects.Container {
     this.add(this.backdrop);
 
     // Window
-    const winWidth = 680;
-    const winHeight = 520;
+    const winWidth = 700;
+    const winHeight = 570;
     const winX = screenWidth / 2;
     const winY = screenHeight / 2;
 
@@ -84,7 +86,7 @@ export class SettingsModal extends GameObjects.Container {
     // SECTION 1: AUDIO
     // ==========================================
     const audioTitle = this.scene.add
-      .text(winX - 300, winY - 170, "🔊 PARAMÈTRES AUDIO", {
+      .text(winX - 320, winY - 205, "🔊 PARAMÈTRES AUDIO", {
         fontFamily: "Arial, sans-serif",
         fontSize: "15px",
         fontStyle: "bold",
@@ -95,7 +97,7 @@ export class SettingsModal extends GameObjects.Container {
 
     const currentVolume = this.scene.sound.volume ?? 1;
     this.volumeText = this.scene.add
-      .text(winX - 300, winY - 130, `Volume général : ${Math.round(currentVolume * 100)} %`, {
+      .text(winX - 320, winY - 165, `Volume général : ${Math.round(currentVolume * 100)} %`, {
         fontFamily: "Arial, sans-serif",
         fontSize: "14px",
         color: "#ffffff",
@@ -106,14 +108,14 @@ export class SettingsModal extends GameObjects.Container {
     // Volume buttons: 0%, 25%, 50%, 75%, 100%
     const volumeLevels = [0, 0.25, 0.5, 0.75, 1];
     volumeLevels.forEach((vol, idx) => {
-      const btnX = winX - 100 + idx * 75;
+      const btnX = winX - 90 + idx * 75;
       const btn = this.scene.add
-        .rectangle(btnX, winY - 130, 65, 28, currentVolume === vol ? 0x00d2ff : 0x2e3846)
+        .rectangle(btnX, winY - 165, 65, 28, currentVolume === vol ? 0x00d2ff : 0x2e3846)
         .setStrokeStyle(1, 0xffffff)
         .setInteractive({ useHandCursor: true });
 
       const btnText = this.scene.add
-        .text(btnX, winY - 130, `${Math.round(vol * 100)}%`, {
+        .text(btnX, winY - 165, `${Math.round(vol * 100)}%`, {
           fontFamily: "Arial, sans-serif",
           fontSize: "12px",
           color: currentVolume === vol ? "#000000" : "#ffffff",
@@ -134,7 +136,7 @@ export class SettingsModal extends GameObjects.Container {
     // SECTION 2: KEY CONFIGURATION
     // ==========================================
     const controlsTitle = this.scene.add
-      .text(winX - 300, winY - 65, "⌨️ CONFIGURATION DES COMMANDES & TOUCHES", {
+      .text(winX - 320, winY - 110, "⌨️ CONFIGURATION DES COMMANDES & TOUCHES", {
         fontFamily: "Arial, sans-serif",
         fontSize: "15px",
         fontStyle: "bold",
@@ -143,16 +145,18 @@ export class SettingsModal extends GameObjects.Container {
       .setOrigin(0, 0.5);
     this.add(controlsTitle);
 
+    const layoutLabel = this.movementLayout === "ZQSD" ? "ZQSD (AZERTY)" : "WASD (QWERTY)";
+
     const controlsInfo = this.scene.add
       .text(
-        winX - 300,
-        winY - 20,
-        `• Avancer dans les dialogues : [ ${this.dialogueKey} ] ou CLIC GAUCHE\n• Déplacement & Exploration : SOURIS / CLIC\n• Raccourci Inventaire : TOUCHE [ I ]`,
+        winX - 320,
+        winY - 32,
+        `• Avancer dans les dialogues : [ ${this.dialogueKey} ] ou CLIC GAUCHE\n• Déplacement (Labyrinthe) : ${layoutLabel} ou FLÈCHES / SOURIS\n• Raccourci Carte (Guide Michelin) : TOUCHE [ M ]\n• Raccourci Inventaire : TOUCHE [ I ]`,
         {
           fontFamily: "Courier, monospace",
-          fontSize: "13px",
+          fontSize: "12px",
           color: "#d0d7de",
-          lineSpacing: 8,
+          lineSpacing: 7,
         }
       )
       .setOrigin(0, 0.5);
@@ -160,14 +164,14 @@ export class SettingsModal extends GameObjects.Container {
 
     // Dialogue key toggle button (Space vs Enter)
     const toggleKeyBtn = this.scene.add
-      .rectangle(winX + 160, winY - 20, 240, 34, 0x2e3846)
+      .rectangle(winX + 175, winY - 54, 250, 32, 0x2e3846)
       .setStrokeStyle(1, 0x00d2ff)
       .setInteractive({ useHandCursor: true });
 
     const toggleKeyText = this.scene.add
-      .text(winX + 160, winY - 20, `Changer touche : ${this.dialogueKey}`, {
+      .text(winX + 175, winY - 54, `Touche dialogue : [ ${this.dialogueKey} ]`, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "13px",
+        fontSize: "12px",
         color: "#00ffcc",
         fontStyle: "bold",
       })
@@ -178,13 +182,35 @@ export class SettingsModal extends GameObjects.Container {
       gameState.setFlag("dialogueKey", this.dialogueKey);
       this.initUI();
     });
-    this.add([toggleKeyBtn, toggleKeyText]);
+
+    // Movement layout toggle button (ZQSD vs WASD)
+    const toggleLayoutBtn = this.scene.add
+      .rectangle(winX + 175, winY - 12, 250, 32, 0x2e3846)
+      .setStrokeStyle(1, 0x00ff88)
+      .setInteractive({ useHandCursor: true });
+
+    const toggleLayoutText = this.scene.add
+      .text(winX + 175, winY - 12, `Clavier : ${layoutLabel}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "12px",
+        color: "#00ff88",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    toggleLayoutBtn.on("pointerdown", () => {
+      this.movementLayout = this.movementLayout === "ZQSD" ? "WASD" : "ZQSD";
+      gameState.setFlag("movementLayout", this.movementLayout);
+      this.initUI();
+    });
+
+    this.add([toggleKeyBtn, toggleKeyText, toggleLayoutBtn, toggleLayoutText]);
 
     // ==========================================
     // SECTION 3: SYSTEM & EPITECH REQUIREMENTS
     // ==========================================
     const sysTitle = this.scene.add
-      .text(winX - 300, winY + 55, "🔄 GESTION DU JEU & SESSION (Critère Epitech)", {
+      .text(winX - 320, winY + 58, "🔄 GESTION DU JEU & SESSION (Critère Epitech)", {
         fontFamily: "Arial, sans-serif",
         fontSize: "15px",
         fontStyle: "bold",
@@ -196,7 +222,7 @@ export class SettingsModal extends GameObjects.Container {
     // Restart game button
     this.createActionButton(
       winX - 155,
-      winY + 115,
+      winY + 120,
       "🔄 Redémarrer le jeu",
       0xd97706,
       () => {
@@ -209,7 +235,7 @@ export class SettingsModal extends GameObjects.Container {
     // Delete local save button
     this.createActionButton(
       winX + 155,
-      winY + 115,
+      winY + 120,
       "🗑️ Effacer la sauvegarde",
       0xb91c1c,
       () => {
@@ -222,7 +248,7 @@ export class SettingsModal extends GameObjects.Container {
     // Close button
     this.createActionButton(
       winX,
-      winY + 200,
+      winY + 210,
       "Fermer les paramètres",
       0x104e8b,
       () => this.close(),

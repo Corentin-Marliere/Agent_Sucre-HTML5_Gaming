@@ -2,6 +2,8 @@ import { Scene } from "phaser";
 import { InteractiveArea } from "../components/InteractiveArea.js";
 import { gameState } from "../state/GameState.js";
 import { InventoryModal } from "../components/InventoryModal.js";
+import { ConfirmModal } from "../components/ConfirmModal.js";
+import { MazeModal } from "../components/MazeModal.js";
 import { Taskbar } from "../components/Taskbar.js";
 
 /**
@@ -20,6 +22,7 @@ export class GenericMapScene extends Scene {
     }
     this.currentModal = null;
     this.tooltipContainer = null;
+    this.taskbar = null;
   }
 
   create() {
@@ -404,6 +407,115 @@ export class GenericMapScene extends Scene {
 
     this.currentModal.on("destroy", () => {
       this.currentModal = null;
+    });
+  }
+
+  /**
+   * Handles player clicking on the Archives zone on the map.
+   */
+  handleArchivesAccess() {
+    // If the player already solved the maze, access directly to Archives
+    if (gameState.getFlag("archives_unlocked")) {
+      let transitioned = false;
+      const goToArchives = () => {
+        if (!transitioned) {
+          transitioned = true;
+          this.scene.start("GenericMapScene", { mapId: "archives" });
+        }
+      };
+
+      this.cameras.main.fadeOut(300, 0, 0, 0, (camera, progress) => {
+        if (progress >= 1) {
+          goToArchives();
+        }
+      });
+
+      this.time.delayedCall(350, goToArchives);
+      return;
+    }
+
+    // Otherwise, show the security error alert modal directing them to the secret corridor
+    new ConfirmModal(this, {
+      title: "⛔ ACCÈS REFUSÉ — SAS DES ARCHIVES",
+      message:
+        "Le sas biométrique des Archives est verrouillé !\nImpossible d'entrer directement.\n\nPassez par le Couloir Secret de dérivation pour pirater et déverrouiller le sas.",
+      confirmText: "🕵️ Aller au Couloir Secret",
+      cancelText: "Annuler",
+      onConfirm: () => {
+        this.launchMazeMinigame();
+      },
+    });
+  }
+
+  /**
+   * Launches the procedural Among Us style maze minigame.
+   */
+  launchMazeMinigame() {
+    if (this.currentModal) {
+      this.currentModal.close();
+      this.currentModal = null;
+    }
+
+    this.currentModal = new MazeModal(this, {
+      timeLimit: 25,
+      onClose: () => {
+        this.currentModal = null;
+      },
+      onSuccess: () => {
+        this.currentModal = null;
+        gameState.setFlag("archives_unlocked", true);
+        this.showToast("🔓 SAS DÉVERROUILLÉ : Accès aux Archives accordé !");
+
+        let transitioned = false;
+        const goToArchives = () => {
+          if (!transitioned) {
+            transitioned = true;
+            this.scene.start("GenericMapScene", { mapId: "archives" });
+          }
+        };
+
+        // Transition directly into the Archives room terminal
+        this.cameras.main.fadeOut(400, 0, 0, 0, (camera, progress) => {
+          if (progress >= 1) {
+            goToArchives();
+          }
+        });
+
+        // Safety fallback timer so transition never hangs
+        this.time.delayedCall(450, goToArchives);
+      },
+    });
+  }
+
+  /**
+   * Shows a toast message via taskbar or floating toast on map.
+   * @param {string} msg
+   */
+  showToast(msg) {
+    if (this.taskbar && this.taskbar.scene && typeof this.taskbar.showToast === "function") {
+      this.taskbar.showToast(msg);
+      return;
+    }
+
+    const toast = this.add
+      .text(960, 90, msg, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "15px",
+        fontStyle: "bold",
+        backgroundColor: "#0d1527",
+        padding: { x: 20, y: 10 },
+        color: "#00ffcc",
+      })
+      .setOrigin(0.5)
+      .setDepth(1400);
+
+    this.tweens.add({
+      targets: toast,
+      alpha: 0,
+      y: 70,
+      delay: 2200,
+      duration: 400,
+      onComplete: () => toast.destroy(),
     });
   }
 }

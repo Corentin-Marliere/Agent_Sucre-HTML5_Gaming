@@ -576,5 +576,28 @@
         "sceneData": { "mapId": "secretInstitute" }
       }
     ]
+  },
+  "archives_intro": {
+    "speaker": "Paul Bocuse",
+    "lines": [
+      "Impressionnant, recrue. Vous avez réussi à pirater le conduit de dérivation et à infiltrer la salle des Archives Secrètes.",
+      "C'est ici que sont conservées les recettes ancestrales de la Confrérie et les rapports d'espionnage sur les chefs ennemis.",
+      "Votre dextérité face aux systèmes de sécurité prouve que vous êtes digne de la confiance de notre Institut. Gardez ce passage secret en mémoire !"
+    ],
+    "choices": [
+      {
+        "text": "Examiner les classeurs d'archives confidentielles",
+        "actions": [
+          { "type": "ADD_AFFECTION", "target": "bocuse", "amount": 10 }
+        ],
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "archives" }
+      },
+      {
+        "text": "Retourner à la carte de l'Institut [M]",
+        "nextSceneId": "GenericMapScene",
+        "sceneData": { "mapId": "secretInstitute" }
+      }
+    ]
   }
 }

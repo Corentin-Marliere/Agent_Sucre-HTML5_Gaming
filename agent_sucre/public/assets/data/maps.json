@@ -56,7 +56,7 @@
         "height": 125,
         "type": "map",
         "target": "secret_corridor",
-        "label": "🏛️ Couloirs secrets ()"
+        "label": "🕵️ Couloir Secret (Dérivation & Piratage)"
       },
       {
         "x": 1328,
@@ -65,7 +65,7 @@
         "height": 110,
         "type": "map",
         "target": "archives",
-        "label": "🏛️ Archives ()"
+        "label": "🏛️ Archives Secrètes (Accès sécurisé)"
       },
       {
         "x": 1367,
@@ -126,6 +126,20 @@
     "description": "Zone sous haute surveillance de Philippe Etchebest. Badge d'accès requis.",
     "character": "Philippe Etchebest",
     "dialogId": "etchebest_intro",
+    "zones": []
+  },
+  "archives": {
+    "type": "room",
+    "title": "Archives Secrètes de l'Institut",
+    "description": "Salle ultra-sécurisée renfermant les recettes ancestrales et les dossiers classifiés d'espionnage.",
+    "character": "Paul Bocuse",
+    "dialogId": "bocuse_chap1_conclusion",
+    "zones": []
+  },
+  "secret_corridor": {
+    "type": "room",
+    "title": "Couloirs Secrets de Dérivation",
+    "description": "Conduits techniques et sas de maintenance reliant les différentes ailes de l'Institut.",
     "zones": []
   }
 }

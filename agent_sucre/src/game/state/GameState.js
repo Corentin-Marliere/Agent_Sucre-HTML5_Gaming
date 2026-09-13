@@ -116,7 +116,9 @@ export class GameState {
         energy: 100,
         moral: 100,
       },
-      flags: {},
+      flags: {
+        movementLayout: "ZQSD",
+      },
     };
   }
 
@@ -407,6 +409,10 @@ export class GameState {
       if (!this.getFlag("chap1_scene4_dialog_completed")) return "ramsay_intro";
       if (!this.getFlag("chap1_scene4_completed") && !this.getFlag("chap1_completed")) return "ramsay_rappel_equiper";
       return "ramsay_post_chap1";
+    }
+
+    if (roomId === "archives") {
+      return "archives_intro";
     }
 
     if (this.getFlag("chap1_completed")) {
