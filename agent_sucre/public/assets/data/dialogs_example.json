@@ -321,28 +321,19 @@
     "lines": [
       "On verra bien sur le terrain ce que vous avez dans le ventre. Tenez, prenez ça.",
       "C'est le Tablier pare-balles du chef. Kevlar haute densité, protection optimale contre les tirs et les éclaboussures brûlantes.",
-      "Ouvrez votre sacoche avec la touche [I] et enfilez-le TOUT DE SUITE pour valider votre entraînement !"
+      "Enfilez-le TOUT DE SUITE pour valider votre entraînement !"
     ],
     "actions": [
-      { "type": "ADD_ITEM", "itemId": "tablier_pare_balles", "quantity": 1 },
+      { "type": "SET_FLAG", "flag": "tablier_unlocked", "value": true },
       { "type": "SET_FLAG", "flag": "chap1_scene4_dialog_completed", "value": true }
     ],
     "choices": [
       {
-        "text": "Ouvrir la sacoche [I] pour équiper le tablier",
+        "text": "Retourner au bureau",
         "actions": [
           { "type": "SET_FLAG", "flag": "chap1_scene4_dialog_completed", "value": true }
         ],
-        "nextSceneId": "GenericMapScene",
-        "sceneData": { "mapId": "training_grounds" }
-      },
-      {
-        "text": "Consulter la carte [M]",
-        "actions": [
-          { "type": "SET_FLAG", "flag": "chap1_scene4_dialog_completed", "value": true }
-        ],
-        "nextSceneId": "GenericMapScene",
-        "sceneData": { "mapId": "secretInstitute" }
+        "nextSceneId": "MainMenu"
       }
     ]
   },
