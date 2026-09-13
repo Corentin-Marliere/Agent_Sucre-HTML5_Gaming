@@ -38,17 +38,26 @@ export class MainMenu extends Scene {
     // Session check on launch
     this.checkInitialSession();
 
-    // Keydown listeners: [I] for Inventory, [M] for Map
+    // Keydown listeners: [I] for Inventory, [M] for Map, [=]/[+] for ShootEmUp (Only when authenticated)
     this.input.keyboard.on("keydown", (event) => {
+      // Prevent any global hotkeys while modal is open or session is not authenticated
+      if (
+        this.currentModal ||
+        (this.taskbar && this.taskbar.currentModal) ||
+        !gameState.getProfile().pinCode
+      ) {
+        return;
+      }
+
       if (event.key === "i" || event.key === "I") {
         this.taskbar.handleInventory();
+      } else if (event.key === "=" || event.key === "+") {
+        this.scene.start("ShootEmUpScene", { originScene: "MainMenu" });
       } else if (event.key === "m" || event.key === "M") {
-        if (!this.currentModal && !this.taskbar.currentModal) {
-          if (!gameState.getFlag("chap1_scene1_completed")) {
-            this.scene.start("Game", { dialogId: "bocuse_welcome" });
-          } else {
-            this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
-          }
+        if (!gameState.getFlag("chap1_scene1_completed")) {
+          this.scene.start("Game", { dialogId: "bocuse_welcome" });
+        } else {
+          this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
         }
       }
     });

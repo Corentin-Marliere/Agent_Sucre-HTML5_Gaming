@@ -84,6 +84,14 @@ export class DialogueManager {
       target.actions.forEach((action) => this.executeAction(action));
     }
 
+    // If infiltration dropped to 0 or below, cover is blown! Abort dialogue navigation!
+    if (gameState.getInfiltration() <= 0) {
+      if (this.dialogBox) {
+        this.dialogBox.setVisible(false);
+      }
+      return;
+    }
+
     if (target.nextDialogId) {
       this.play(target.nextDialogId);
       return;
@@ -145,6 +153,29 @@ export class DialogueManager {
           const sign = amount >= 0 ? `+${amount}` : `${amount}`;
           const color = amount >= 0 ? "#00ff88" : "#ff4444";
           this.gaugeHUD.showFeedback(`${sign} % 🕵️ Infiltration`, color, 220, 70);
+        }
+
+        if (newVal <= 0) {
+          gameState.setLastSafeContext({
+            scene: this.scene.scene.key,
+            data: {
+              dialogId: gameState.state.progression.currentDialogueId,
+              roomReturnId: this.scene.roomReturnId || null,
+            },
+          });
+
+          if (this.dialogBox) {
+            this.dialogBox.setVisible(false);
+          }
+
+          if (typeof this.scene.triggerCoverBlownAlert === "function") {
+            this.scene.triggerCoverBlownAlert();
+          } else {
+            this.scene.scene.start("ShootEmUpScene", {
+              originScene: this.scene.scene.key,
+              returnRoomId: this.scene.roomReturnId || null,
+            });
+          }
         }
         break;
       }
