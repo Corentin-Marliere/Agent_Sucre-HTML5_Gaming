@@ -1,27 +1,77 @@
 {
   "secretInstitute": {
+    "type": "map",
     "mapKey": "secret_institute_map",
+    "title": "ACADÉMIE SECRÈTE - INSTITUT LYFE",
     "zones": [
       {
-        "x": 502,
-        "y": 295,
-        "width": 240,
-        "height": 80,
+        "x": 500,
+        "y": 370,
+        "width": 340,
+        "height": 150,
         "type": "map",
-        "target": "institute"
+        "target": "security_hall",
+        "label": "🏛️ Hall de Sécurité (Philippe Etchebest)"
       },
       {
-        "x": 700,
-        "y": 90,
-        "width": 500,
+        "x": 1350,
+        "y": 545,
+        "width": 600,
+        "height": 165,
+        "type": "map",
+        "target": "rd_lab",
+        "label": "🔬 Laboratoire R&D (Cyril Lignac)"
+      },
+      {
+        "x": 490,
+        "y": 545,
+        "width": 420,
+        "height": 165,
+        "type": "map",
+        "target": "training_grounds",
+        "label": "🥊 Cour d'Entraînement (Gordon Ramsay)"
+      },
+      {
+        "x": 960,
+        "y": 170,
+        "width": 520,
         "height": 160,
         "type": "scene",
-        "target": "MainMenu"
+        "target": "MainMenu",
+        "label": "🖥️ Bureau Principal (Retour accueil)"
       }
     ]
   },
+  "security_hall": {
+    "type": "room",
+    "title": "Poste de Sécurité - Hall Principal",
+    "description": "Zone sous haute surveillance de Philippe Etchebest. Badge d'accès requis.",
+    "character": "Philippe Etchebest",
+    "dialogId": "etchebest_intro",
+    "zones": []
+  },
+  "rd_lab": {
+    "type": "room",
+    "title": "Laboratoire R&D & Gadgets",
+    "description": "Atelier secret de Cyril Lignac. Conception d'armes sucrées et gadgets gourmands-croquants.",
+    "character": "Cyril Lignac",
+    "dialogId": "lignac_lab",
+    "zones": []
+  },
+  "training_grounds": {
+    "type": "room",
+    "title": "Cour d'Entraînement Tactique",
+    "description": "Arène d'exercice physique sous le commandement impitoyable de Gordon Ramsay.",
+    "character": "Gordon Ramsay",
+    "dialogId": "ramsay_training",
+    "zones": []
+  },
   "institute": {
-    "mapKey": "pc_screen",
+    "type": "room",
+    "title": "Poste de Sécurité - Hall Principal",
+    "description": "Zone sous haute surveillance de Philippe Etchebest. Badge d'accès requis.",
+    "character": "Philippe Etchebest",
+    "dialogId": "etchebest_intro",
     "zones": []
   }
 }

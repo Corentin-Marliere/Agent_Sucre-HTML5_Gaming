@@ -13,13 +13,18 @@ export class Game extends Scene {
     super("Game");
   }
 
+  init(data) {
+    this.dialogId = data?.dialogId || "etchebest_intro";
+    this.roomReturnId = data?.roomReturnId || null;
+  }
+
   create() {
     gameState.setCurrentScene("Game");
     this.cameras.main.setBackgroundColor(0x141b26);
 
     // Background decoration if available
     if (this.textures.exists("pc_screen")) {
-      this.add.image(980, 499, "pc_screen").setScale(1.3).setAlpha(0.65);
+      this.add.image(960, 490, "pc_screen").setScale(1.3).setAlpha(0.65);
     }
 
     this.currentModal = null;
@@ -38,10 +43,10 @@ export class Game extends Scene {
       { gaugeHUD: this.gaugeHUD }
     );
 
-    // Start introductory dialogue
-    this.dialogueManager.play("etchebest_intro");
+    // Start introductory dialogue or room-specific dialogue
+    this.dialogueManager.play(this.dialogId || "etchebest_intro");
 
-    // Top HUD controls (return to desktop & inventory shortcut)
+    // Top HUD controls (return to room/desktop & inventory shortcut)
     this.createHUD();
 
     // Advance dialogues when clicking (only if no modal is open)
@@ -55,6 +60,11 @@ export class Game extends Scene {
     this.input.keyboard.on("keydown", (event) => {
       if (event.key === "i" || event.key === "I") {
         this.toggleInventory();
+        return;
+      } else if (event.key === "m" || event.key === "M") {
+        if (!this.currentModal) {
+          this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
+        }
         return;
       }
 
@@ -74,14 +84,18 @@ export class Game extends Scene {
    * Creates HUD buttons for returning to desktop and opening inventory.
    */
   createHUD() {
-    // Return to main menu desktop
+    // Return button (either to room terminal or to main desktop)
+    const returnTarget = this.roomReturnId
+      ? { scene: "GenericMapScene", data: { mapId: this.roomReturnId }, label: "🚪 Quitter" }
+      : { scene: "MainMenu", data: undefined, label: "🖥️ Bureau" };
+
     const desktopBtn = this.add
-      .rectangle(1730, 36, 110, 32, 0x1e222d, 0.9)
+      .rectangle(1720, 36, 120, 32, 0x1e222d, 0.9)
       .setStrokeStyle(1, 0x00d2ff)
       .setInteractive({ useHandCursor: true });
 
     this.add
-      .text(1730, 36, "🖥️ Bureau", {
+      .text(1720, 36, returnTarget.label, {
         fontFamily: "Arial, sans-serif",
         fontSize: "13px",
         fontStyle: "bold",
@@ -89,7 +103,7 @@ export class Game extends Scene {
       })
       .setOrigin(0.5);
 
-    desktopBtn.on("pointerdown", () => this.scene.start("MainMenu"));
+    desktopBtn.on("pointerdown", () => this.scene.start(returnTarget.scene, returnTarget.data));
 
     // Inventory button
     const invBtn = this.add
