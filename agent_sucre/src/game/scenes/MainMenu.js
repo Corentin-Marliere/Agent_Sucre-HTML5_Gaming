@@ -119,9 +119,16 @@ export class MainMenu extends Scene {
         action: () => {
           const objective = gameState.getCurrentObjective();
           if (objective.targetMap === "MainMenu" || !gameState.getFlag("chap1_scene1_completed")) {
-            const dialogId = gameState.getFlag("chap1_completed")
-              ? "bocuse_chap1_conclusion"
-              : "bocuse_welcome";
+            let dialogId = "bocuse_welcome";
+            if (!gameState.getFlag("chap1_scene1_completed")) {
+              dialogId = "bocuse_welcome";
+            } else if (gameState.getFlag("chap1_completed") && !gameState.getFlag("chap2_started")) {
+              dialogId = "lignac_chap2_alert";
+            } else if (gameState.getFlag("chap2_completed")) {
+              dialogId = "mercotte_post_chap2";
+            } else if (gameState.getFlag("chap1_completed")) {
+              dialogId = "bocuse_chap1_conclusion";
+            }
             this.scene.start("Game", { dialogId });
           } else if (objective.targetMap === "inventory") {
             this.taskbar.handleInventory();

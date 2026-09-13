@@ -111,6 +111,7 @@ export class GameState {
           lignac: 50,
           bocuse: 50,
           grolet: 50,
+          mercotte: 50,
         },
         infiltration: 100,
         energy: 100,
@@ -370,9 +371,60 @@ export class GameState {
         character: "Gordon Ramsay",
       };
     }
+
+    // --- CHAPTER 2 PROGRESSION ---
+    if (!this.getFlag("chap2_started")) {
+      return {
+        title: "Alerte Réseau R&D (Chapitre 2)",
+        instruction: "Écouter l'appel d'urgence de Cyril Lignac sur le Brookie-Walkie.",
+        targetMap: "MainMenu",
+        character: "Cyril Lignac",
+      };
+    }
+    if (!this.getFlag("chap2_bocuse_done")) {
+      return {
+        title: "Infiltration des Archives",
+        instruction: "Infiltrer les Archives via le passage dérobé et débriefer avec Paul Bocuse.",
+        targetMap: "archives",
+        character: "Paul Bocuse",
+      };
+    }
+    if (!this.getFlag("chap2_ramsay_done")) {
+      return {
+        title: "Entraînement Mental & Sang-Froid",
+        instruction: "Se présenter à Gordon Ramsay dans la Cour d'Entraînement pour l'épreuve mentale.",
+        targetMap: "training_grounds",
+        character: "Gordon Ramsay",
+      };
+    }
+    if (!this.getFlag("chap2_etchebest_done")) {
+      return {
+        title: "Boost d'Égo & Motivation",
+        instruction: "Rejoindre Philippe Etchebest au Hall de Sécurité (\"C'est qui le patron ?!\").",
+        targetMap: "security_hall",
+        character: "Philippe Etchebest",
+      };
+    }
+    if (!this.getFlag("chap2_lignac_done")) {
+      return {
+        title: "Analyse du Sucre Filé Épicé",
+        instruction: "Consulter Cyril Lignac au Laboratoire R&D pour analyser les résidus.",
+        targetMap: "rd_lab",
+        character: "Cyril Lignac",
+      };
+    }
+    if (!this.getFlag("chap2_completed")) {
+      return {
+        title: "Masterclass sous Tension",
+        instruction: "Retrouver Mercotte dans la salle de Masterclass (Classe) et déjouer le piège.",
+        targetMap: "lecture_room",
+        character: "Mercotte",
+      };
+    }
+
     return {
-      title: "Mise en Bouche Validée",
-      instruction: "Félicitations Agent ! Chapitre 1 validé. Préparez-vous pour le Chapitre 2.",
+      title: "Chapitre 2 Validé",
+      instruction: "L'ombre du Bonbon Ultime recule... Préparez-vous pour la descente aux caves.",
       targetMap: "MainMenu",
       character: "Paul Bocuse",
     };
@@ -388,6 +440,45 @@ export class GameState {
       return "etchebest_bloque_bocuse";
     }
 
+    // --- CHAPTER 2 PROGRESSION ---
+    if (this.getFlag("chap1_completed")) {
+      if (roomId === "archives") {
+        if (!this.getFlag("chap2_started")) return "archives_intro";
+        return "bocuse_chap2_archives";
+      }
+
+      if (roomId === "training_grounds") {
+        if (!this.getFlag("chap2_bocuse_done")) return "ramsay_post_chap1";
+        if (!this.getFlag("chap2_ramsay_done")) return "ramsay_chap2_mental";
+        return "ramsay_chap2_post";
+      }
+
+      if (roomId === "security_hall" || roomId === "institute") {
+        if (!this.getFlag("chap2_ramsay_done")) return "etchebest_post_chap1";
+        if (!this.getFlag("chap2_etchebest_done")) return "etchebest_chap2_ego_1";
+        return "etchebest_chap2_post";
+      }
+
+      if (roomId === "rd_lab") {
+        if (!this.getFlag("chap2_etchebest_done")) return "lignac_post_chap1";
+        if (!this.getFlag("chap2_lignac_done")) return "lignac_chap2_lead";
+        return "lignac_chap2_post";
+      }
+
+      if (roomId === "lecture_room") {
+        if (!this.getFlag("chap2_lignac_done")) return "mercotte_bloque";
+        if (!this.getFlag("chap2_completed")) return "mercotte_chap2_macaron";
+        return "mercotte_post_chap2";
+      }
+
+      // Default for other rooms in Chapter 2
+      if (!this.getFlag("chap2_started")) {
+        return "lignac_chap2_alert";
+      }
+      return "bocuse_chap1_conclusion";
+    }
+
+    // --- CHAPTER 1 PROGRESSION ---
     if (roomId === "security_hall" || roomId === "institute") {
       if (!this.getFlag("chap1_scene2_completed")) return "etchebest_intro";
       if (!this.getFlag("chap1_scene3_completed")) return "etchebest_rappel_lignac";
@@ -415,8 +506,8 @@ export class GameState {
       return "archives_intro";
     }
 
-    if (this.getFlag("chap1_completed")) {
-      return "bocuse_chap1_conclusion";
+    if (roomId === "lecture_room") {
+      return "mercotte_bloque";
     }
 
     return "bocuse_welcome";

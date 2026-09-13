@@ -10,6 +10,7 @@ const CHARACTER_MAP = {
   lignac: "Cyril Lignac",
   bocuse: "Paul Bocuse",
   grolet: "Cédric Grolet",
+  mercotte: "Mercotte",
 };
 
 /**
@@ -45,6 +46,7 @@ export class GaugeHUD extends GameObjects.Container {
     if (lower.includes("lignac") || lower.includes("cyril")) return "lignac";
     if (lower.includes("bocuse") || lower.includes("paul")) return "bocuse";
     if (lower.includes("grolet") || lower.includes("cédric") || lower.includes("cedric")) return "grolet";
+    if (lower.includes("mercotte")) return "mercotte";
     return lower;
   }
 

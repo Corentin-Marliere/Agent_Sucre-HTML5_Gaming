@@ -102,58 +102,129 @@ export class DialogBox extends GameObjects.Container {
   showChoices() {
     this.clearChoices();
 
-    const choiceWidth = 640;
-    const choiceHeight = 40;
-    const spacing = 12;
-
-    // Shuffle choice display order if they represent narrative dialogue responses
+    // Shuffle choice display order if they represent distinct narrative dialogue responses
     const isDialogueResponse =
       Array.isArray(this.choices) &&
       this.choices.length > 1 &&
-      this.choices.every((c) => c.nextDialogId);
+      this.choices.every((c) => c.nextDialogId) &&
+      new Set(this.choices.map((c) => c.text)).size > 1;
 
     const displayedChoices = isDialogueResponse
       ? [...this.choices].sort(() => Math.random() - 0.5)
       : this.choices;
 
-    displayedChoices.forEach((choice, index) => {
-      const buttonY = -(choiceHeight + spacing) * (displayedChoices.length - index) - 10;
+    const totalChoices = displayedChoices.length;
 
-      const btnBg = this.scene.add
-        .rectangle(this.width / 2, buttonY, choiceWidth, choiceHeight, 0x101a28, 0.95)
-        .setStrokeStyle(1.5, 0x00d2ff)
-        .setInteractive({ useHandCursor: true });
+    // If more than 4 choices (e.g. 6 or 9 choices), render in a multi-column grid
+    if (totalChoices > 4) {
+      const cols = totalChoices >= 9 ? 3 : (totalChoices % 2 === 0 && totalChoices < 6 ? 2 : 3);
+      const rows = Math.ceil(totalChoices / cols);
+      const totalGridWidth = 1060;
+      const spacingX = 14;
+      const spacingY = 10;
+      const btnW = Math.floor((totalGridWidth - (cols - 1) * spacingX) / cols);
+      const btnH = 44;
+      const totalGridHeight = rows * btnH + (rows - 1) * spacingY;
+      const startY = -totalGridHeight - 16;
+      const startX = (this.width - totalGridWidth) / 2;
 
-      const btnText = this.scene.add
-        .text(this.width / 2, buttonY, `➤  ${choice.text}`, {
-          fontFamily: "Arial, sans-serif",
-          fontSize: "15px",
-          fontStyle: "bold",
-          color: "#ffffff",
-        })
-        .setOrigin(0.5);
+      displayedChoices.forEach((choice, index) => {
+        const col = index % cols;
+        const row = Math.floor(index / cols);
 
-      btnBg.on("pointerover", () => {
-        btnBg.setFillStyle(0x1e3a5f, 0.98);
-        btnBg.setStrokeStyle(2, 0x00ffcc);
-        btnText.setColor("#00ffcc");
+        const btnX = startX + col * (btnW + spacingX) + btnW / 2;
+        const btnY = startY + row * (btnH + spacingY) + btnH / 2;
+
+        const btnBg = this.scene.add
+          .rectangle(btnX, btnY, btnW, btnH, 0x101a28, 0.95)
+          .setStrokeStyle(1.5, 0x00d2ff)
+          .setInteractive({ useHandCursor: true });
+
+        const btnText = this.scene.add
+          .text(btnX, btnY, `➤  ${choice.text}`, {
+            fontFamily: "Arial, sans-serif",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            wordWrap: { width: btnW - 20, useAdvancedWrap: true },
+            align: "center",
+          })
+          .setOrigin(0.5);
+
+        btnBg.on("pointerover", () => {
+          btnBg.setFillStyle(0x1e3a5f, 0.98);
+          btnBg.setStrokeStyle(2, 0x00ffcc);
+          btnText.setColor("#00ffcc");
+        });
+
+        btnBg.on("pointerout", () => {
+          btnBg.setFillStyle(0x101a28, 0.95);
+          btnBg.setStrokeStyle(1.5, 0x00d2ff);
+          btnText.setColor("#ffffff");
+        });
+
+        btnBg.on("pointerdown", () => {
+          this.justSelectedChoice = true;
+          this.clearChoices();
+          if (this.onChoiceSelected) this.onChoiceSelected(choice);
+        });
+
+        this.choicesContainer.add([btnBg, btnText]);
       });
+    } else {
+      // 1 to 4 choices: single-column vertical stack with generous width and dynamic height
+      const choiceWidth = 1000;
+      const defaultChoiceHeight = 44;
+      const spacing = 10;
+      let currentBottom = -14;
 
-      btnBg.on("pointerout", () => {
-        btnBg.setFillStyle(0x101a28, 0.95);
-        btnBg.setStrokeStyle(1.5, 0x00d2ff);
-        btnText.setColor("#ffffff");
-      });
+      // Layout from bottom-most choice upwards
+      for (let i = displayedChoices.length - 1; i >= 0; i--) {
+        const choice = displayedChoices[i];
 
-      btnBg.on("pointerdown", () => {
-        this.justSelectedChoice = true;
+        const btnText = this.scene.add
+          .text(this.width / 2, 0, `➤  ${choice.text}`, {
+            fontFamily: "Arial, sans-serif",
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            wordWrap: { width: choiceWidth - 40, useAdvancedWrap: true },
+            align: "center",
+          })
+          .setOrigin(0.5);
 
-        this.clearChoices();
-        if (this.onChoiceSelected) this.onChoiceSelected(choice);
-      });
+        const btnHeight = Math.max(defaultChoiceHeight, btnText.height + 18);
+        const btnY = currentBottom - btnHeight / 2;
+        btnText.setY(btnY);
 
-      this.choicesContainer.add([btnBg, btnText]);
-    });
+        const btnBg = this.scene.add
+          .rectangle(this.width / 2, btnY, choiceWidth, btnHeight, 0x101a28, 0.95)
+          .setStrokeStyle(1.5, 0x00d2ff)
+          .setInteractive({ useHandCursor: true });
+
+        btnBg.on("pointerover", () => {
+          btnBg.setFillStyle(0x1e3a5f, 0.98);
+          btnBg.setStrokeStyle(2, 0x00ffcc);
+          btnText.setColor("#00ffcc");
+        });
+
+        btnBg.on("pointerout", () => {
+          btnBg.setFillStyle(0x101a28, 0.95);
+          btnBg.setStrokeStyle(1.5, 0x00d2ff);
+          btnText.setColor("#ffffff");
+        });
+
+        btnBg.on("pointerdown", () => {
+          this.justSelectedChoice = true;
+          this.clearChoices();
+          if (this.onChoiceSelected) this.onChoiceSelected(choice);
+        });
+
+        // Add background first so text is on top
+        this.choicesContainer.add([btnBg, btnText]);
+        currentBottom -= (btnHeight + spacing);
+      }
+    }
   }
 
   clearChoices() {

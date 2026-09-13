@@ -46,11 +46,13 @@ export class Preloader extends Scene {
     this.load.image("char_lignac", "images/char_lignac.jpg");
     this.load.image("char_ramsay", "images/char_ramsay.jpg");
     this.load.image("char_bocuse", "images/char_bocuse.jpg");
+    this.load.image("char_mercotte", "images/char_mercotte.jpg");
 
     // Room backgrounds for immersive Visual Novel dialogues
     this.load.image("bg_security_hall", "images/bg_security_hall.jpg");
     this.load.image("bg_rd_lab", "images/bg_rd_lab.jpg");
     this.load.image("bg_training_grounds", "images/bg_training_grounds.jpg");
+    this.load.image("bg_lecture_room", "images/bg_lecture_room.jpg");
 
     // Inventory gadget textures
     this.load.image("item_tablier_pare_balles", "images/tablier-pare-balle.png");
