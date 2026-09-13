@@ -211,6 +211,13 @@ export class GenericMapScene extends Scene {
     // Centered retro PC monitor frame
     this.add.image(960, 490, "pc_screen").setScale(1.3);
 
+    // Terminal desktop wallpaper logo inside CRT monitor screen (55% opacity)
+    if (this.textures.exists("pc_wallpaper_logo")) {
+      const wallpaper = this.add.image(960, 460, "pc_wallpaper_logo");
+      wallpaper.setDisplaySize(540, 540);
+      wallpaper.setAlpha(0.1);
+    }
+
     // Reusable taskbar at the bottom of the CRT screen
     this.taskbar = new Taskbar(this, {
       locationName: roomData.title || "Poste d'observation",
@@ -280,12 +287,12 @@ export class GenericMapScene extends Scene {
     // Dynamically resolve the story dialogue ID for this room
     const activeDialogId = gameState.getDialogueForRoom(this.currentMapId);
 
-    // Story / Dialogue trigger button
+    // Story / Dialogue trigger button (Brookie-Walkie)
     if (roomData.character || roomData.dialogId) {
       icons.push({
-        label: `💬 ${roomData.character ? "Parler à " + roomData.character : "Rapport Mission"}`,
-        sub: "(Lancer l'échange)",
-        color: "#ffdd00",
+        texture: "icon_dialogue",
+        label: roomData.character ? `Parler à\n${roomData.character}` : "Rapport\nMission",
+        color: "#ffffff",
         action: () => {
           this.scene.start("Game", {
             dialogId: activeDialogId,
@@ -295,71 +302,83 @@ export class GenericMapScene extends Scene {
       });
     }
 
-    // Map shortcut
+    // Map shortcut (Guide Michelin / Boussole)
     icons.push({
-      label: "🗺️ Carte Institut [M]",
-      sub: "(Changer de pièce)",
-      color: "#38bdf8",
+      texture: "icon_map_guide",
+      label: "Guide\nMichelin",
+      color: "#ffffff",
       action: () => {
         this.scene.start("GenericMapScene", { mapId: "secretInstitute" });
       },
     });
 
-    // Inventory shortcut
+    // Inventory shortcut (Poche à douille)
     icons.push({
-      label: "🎒 Sacoche [I]",
-      sub: "(Inspecter objets)",
-      color: "#00ff88",
+      texture: "icon_inventory",
+      label: "Inventaire\n[I]",
+      color: "#ffffff",
       action: () => this.taskbar.handleInventory(),
     });
 
-    // Desktop shortcut
+    // Desktop shortcut (Windows Cake)
     icons.push({
-      label: "🖥️ Bureau Principal",
-      sub: "(Retour accueil)",
+      texture: "windows_cake",
+      label: "Bureau\nPrincipal",
       color: "#ffffff",
       action: () => this.scene.start("MainMenu"),
     });
 
     // Spacing calculation centered inside the CRT screen
     const count = icons.length;
-    const spacing = 230;
+    const spacing = 220;
     const startX = 960 - ((count - 1) * spacing) / 2;
-    const yPos = 440;
+    const yPos = 430;
 
     icons.forEach((item, idx) => {
       const xPos = startX + idx * spacing;
+      const iconKey = item.texture || "folder";
 
-      const folder = this.add.image(xPos, yPos, "folder");
-      folder.setScale(0.1);
+      const iconImg = this.add.image(xPos, yPos, iconKey);
+      const targetDim = 66;
+      const baseScale = Math.min(
+        targetDim / (iconImg.width || 100),
+        targetDim / (iconImg.height || 100)
+      );
+      iconImg.setScale(baseScale);
+
+      const hasMultiline = item.label.includes("\n");
+      const labelY = yPos + (hasMultiline ? 46 : 44);
+      const subY = yPos + (hasMultiline ? 72 : 64);
 
       const labelText = this.add
-        .text(xPos, yPos + 44, item.label, {
+        .text(xPos, labelY, item.label, {
           fontFamily: "Arial, sans-serif",
           fontSize: "14px",
           fontStyle: "bold",
           color: item.color,
+          align: "center",
         })
         .setOrigin(0.5);
 
       const subText = this.add
-        .text(xPos, yPos + 64, item.sub, {
+        .text(xPos, subY, item.sub, {
           fontFamily: "Arial, sans-serif",
           fontSize: "11px",
           color: "#94a3b8",
+          align: "center",
         })
         .setOrigin(0.5);
 
       const hitZone = this.add
-        .rectangle(xPos, yPos + 20, 170, 120, 0x000000, 0)
+        .rectangle(xPos, yPos + 20, 170, 130, 0x000000, 0)
         .setInteractive({ useHandCursor: true });
 
       hitZone.on("pointerover", () => {
-        folder.setScale(0.11);
+        iconImg.setScale(baseScale * 1.12);
         labelText.setColor("#ffffff");
       });
       hitZone.on("pointerout", () => {
-        folder.setScale(0.1);
+        iconImg.setScale(baseScale);
         labelText.setColor(item.color);
       });
       hitZone.on("pointerdown", item.action);

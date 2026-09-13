@@ -32,6 +32,15 @@ export class Preloader extends Scene {
     this.load.image("secret_institute_map", "images/map_secret_institute.jpeg");
     this.load.image("game_logo", "images/logo.png");
 
+    // Desktop OS Icons & CRT Wallpaper
+    this.load.image("pc_wallpaper_logo", "images/logoV1.psd.png");
+    this.load.image("icon_inventory", "images/poche-a-douille.png");
+    this.load.image("icon_wardrobe", "images/tablier.png");
+    this.load.image("icon_map_guide", "images/boussole.png");
+    this.load.image("icon_new_mission", "images/sainte-grenade.png");
+    this.load.image("icon_dialogue", "images/brookie-walkie.png");
+    this.load.image("icon_load_save", "images/save_floppy.png");
+
     // Character portraits for Visual Novel dialogues
     this.load.image("char_etchebest", "images/char_etchebest.jpg");
     this.load.image("char_lignac", "images/char_lignac.jpg");
