@@ -5,37 +5,37 @@
     "title": "ACADÉMIE SECRÈTE - INSTITUT LYFE",
     "zones": [
       {
-        "x": 500,
-        "y": 370,
+        "x": 700,
+        "y": 380,
         "width": 340,
-        "height": 150,
+        "height": 100,
         "type": "map",
         "target": "security_hall",
         "label": "🏛️ Hall de Sécurité (Philippe Etchebest)"
       },
       {
-        "x": 1350,
+        "x": 1367,
         "y": 545,
-        "width": 600,
-        "height": 165,
+        "width": 595,
+        "height": 150,
         "type": "map",
         "target": "rd_lab",
         "label": "🔬 Laboratoire R&D (Cyril Lignac)"
       },
       {
-        "x": 490,
+        "x": 583,
         "y": 545,
-        "width": 420,
-        "height": 165,
+        "width": 590,
+        "height": 150,
         "type": "map",
         "target": "training_grounds",
         "label": "🥊 Cour d'Entraînement (Gordon Ramsay)"
       },
       {
-        "x": 960,
-        "y": 170,
+        "x": 975,
+        "y": 125,
         "width": 520,
-        "height": 160,
+        "height": 190,
         "type": "scene",
         "target": "MainMenu",
         "label": "🖥️ Bureau Principal (Retour accueil)"
