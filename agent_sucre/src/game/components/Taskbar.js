@@ -149,18 +149,18 @@ export class Taskbar extends GameObjects.Container {
     this.startMenuOpen = true;
 
     const startX = 570;
-    const startY = 650;
+    const startY = 630;
 
     this.startMenuContainer = this.scene.add.container(startX, startY);
     this.startMenuContainer.setDepth(1100);
 
     const menuBg = this.scene.add
-      .rectangle(0, 0, 270, 320, 0x0d1527, 0.98)
+      .rectangle(0, 0, 270, 360, 0x0d1527, 0.98)
       .setStrokeStyle(2, 0x00d2ff);
     this.startMenuContainer.add(menuBg);
 
     const header = this.scene.add
-      .text(-120, -140, "AGENT OS - DÉMARRER", {
+      .text(-120, -160, "AGENT OS - DÉMARRER", {
         fontFamily: "Courier, monospace",
         fontSize: "12px",
         fontStyle: "bold",
@@ -175,6 +175,17 @@ export class Taskbar extends GameObjects.Container {
         action: () => {
           this.closeStartMenu();
           this.scene.scene.start("MainMenu");
+        },
+      },
+      {
+        text: "📁 Dossier Multimédia",
+        action: () => {
+          this.closeStartMenu();
+          if (typeof this.scene.openMediaFolder === "function") {
+            this.scene.openMediaFolder();
+          } else {
+            this.scene.scene.start("MainMenu");
+          }
         },
       },
       {
@@ -219,7 +230,7 @@ export class Taskbar extends GameObjects.Container {
     ];
 
     items.forEach((item, idx) => {
-      const yPos = -105 + idx * 42;
+      const yPos = -125 + idx * 39;
       const btn = this.scene.add
         .rectangle(0, yPos, 250, 34, 0x16243d, 0.9)
         .setStrokeStyle(1, 0x335588)

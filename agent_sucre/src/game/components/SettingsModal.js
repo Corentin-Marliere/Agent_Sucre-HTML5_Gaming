@@ -1,6 +1,7 @@
 import { GameObjects } from "phaser";
 import { SaveManager } from "../manager/SaveManager.js";
 import { gameState } from "../state/GameState.js";
+import { audioManager } from "../manager/AudioManager.js";
 
 /**
  * Retro OS dialog box for settings management
@@ -126,6 +127,7 @@ export class SettingsModal extends GameObjects.Container {
       btn.on("pointerdown", () => {
         this.scene.sound.volume = vol;
         this.scene.sound.mute = vol === 0;
+        audioManager.setVolume(vol);
         this.initUI();
       });
 
