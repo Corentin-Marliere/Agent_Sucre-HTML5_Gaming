@@ -40,9 +40,22 @@ export class DialogueManager {
 
     gameState.setCurrentDialogue(dialogueId);
 
+    // Execute node-level entry actions (e.g. awards, flag updates)
+    if (data.action) {
+      this.executeAction(data.action);
+    }
+    if (Array.isArray(data.actions)) {
+      data.actions.forEach((action) => this.executeAction(action));
+    }
+
     // Update active speaker on the affinity gauge if available
     if (data.speaker && this.gaugeHUD) {
       this.gaugeHUD.setSpeaker(data.speaker);
+    }
+
+    // Update character sprite portrait visual on scene
+    if (typeof this.scene.updateSpeakerVisuals === "function") {
+      this.scene.updateSpeakerVisuals(data.speaker);
     }
 
     this.dialogBox.start(
@@ -77,7 +90,7 @@ export class DialogueManager {
     }
 
     if (target.nextSceneId) {
-      this.scene.scene.start(target.nextSceneId);
+      this.scene.scene.start(target.nextSceneId, target.sceneData || undefined);
       return;
     }
   }
@@ -90,12 +103,17 @@ export class DialogueManager {
     if (!action || !action.type) return;
 
     switch (action.type) {
-      case "ADD_ITEM":
+      case "ADD_ITEM": {
+        const catalog = this.scene.cache.json.get("items") || {};
+        const itemName = catalog[action.itemId]?.name || action.itemId;
         gameState.addItem(action.itemId, action.quantity || 1);
         if (typeof this.scene.showToast === "function") {
-          this.scene.showToast(`📦 Objet obtenu : ${action.itemId}`);
+          this.scene.showToast(`📦 Objet obtenu : ${itemName}`);
+        } else if (this.gaugeHUD && typeof this.gaugeHUD.showFeedback === "function") {
+          this.gaugeHUD.showFeedback(`+1 📦 ${itemName}`, "#00ffcc", 960, 100);
         }
         break;
+      }
 
       case "REMOVE_ITEM":
         gameState.removeItem(action.itemId, action.quantity || 1);
@@ -145,8 +163,17 @@ export class DialogueManager {
         gameState.setFlag(action.flag, action.value ?? true);
         break;
 
+      case "SET_CHAPTER":
+        gameState.setChapter(Number(action.chapter) || 1);
+        break;
+
       default:
-        console.warn(`Action de dialogue non reconnue : ${action.type}`);
+        console.warn(`Unrecognized dialogue action: ${action.type}`);
+    }
+
+    // Refresh active quest banner if current scene supports it
+    if (typeof this.scene.refreshObjectiveBanner === "function") {
+      this.scene.refreshObjectiveBanner();
     }
   }
 }

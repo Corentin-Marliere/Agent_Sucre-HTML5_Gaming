@@ -79,35 +79,38 @@ export class GameState {
       throw new Error("L'état fourni est invalide.");
     }
 
+    const defaultState = this.getDefaultState();
+    const loadedGauges = loadedState.gauges || {};
+    const loadedAffection = loadedGauges.affection || {};
+
     this.state = {
-      version: loadedState.version || this.state.version,
+      version: loadedState.version || defaultState.version,
       profile: {
-        ...this.state.profile,
+        ...defaultState.profile,
         ...(loadedState.profile || {}),
       },
       progression: {
-        ...this.state.progression,
+        ...defaultState.progression,
         ...(loadedState.progression || {}),
         completedChapters: Array.isArray(loadedState.progression?.completedChapters)
           ? [...loadedState.progression.completedChapters]
-          : this.state.progression.completedChapters,
+          : [...defaultState.progression.completedChapters],
       },
       inventory: {
-        ...this.state.inventory,
+        ...defaultState.inventory,
         items: Array.isArray(loadedState.inventory?.items)
           ? JSON.parse(JSON.stringify(loadedState.inventory.items))
-          : this.state.inventory.items,
+          : [...defaultState.inventory.items],
       },
       gauges: {
-        ...this.state.gauges,
-        ...(loadedState.gauges || {}),
+        ...defaultState.gauges,
+        ...loadedGauges,
         affection: {
-          ...this.state.gauges.affection,
-          ...(loadedState.gauges?.affection || {}),
+          ...defaultState.gauges.affection,
+          ...loadedAffection,
         },
       },
       flags: {
-        ...this.state.flags,
         ...(loadedState.flags || {}),
       },
     };
@@ -201,6 +204,99 @@ export class GameState {
   setCurrentDialogue(dialogueId) {
     this.state.progression.currentDialogueId = dialogueId;
     this._touch();
+  }
+
+  /**
+   * Computes the current active storyline objective for the player.
+   * @returns {{ title: string, instruction: string, targetMap: string, character: string|null }}
+   */
+  getCurrentObjective() {
+    if (!this.getFlag("chap1_scene1_completed")) {
+      return {
+        title: "Briefing de Mission",
+        instruction: "Écouter la transmission secrète du Directeur Paul Bocuse.",
+        targetMap: "MainMenu",
+        character: "Paul Bocuse",
+      };
+    }
+    if (!this.getFlag("chap1_scene2_completed")) {
+      return {
+        title: "Contrôle d'Accès",
+        instruction: "Présenter votre badge à Philippe Etchebest dans le Hall de Sécurité.",
+        targetMap: "security_hall",
+        character: "Philippe Etchebest",
+      };
+    }
+    if (!this.getFlag("chap1_scene3_completed")) {
+      return {
+        title: "Équipement Pâtissier R&D",
+        instruction: "Rejoindre Cyril Lignac au Laboratoire R&D pour obtenir vos gadgets.",
+        targetMap: "rd_lab",
+        character: "Cyril Lignac",
+      };
+    }
+    if (!this.getFlag("chap1_scene4_dialog_completed")) {
+      return {
+        title: "Test Physique & Combat",
+        instruction: "Se présenter à Gordon Ramsay dans la Cour d'Entraînement.",
+        targetMap: "training_grounds",
+        character: "Gordon Ramsay",
+      };
+    }
+    if (!this.getFlag("chap1_scene4_completed") && !this.getFlag("chap1_completed")) {
+      return {
+        title: "Équiper le Tablier",
+        instruction: "Ouvrir votre sacoche [I] et équiper le Tablier Pare-Balles du Chef.",
+        targetMap: "inventory",
+        character: "Gordon Ramsay",
+      };
+    }
+    return {
+      title: "Mise en Bouche Validée",
+      instruction: "Félicitations Agent ! Chapitre 1 validé. Préparez-vous pour le Chapitre 2.",
+      targetMap: "MainMenu",
+      character: "Paul Bocuse",
+    };
+  }
+
+  /**
+   * Resolves the appropriate dialogue ID for a given room based on current narrative flags.
+   * @param {string} roomId
+   * @returns {string}
+   */
+  getDialogueForRoom(roomId) {
+    if (!this.getFlag("chap1_scene1_completed")) {
+      return "etchebest_bloque_bocuse";
+    }
+
+    if (roomId === "security_hall" || roomId === "institute") {
+      if (!this.getFlag("chap1_scene2_completed")) return "etchebest_intro";
+      if (!this.getFlag("chap1_scene3_completed")) return "etchebest_rappel_lignac";
+      if (!this.getFlag("chap1_scene4_dialog_completed")) return "etchebest_rappel_ramsay";
+      if (!this.getFlag("chap1_scene4_completed") && !this.getFlag("chap1_completed")) return "etchebest_rappel_equiper";
+      return "etchebest_post_chap1";
+    }
+
+    if (roomId === "rd_lab") {
+      if (!this.getFlag("chap1_scene2_completed")) return "lignac_bloque";
+      if (!this.getFlag("chap1_scene3_completed")) return "lignac_intro";
+      if (!this.getFlag("chap1_scene4_dialog_completed")) return "lignac_rappel_ramsay";
+      if (!this.getFlag("chap1_scene4_completed") && !this.getFlag("chap1_completed")) return "lignac_rappel_equiper";
+      return "lignac_post_chap1";
+    }
+
+    if (roomId === "training_grounds") {
+      if (!this.getFlag("chap1_scene3_completed")) return "ramsay_bloque";
+      if (!this.getFlag("chap1_scene4_dialog_completed")) return "ramsay_intro";
+      if (!this.getFlag("chap1_scene4_completed") && !this.getFlag("chap1_completed")) return "ramsay_rappel_equiper";
+      return "ramsay_post_chap1";
+    }
+
+    if (this.getFlag("chap1_completed")) {
+      return "bocuse_chap1_conclusion";
+    }
+
+    return "bocuse_welcome";
   }
 
   /* ======================================================================== */

@@ -30,6 +30,26 @@ export class Preloader extends Scene {
     this.load.image("folder", "images/folder.png");
     this.load.image("windows_cake", "images/Windows_Cake.png");
     this.load.image("secret_institute_map", "images/map_secret_institute.jpeg");
+    this.load.image("game_logo", "images/logo.png");
+
+    // Character portraits for Visual Novel dialogues
+    this.load.image("char_etchebest", "images/char_etchebest.jpg");
+    this.load.image("char_lignac", "images/char_lignac.jpg");
+    this.load.image("char_ramsay", "images/char_ramsay.jpg");
+    this.load.image("char_bocuse", "images/char_bocuse.jpg");
+
+    // Room backgrounds for immersive Visual Novel dialogues
+    this.load.image("bg_security_hall", "images/bg_security_hall.jpg");
+    this.load.image("bg_rd_lab", "images/bg_rd_lab.jpg");
+    this.load.image("bg_training_grounds", "images/bg_training_grounds.jpg");
+
+    // Inventory gadget textures
+    this.load.image("item_tablier_pare_balles", "images/tablier-pare-balle.png");
+    this.load.image("item_brookie_walkie", "images/brookie-walkie.png");
+    this.load.image("item_poche_a_douille", "images/poche-a-douille-inventaire.png");
+    this.load.image("item_sainte_grenade", "images/sainte-grenade.png");
+    this.load.image("item_eclair_laser", "images/eclair-laser-on.png");
+    this.load.image("item_boussole", "images/boussole.png");
 
     this.load.json("dialogs", "data/dialogs_example.json");
     this.load.json("maps", "data/maps.json");

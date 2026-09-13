@@ -11,6 +11,7 @@
     "name": "Tablier Pare-Balles du Chef",
     "category": "Équipement Tactique",
     "icon": "🥋",
+    "texture": "item_tablier_pare_balles",
     "description": "Tablier de cuisine renforcé de fibres de kevlar tressées, remis par le Chef Gordon Ramsay lors de l'entraînement physique.",
     "inspection": "Un rembourrage secret protège les organes vitaux contre les éclaboussures brûlantes et les tirs ennemis. Il porte le sceau de Ramsay : 'Done to perfection'.",
     "usable": true,
@@ -24,6 +25,51 @@
     "icon": "🧁",
     "description": "Un macaron à la framboise concocté par Cyril Lignac dans son laboratoire secret au four à 180°C.",
     "inspection": "Attention : la ganache renferme une micro-charge thermique télécommandée. Détonation croquante garantie en cas de besoin d'évacuation d'urgence !",
+    "usable": false
+  },
+  "brookie_walkie": {
+    "name": "Brookie-Walkie Chiffré",
+    "category": "Communication Secrète",
+    "icon": "📻",
+    "texture": "item_brookie_walkie",
+    "description": "Émetteur-récepteur radio haute fréquence camouflé sous la forme d'un succulent brookie mi-brownie mi-cookie.",
+    "inspection": "En pressant la pépite de chocolat supérieure, vous ouvrez un canal sécurisé directement relié au bureau du Directeur Bocuse.",
+    "usable": false
+  },
+  "poche_a_douille": {
+    "name": "Poche à Douille Tactique",
+    "category": "Arme Dissuasive",
+    "icon": "🧁",
+    "texture": "item_poche_a_douille",
+    "description": "Poche à douille sous pression projetant de la crème pâtissière cryogénique à prise ultra-rapide.",
+    "inspection": "Idéale pour figer un ennemi sur place ou boucher instantanément un conduit d'aération ou un mécanisme d'alarme.",
+    "usable": false
+  },
+  "sainte_grenade": {
+    "name": "Sainte Grenade Pâtissière",
+    "category": "Explosif Sucré",
+    "icon": "💣",
+    "texture": "item_sainte_grenade",
+    "description": "Grenade d'apparat dorée garnie d'une émulsion au sucre pétillant et caramel surchauffé.",
+    "inspection": "Dégoupiller, compter jusqu'à trois, et lancer vers le verrou ou la porte blindée pour une ouverture royale.",
+    "usable": false
+  },
+  "eclair_laser": {
+    "name": "Éclair au Chocolat Laser",
+    "category": "Outil d'Infiltration",
+    "icon": "🥖",
+    "texture": "item_eclair_laser",
+    "description": "Faux éclair pâtissier au glaçage chocolat abritant un rayon laser de découpe haute précision.",
+    "inspection": "Le glaçage dissimule l'interrupteur ON/OFF. Capable de découper un panneau métallique ou une serrure renforcée en silence.",
+    "usable": false
+  },
+  "boussole": {
+    "name": "Boussole de l'Institut",
+    "category": "Navigation",
+    "icon": "🧭",
+    "texture": "item_boussole",
+    "description": "Boussole magnétique dorée orientée vers les points stratégiques de l'Institut Lyfe.",
+    "inspection": "L'aiguille n'indique pas le Nord, mais le point de rendez-vous d'extraction le plus proche.",
     "usable": false
   },
   "boite_patissiere": {

@@ -55,7 +55,7 @@
     "title": "Laboratoire R&D & Gadgets",
     "description": "Atelier secret de Cyril Lignac. Conception d'armes sucrées et gadgets gourmands-croquants.",
     "character": "Cyril Lignac",
-    "dialogId": "lignac_lab",
+    "dialogId": "lignac_intro",
     "zones": []
   },
   "training_grounds": {
@@ -63,7 +63,7 @@
     "title": "Cour d'Entraînement Tactique",
     "description": "Arène d'exercice physique sous le commandement impitoyable de Gordon Ramsay.",
     "character": "Gordon Ramsay",
-    "dialogId": "ramsay_training",
+    "dialogId": "ramsay_intro",
     "zones": []
   },
   "institute": {
