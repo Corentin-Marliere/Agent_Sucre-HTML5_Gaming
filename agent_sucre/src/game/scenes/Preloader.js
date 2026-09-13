@@ -51,6 +51,29 @@ export class Preloader extends Scene {
     this.load.image("item_eclair_laser", "images/eclair-laser-on.png");
     this.load.image("item_boussole", "images/boussole.png");
 
+    // 2D Chibi Avatar customization layers
+    this.load.svg("avatar_body_light", "character/body/body_light.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_body_tan", "character/body/body_tan.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_body_dark", "character/body/body_dark.svg", { width: 200, height: 300 });
+
+    this.load.svg("avatar_eyes_blue", "character/eyes/eyes_blue.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_eyes_green", "character/eyes/eyes_green.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_eyes_brown", "character/eyes/eyes_brown.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_eyes_purple", "character/eyes/eyes_purple.svg", { width: 200, height: 300 });
+
+    this.load.svg("avatar_hair_short", "character/hair/hair_short.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_hair_bob", "character/hair/hair_bob.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_hair_ponytail", "character/hair/hair_ponytail.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_hair_curly", "character/hair/hair_curly.svg", { width: 200, height: 300 });
+
+    this.load.svg("avatar_outfit_apprenti", "character/outfits/outfit_apprenti.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_outfit_tablier_pare_balles", "character/outfits/outfit_tablier_pare_balles.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_outfit_smoking", "character/outfits/outfit_smoking.svg", { width: 200, height: 300 });
+
+    this.load.svg("avatar_acc_glasses", "character/accessories/acc_glasses.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_acc_earpiece", "character/accessories/acc_earpiece.svg", { width: 200, height: 300 });
+    this.load.svg("avatar_acc_toque", "character/accessories/acc_toque.svg", { width: 200, height: 300 });
+
     this.load.json("dialogs", "data/dialogs_example.json");
     this.load.json("maps", "data/maps.json");
     this.load.json("items", "data/items.json");

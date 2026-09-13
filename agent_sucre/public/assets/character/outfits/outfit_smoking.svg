@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Pinstripe Black Pants -->
+  <path d="M 74 205 L 72 272 Q 72 278 85 278 Q 96 278 96 272 L 95 205 Z" fill="#09090b" stroke="#27272a" stroke-width="1.5"/>
+  <path d="M 105 205 L 104 272 Q 104 278 115 278 Q 128 278 128 272 L 126 205 Z" fill="#09090b" stroke="#27272a" stroke-width="1.5"/>
+  <!-- Crisp White Shirt V-Shape -->
+  <polygon points="88,150 112,150 100,190" fill="#ffffff" stroke="#e4e4e7" stroke-width="1"/>
+  <!-- Purple Bowtie -->
+  <polygon points="94,152 106,152 100,158" fill="#9333ea"/>
+  <polygon points="94,162 106,162 100,156" fill="#9333ea"/>
+  <circle cx="100" cy="157" r="2" fill="#c084fc"/>
+  <!-- Black Tailored Suit Jacket -->
+  <path d="M 65 158 L 86 156 L 96 195 L 62 215 Z" fill="#18181b" stroke="#27272a" stroke-width="1.8"/>
+  <path d="M 135 158 L 114 156 L 104 195 L 138 215 Z" fill="#18181b" stroke="#27272a" stroke-width="1.8"/>
+  <!-- Satin Lapels (Revers satinés) -->
+  <path d="M 86 156 L 98 190 L 92 190 L 76 166 Z" fill="#3f3f46" stroke="#71717a" stroke-width="1"/>
+  <path d="M 114 156 L 102 190 L 108 190 L 124 166 Z" fill="#3f3f46" stroke="#71717a" stroke-width="1"/>
+  <!-- Pocket Square (Pochette pourpre) -->
+  <polygon points="76,182 84,180 82,185" fill="#c084fc"/>
+  <line x1="74" y1="185" x2="86" y2="185" stroke="#27272a" stroke-width="1.5"/>
+  <!-- Sleeves with cufflinks -->
+  <path d="M 65 158 Q 50 185 52 205 L 68 202 L 73 165 Z" fill="#18181b" stroke="#27272a" stroke-width="1.8"/>
+  <path d="M 135 158 Q 150 185 148 205 L 132 202 L 127 165 Z" fill="#18181b" stroke="#27272a" stroke-width="1.8"/>
+  <!-- Gold Cufflinks -->
+  <circle cx="56" cy="202" r="2" fill="#eab308"/>
+  <circle cx="144" cy="202" r="2" fill="#eab308"/>
+</svg>

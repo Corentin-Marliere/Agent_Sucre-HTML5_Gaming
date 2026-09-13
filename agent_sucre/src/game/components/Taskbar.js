@@ -315,7 +315,17 @@ export class Taskbar extends GameObjects.Container {
    */
   handleWardrobe() {
     this.closeStartMenu();
-    new WardrobeModal(this.scene);
+    if (this.currentModal) {
+      this.currentModal.close();
+      this.currentModal = null;
+      return;
+    }
+    this.currentModal = new WardrobeModal(this.scene, {
+      onClose: () => {
+        this.currentModal = null;
+        this.refreshStatus();
+      },
+    });
   }
 
   /**
